@@ -37,7 +37,7 @@ export async function buildPreview(
 export function profileToSave(analysis: FormatAnalysis, account: Account): BankProfile | undefined {
   if (analysis.source === 'profile') return undefined;
   return {
-    id: `${account.bank}:${analysis.signature.join('|')}`,
+    id: `${account.id}:${analysis.signature.join('|')}`,
     name: account.name,
     bank: account.bank,
     headerSignature: analysis.signature,

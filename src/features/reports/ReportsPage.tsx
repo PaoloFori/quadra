@@ -1,7 +1,8 @@
 import { useCallback, useRef, useState, type TouchEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Screen } from '@/components/Screen';
-import { useCategoryLookup } from '@/db/hooks';
+import { useAccounts, useCategoryLookup } from '@/db/hooks';
+import { ALL_ACCOUNTS } from '@/domain/reports/accounts';
 import { renderPdf } from '@/domain/export/pdf';
 import type { MonthReport } from '@/domain/reports/month';
 import type { YearReport } from '@/domain/reports/year';
@@ -11,6 +12,7 @@ import { useFormat } from '@/i18n/useFormat';
 import { MonthView } from './MonthView';
 import { monthPdfDoc, yearPdfDoc } from './pdfDocs';
 import { YearView } from './YearView';
+import { AccountChips } from './shared';
 
 type Mode = 'month' | 'year';
 const SWIPE_PX = 60;
@@ -19,6 +21,13 @@ export default function ReportsPage() {
   const { t } = useTranslation();
   const f = useFormat();
   const lookup = useCategoryLookup();
+  const accounts = useAccounts();
+  const [accountId, setAccountId] = useState(ALL_ACCOUNTS);
+  // se il conto scelto viene eliminato si torna a «tutti»
+  const scope =
+    accountId === ALL_ACCOUNTS || accounts.some((a) => a.id === accountId)
+      ? accountId
+      : ALL_ACCOUNTS;
   const [mode, setMode] = useState<Mode>('month');
   const [month, setMonth] = useState(monthOf(todayIso()));
   const [year, setYear] = useState(todayIso().slice(0, 4));
@@ -69,7 +78,10 @@ export default function ReportsPage() {
     if (!doc) return;
     setExporting(true);
     try {
-      await saveFile(await renderPdf(doc), `quadra-${mode === 'month' ? month : year}.pdf`);
+      await saveFile(
+        await renderPdf(doc),
+        `quadra-${mode === 'month' ? month : year}${scope === ALL_ACCOUNTS ? '' : `-${accounts.find((a) => a.id === scope)?.name ?? ''}`}.pdf`,
+      );
     } finally {
       setExporting(false);
     }
@@ -103,6 +115,8 @@ export default function ReportsPage() {
         ))}
       </div>
 
+      <AccountChips accounts={accounts} value={scope} onChange={setAccountId} />
+
       <div className="mb-3 flex items-center justify-between">
         <button
           className="btn-secondary !min-w-[44px] !px-3"
@@ -123,9 +137,9 @@ export default function ReportsPage() {
 
       <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} className="min-h-[50vh]">
         {mode === 'month' ? (
-          <MonthView month={month} onReport={setMonthReport} />
+          <MonthView month={month} accountId={scope} onReport={setMonthReport} />
         ) : (
-          <YearView year={year} onReport={setYearReport} />
+          <YearView year={year} accountId={scope} onReport={setYearReport} />
         )}
       </div>
     </Screen>

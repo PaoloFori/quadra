@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 
 const icon = (d: string): ReactNode => (
   <svg
-    width="26"
-    height="26"
+    width="22"
+    height="22"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -47,11 +47,19 @@ export function TabBar() {
               to={tab.to}
               end={'end' in tab}
               className={({ isActive }) =>
-                `flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 text-[10px] font-medium ${isActive ? 'text-accent' : 'text-muted'}`
+                `flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 text-[10px] font-medium ${isActive ? 'font-semibold text-accent' : 'text-muted'}`
               }
             >
-              {tab.icon}
-              <span className="max-w-full truncate">{t(`nav.${tab.key}`)}</span>
+              {({ isActive }: { isActive: boolean }) => (
+                <>
+                  <span
+                    className={`flex h-7 w-14 items-center justify-center rounded-full transition ${isActive ? 'bg-accent/15' : ''}`}
+                  >
+                    {tab.icon}
+                  </span>
+                  <span className="max-w-full truncate">{t(`nav.${tab.key}`)}</span>
+                </>
+              )}
             </NavLink>
           </li>
         ))}

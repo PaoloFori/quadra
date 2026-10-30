@@ -2,25 +2,48 @@ import { useEffect, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { Delta } from '@/components/Delta';
+import { useAccounts } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
+import { ALL_ACCOUNTS, filterByAccount, totalsByAccount } from '@/domain/reports/accounts';
+import { yearOf } from '@/lib/dates';
 import { buildYearReport, type YearReport } from '@/domain/reports/year';
 import { useFormat } from '@/i18n/useFormat';
-import { YearBars } from './charts';
-import { CategoryBreakdown, StatPair } from './shared';
+import { CumulativeChart, YearBars } from './charts';
+import { AccountsCompare, CategoryBreakdown, SummaryHero } from './shared';
 
 interface Props {
   year: string;
+  accountId: string;
   onReport: (report: YearReport | undefined) => void;
 }
 
-export function YearView({ year, onReport }: Props) {
+export function YearView({ year, accountId, onReport }: Props) {
   const { t } = useTranslation();
   const f = useFormat();
-  const txs = useLiveQuery(
+  const accounts = useAccounts();
+  const rawTxs = useLiveQuery(
     () => transactionsRepo.inRange(`${Number(year) - 1}-01-01`, `${year}-12-31`),
     [year],
   );
+  const txs = useMemo(() => rawTxs && filterByAccount(rawTxs, accountId), [rawTxs, accountId]);
   const report = useMemo(() => (txs ? buildYearReport(txs, year) : undefined), [txs, year]);
+  const perAccount = useMemo(
+    () =>
+      rawTxs
+        ? totalsByAccount(
+            rawTxs.filter((t) => yearOf(t.date) === year),
+            accounts,
+          )
+        : [],
+    [rawTxs, accounts, year],
+  );
+  const cumulative = useMemo(() => {
+    const months = report?.months ?? [];
+    return months.map((m, i) => ({
+      name: f.monthShort(m.month),
+      value: months.slice(0, i + 1).reduce((sum, x) => sum + x.net, 0),
+    }));
+  }, [report, f]);
 
   useEffect(() => onReport(report), [report, onReport]);
 
@@ -29,11 +52,7 @@ export function YearView({ year, onReport }: Props) {
 
   return (
     <div className="space-y-3">
-      <section className="card space-y-1" aria-label={t('reports.summary')}>
-        <StatPair label={t('common.income')} cents={report.totals.income} tone="income" />
-        <StatPair label={t('common.expenses')} cents={report.totals.expenses} tone="expense" />
-        <StatPair label={t('common.balance')} cents={report.totals.net} tone="neutral" />
-      </section>
+      <SummaryHero totals={report.totals} />
 
       <section className="card space-y-1">
         <p className="flex justify-between gap-3">
@@ -74,6 +93,18 @@ export function YearView({ year, onReport }: Props) {
         <h2 className="mb-2 font-semibold">{t('reports.byMonth')}</h2>
         <YearBars months={report.months} />
       </section>
+
+      <section className="card">
+        <h2 className="mb-2 font-semibold">{t('reports.cumulative')}</h2>
+        <CumulativeChart data={cumulative} />
+      </section>
+
+      {accountId === ALL_ACCOUNTS && accounts.length > 1 && (
+        <section className="card">
+          <h2 className="mb-3 font-semibold">{t('reports.byAccount')}</h2>
+          <AccountsCompare rows={perAccount} />
+        </section>
+      )}
 
       <section className="card">
         <h2 className="mb-2 font-semibold">{t('reports.byCategory')}</h2>

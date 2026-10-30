@@ -55,7 +55,9 @@
     "budgetOver": "Over by {{amount}}",
     "empty": "No transactions yet. Add one or import a file from your bank.",
     "addFirst": "Add transaction",
-    "importFile": "Import from bank"
+    "importFile": "Import from bank",
+    "noAccountsTitle": "Welcome to Quadra",
+    "noAccountsBody": "Start by adding your accounts: name them as you like (bank, card, cash). Then add transactions or import a file."
   },
   "settings": {
     "title": "Settings",
@@ -156,8 +158,14 @@
     "title": "Accounts",
     "add": "New account",
     "name": "Name",
-    "bank": "Bank",
-    "otherBank": "Other bank"
+    "intro": "Add the accounts you want to track (bank, card, cash…). They are used to record transactions and to import bank files.",
+    "empty": "You have no accounts yet.",
+    "namePlaceholder": "E.g. Main account",
+    "hasMovements": "This account has {{count}} transactions: delete or move them before removing the account.",
+    "deleteConfirm": "Delete account “{{name}}”?",
+    "addFirst": "Add your first account",
+    "needOne": "First, add an account",
+    "needOneBody": "Create at least one account (for example your bank's name): transactions are always recorded and imported on an account."
   },
   "reports": {
     "monthly": "Monthly",
@@ -181,7 +189,18 @@
     "noExpenses": "No expenses in this period.",
     "same": "Unchanged",
     "previous": "Previous period",
-    "next": "Next period"
+    "next": "Next period",
+    "allAccounts": "All accounts",
+    "byAccount": "By account",
+    "savings": "Savings",
+    "savedOfIncome": "{{pct}} of income",
+    "spentTotal": "Spent",
+    "cumulative": "Cumulative balance",
+    "accountFilter": "Account",
+    "movements_one": "{{count}} transaction",
+    "movements_other": "{{count}} transactions",
+    "share": "Share of spending",
+    "average": "Avg/day"
   },
   "budget": {
     "add": "New budget",
@@ -190,7 +209,16 @@
     "empty": "No budgets yet. Set one for a category to keep spending under control.",
     "left": "{{amount}} left",
     "warning": "Careful: only {{amount}} left",
-    "over": "Over by {{amount}}"
+    "over": "Over by {{amount}}",
+    "what": "What is a budget?",
+    "intro": "A budget is the most you want to spend each month on a category, for example Restaurants €150. Quadra shows how much you've already spent and how much is left.",
+    "canExceed": "It never blocks anything: you can spend more. When you go over the limit the bar turns red and tells you by how much.",
+    "howTo": "Tap “New budget”, pick the category and the monthly limit.",
+    "totalTitle": "Month budget",
+    "spentOf": "Spent {{spent}} of {{limit}}",
+    "percentUsed": "{{pct}}% used",
+    "exceeded_one": "{{count}} budget exceeded",
+    "exceeded_other": "{{count}} budgets exceeded"
   },
   "backup": {
     "title": "Backup & restore",
@@ -273,7 +301,9 @@
   "balances": {
     "title": "My accounts",
     "set": "Set balances",
-    "hint": "Enter how much money you have right now on each account. Quadra keeps it updated with the transactions you add or import."
+    "hint": "Enter how much money you have right now on each account. Quadra keeps it updated with the transactions you add or import.",
+    "add": "Add account",
+    "empty": "No accounts: add one to see how much money you have."
   },
   "history": {
     "last": "Last time: {{date}}",

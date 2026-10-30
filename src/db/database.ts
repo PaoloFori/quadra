@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { Account, BankProfile, Budget, Category, Rule, Transaction } from '@/domain/types';
-import { DEFAULT_ACCOUNTS, DEFAULT_CATEGORIES, DEFAULT_RULES } from '@/domain/defaults';
+import { DEFAULT_CATEGORIES, DEFAULT_RULES } from '@/domain/defaults';
 
 export interface SettingRow {
   key: string;
@@ -32,7 +32,6 @@ export class QuadraDb extends Dexie {
     this.on('populate', (tx) => {
       void tx.table('categories').bulkAdd(DEFAULT_CATEGORIES);
       void tx.table('rules').bulkAdd(DEFAULT_RULES);
-      void tx.table('accounts').bulkAdd(DEFAULT_ACCOUNTS);
     });
   }
 }

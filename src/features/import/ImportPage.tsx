@@ -85,7 +85,17 @@ export default function ImportPage() {
         </p>
       )}
 
-      {stage.name === 'pick' && (
+      {stage.name === 'pick' && accounts.length === 0 && (
+        <div className="card space-y-3">
+          <h2 className="font-semibold">{t('accounts.needOne')}</h2>
+          <p className="text-muted">{t('accounts.needOneBody')}</p>
+          <Link to="/settings/accounts" className="btn-primary w-full">
+            {t('accounts.addFirst')}
+          </Link>
+        </div>
+      )}
+
+      {stage.name === 'pick' && accounts.length > 0 && (
         <div className="card space-y-3">
           <div>
             <label className="label" htmlFor="imp-account">

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CategoryPicker } from '@/components/CategoryPicker';
 import { Sheet } from '@/components/Sheet';
@@ -109,6 +110,17 @@ export function TransactionSheet({ tx, onClose }: Props) {
       await deleteTransaction(tx.id);
       onClose();
     }
+  }
+
+  if (accounts.length === 0) {
+    return (
+      <Sheet title={t('accounts.needOne')} onClose={onClose}>
+        <p className="text-muted">{t('accounts.needOneBody')}</p>
+        <Link to="/settings/accounts" className="btn-primary w-full" onClick={onClose}>
+          {t('accounts.addFirst')}
+        </Link>
+      </Sheet>
+    );
   }
 
   return (

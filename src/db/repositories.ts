@@ -28,6 +28,7 @@ export const transactionsRepo = {
 export const accountsRepo = {
   all: (): Promise<Account[]> => db.accounts.toArray(),
   put: (account: Account): Promise<string> => db.accounts.put(account),
+  remove: (id: string): Promise<void> => db.accounts.delete(id),
 };
 
 export const categoriesRepo = {

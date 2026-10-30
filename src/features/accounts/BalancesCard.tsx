@@ -6,6 +6,7 @@ import { Sheet } from '@/components/Sheet';
 import { getAccountBalances, setAccountBalance } from '@/db/accountService';
 import type { AccountBalance } from '@/domain/balances';
 import { centsToPlain, parseSignedAmount } from '@/lib/money';
+import { AccountSheet } from './AccountSheet';
 
 function BalancesSheet({ balances, onClose }: { balances: AccountBalance[]; onClose: () => void }) {
   const { t } = useTranslation();
@@ -63,18 +64,27 @@ export function BalancesCard() {
   const { t } = useTranslation();
   const balances = useLiveQuery(getAccountBalances, []);
   const [open, setOpen] = useState(false);
+  const [adding, setAdding] = useState(false);
   if (!balances) return null;
   const total = balances.reduce((s, b) => s + b.balanceCents, 0);
 
   return (
     <>
       <section className="card" aria-label={t('balances.title')}>
-        <div className="mb-1 flex items-center justify-between">
-          <h2 className="font-semibold">{t('balances.title')}</h2>
-          <button className="btn-secondary !min-h-[44px]" onClick={() => setOpen(true)}>
-            {t('balances.set')}
-          </button>
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="w-full text-lg font-bold">{t('balances.title')}</h2>
+          <div className="flex gap-2">
+            <button className="btn-secondary !px-3 !text-[14px]" onClick={() => setAdding(true)}>
+              {t('balances.add')}
+            </button>
+            {balances.length > 0 && (
+              <button className="btn-secondary !px-3 !text-[14px]" onClick={() => setOpen(true)}>
+                {t('balances.set')}
+              </button>
+            )}
+          </div>
         </div>
+        {balances.length === 0 && <p className="py-2 text-muted">{t('balances.empty')}</p>}
         <ul>
           {balances.map(({ account, balanceCents }) => (
             <li key={account.id} className="flex min-h-[40px] items-center justify-between">
@@ -82,12 +92,15 @@ export function BalancesCard() {
               <Amount cents={balanceCents} signed={false} neutral className="font-semibold" />
             </li>
           ))}
-          <li className="flex min-h-[40px] items-center justify-between border-t border-line/60">
-            <span className="font-semibold">{t('common.total')}</span>
-            <Amount cents={total} signed={false} neutral className="text-lg font-bold" />
-          </li>
+          {balances.length > 1 && (
+            <li className="flex min-h-[40px] items-center justify-between border-t border-line/60">
+              <span className="font-semibold">{t('common.total')}</span>
+              <Amount cents={total} signed={false} neutral className="text-lg font-bold" />
+            </li>
+          )}
         </ul>
       </section>
+      {adding && <AccountSheet onClose={() => setAdding(false)} />}
       {open && <BalancesSheet balances={balances} onClose={() => setOpen(false)} />}
     </>
   );

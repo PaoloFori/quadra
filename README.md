@@ -41,6 +41,11 @@ esegue lint, typecheck, test e pubblica su `https://<utente>.github.io/quadra/`.
 3. Apri Quadra dall'icona in Home. Alla prima apertura vai in **Impostazioni → Backup e ripristino** e tocca _Richiedi archiviazione persistente_.
 4. (Facoltativo) **Impostazioni → Privacy e blocco**: imposta un PIN e attiva Face ID.
 
+## Conti
+
+Quadra parte senza conti: dalla Home (_Aggiungi conto_) o da _Impostazioni → Conti_ crei i tuoi, con il nome che vuoi.
+I movimenti e gli import si registrano sempre su uno di questi conti.
+
 ## Importare i movimenti dalla banca
 
 1. Dall'home banking esporta i movimenti in CSV o XLSX.
@@ -59,6 +64,9 @@ Per provare tutto subito usa i file di esempio in [samples/](samples/).
 `npm run convert-ledger` (legge gli `spese<anno>.xlsx` messi in `private/`) converte fogli mensili (colonne _spesa, data, banca, motivo_) in un CSV per conto
 in `private/` (ignorata da git); le righe senza banca vanno sul conto principale. Verifica i totali di ogni foglio e
 riporta le date corrette. Poi importa ogni CSV scegliendo il conto corrispondente.
+
+Per fare tutto in un colpo: `npm run build-backup` crea `private/quadra-backup-spese.json` (conti, movimenti, categorie e giroconti già pronti).
+In Quadra: _Impostazioni → Backup → Ripristina da file → Sostituisci tutto_.
 
 ## Backup e ripristino (importante)
 
