@@ -8,6 +8,7 @@ const HomePage = lazy(() => import('@/features/home/HomePage'));
 const TransactionsPage = lazy(() => import('@/features/transactions/TransactionsPage'));
 const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'));
 const BudgetPage = lazy(() => import('@/features/budgets/BudgetPage'));
+const ImportPage = lazy(() => import('@/features/import/ImportPage'));
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'));
 
 function Loading() {
@@ -30,6 +31,7 @@ export function App() {
               <Route path="/transactions" element={<TransactionsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/budget" element={<BudgetPage />} />
+              <Route path="/import" element={<ImportPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </Suspense>

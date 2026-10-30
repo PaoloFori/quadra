@@ -83,5 +83,39 @@
     "other": "Other",
     "salary": "Salary",
     "otherIncome": "Other income"
+  },
+  "import": {
+    "title": "Import transactions",
+    "action": "Import",
+    "account": "Account",
+    "chooseFile": "Choose CSV or XLSX file",
+    "hint": "Export transactions from your online banking and pick the file. It is read on this phone and never sent anywhere.",
+    "summary": "{{added}} new, {{existing}} already present",
+    "skipped_one": "{{count}} row ignored (headers, totals or invalid rows)",
+    "skipped_other": "{{count}} rows ignored (headers, totals or invalid rows)",
+    "willSaveProfile": "Format recognized: it will be saved as a profile for future imports.",
+    "transfers_one": "Mark {{count}} transfer between my accounts (excluded from income/expenses)",
+    "transfers_other": "Mark {{count}} transfers between my accounts (excluded from income/expenses)",
+    "sample": "Preview",
+    "confirm_one": "Import {{count}} transaction",
+    "confirm_other": "Import {{count}} transactions",
+    "done_one": "Imported {{count}} transaction",
+    "done_other": "Imported {{count}} transactions",
+    "viewTransactions": "View transactions",
+    "map": {
+      "intro": "I could not recognize the format. Tell me which columns hold the data: the profile will be saved for next time.",
+      "headerRow": "Header row",
+      "notUsed": "Not used",
+      "choose": "Choose column…",
+      "valueDate": "Value date (optional)",
+      "splitAmount": "Debit and credit in separate columns",
+      "debit": "Debit (outgoing)",
+      "credit": "Credit (incoming)",
+      "descriptionExtra": "Extra description (optional)",
+      "balance": "Balance (optional)"
+    }
+  },
+  "tx": {
+    "transfer": "Transfer"
   }
 }

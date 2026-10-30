@@ -1,0 +1,61 @@
+Intesa Sanpaolo - Lista movimenti
+Data;Operazione;Dettagli;Conto o carta;Contabilizzazione;Categoria;Valuta;Importo
+01/04/2026;Bonifico;"Bonifico a favore di Rossi Anna affitto";Conto 1000/00123456;CONTABILIZZATO;;EUR;-680,00
+03/04/2026;Giroconto;"Giroconto verso BBVA";Conto 1000/00123456;CONTABILIZZATO;;EUR;-300,00
+05/04/2026;Addebito;"Addebito SDD Enel Energia bolletta";Conto 1000/00123456;CONTABILIZZATO;;EUR;-75,06
+09/04/2026;Addebito;"Addebito SDD Vodafone Italia";Conto 1000/00123456;CONTABILIZZATO;;EUR;-29,99
+12/04/2026;Pagamento;"Pagamento POS Farmacia Centrale";Conto 1000/00123456;CONTABILIZZATO;;EUR;-22,35
+15/04/2026;Canone;"Canone conto commissioni";Conto 1000/00123456;CONTABILIZZATO;;EUR;-2,00
+16/04/2026;Pagamento;"Pagamento POS Carrefour supermercato";Conto 1000/00123456;CONTABILIZZATO;;EUR;-62,62
+20/04/2026;Pagamento;"Pagamento POS Zara Milano";Conto 1000/00123456;CONTABILIZZATO;;EUR;-45,73
+22/04/2026;Pagamento;"Pagamento POS Caffè Torino";Conto 1000/00123456;CONTABILIZZATO;;EUR;-6,69
+27/04/2026;Accredito;"Accredito emolumenti stipendio ACME SRL";Conto 1000/00123456;CONTABILIZZATO;;EUR;2.150,00
+01/05/2026;Bonifico;"Bonifico a favore di Rossi Anna affitto";Conto 1000/00123456;CONTABILIZZATO;;EUR;-680,00
+03/05/2026;Giroconto;"Giroconto verso BBVA";Conto 1000/00123456;CONTABILIZZATO;;EUR;-300,00
+05/05/2026;Addebito;"Addebito SDD Enel Energia bolletta";Conto 1000/00123456;CONTABILIZZATO;;EUR;-55,48
+09/05/2026;Addebito;"Addebito SDD Vodafone Italia";Conto 1000/00123456;CONTABILIZZATO;;EUR;-29,99
+12/05/2026;Pagamento;"Pagamento POS Farmacia Centrale";Conto 1000/00123456;CONTABILIZZATO;;EUR;-17,72
+15/05/2026;Canone;"Canone conto commissioni";Conto 1000/00123456;CONTABILIZZATO;;EUR;-2,00
+16/05/2026;Pagamento;"Pagamento POS Carrefour supermercato";Conto 1000/00123456;CONTABILIZZATO;;EUR;-56,93
+22/05/2026;Pagamento;"Pagamento POS Caffè Torino";Conto 1000/00123456;CONTABILIZZATO;;EUR;-8,01
+27/05/2026;Accredito;"Accredito emolumenti stipendio ACME SRL";Conto 1000/00123456;CONTABILIZZATO;;EUR;2.150,00
+01/06/2026;Bonifico;"Bonifico a favore di Rossi Anna affitto";Conto 1000/00123456;CONTABILIZZATO;;EUR;-680,00
+03/06/2026;Giroconto;"Giroconto verso BBVA";Conto 1000/00123456;CONTABILIZZATO;;EUR;-300,00
+05/06/2026;Addebito;"Addebito SDD Enel Energia bolletta";Conto 1000/00123456;CONTABILIZZATO;;EUR;-81,47
+09/06/2026;Addebito;"Addebito SDD Vodafone Italia";Conto 1000/00123456;CONTABILIZZATO;;EUR;-29,99
+12/06/2026;Pagamento;"Pagamento POS Farmacia Centrale";Conto 1000/00123456;CONTABILIZZATO;;EUR;-17,45
+15/06/2026;Canone;"Canone conto commissioni";Conto 1000/00123456;CONTABILIZZATO;;EUR;-2,00
+16/06/2026;Pagamento;"Pagamento POS Carrefour supermercato";Conto 1000/00123456;CONTABILIZZATO;;EUR;-42,49
+20/06/2026;Pagamento;"Pagamento POS Zara Milano";Conto 1000/00123456;CONTABILIZZATO;;EUR;-92,56
+22/06/2026;Pagamento;"Pagamento POS Caffè Torino";Conto 1000/00123456;CONTABILIZZATO;;EUR;-7,90
+27/06/2026;Accredito;"Accredito emolumenti stipendio ACME SRL";Conto 1000/00123456;CONTABILIZZATO;;EUR;2.150,00
+01/07/2026;Bonifico;"Bonifico a favore di Rossi Anna affitto";Conto 1000/00123456;CONTABILIZZATO;;EUR;-680,00
+03/07/2026;Giroconto;"Giroconto verso BBVA";Conto 1000/00123456;CONTABILIZZATO;;EUR;-300,00
+05/07/2026;Addebito;"Addebito SDD Enel Energia bolletta";Conto 1000/00123456;CONTABILIZZATO;;EUR;-55,45
+09/07/2026;Addebito;"Addebito SDD Vodafone Italia";Conto 1000/00123456;CONTABILIZZATO;;EUR;-29,99
+12/07/2026;Pagamento;"Pagamento POS Farmacia Centrale";Conto 1000/00123456;CONTABILIZZATO;;EUR;-27,33
+15/07/2026;Canone;"Canone conto commissioni";Conto 1000/00123456;CONTABILIZZATO;;EUR;-2,00
+16/07/2026;Pagamento;"Pagamento POS Carrefour supermercato";Conto 1000/00123456;CONTABILIZZATO;;EUR;-44,46
+22/07/2026;Pagamento;"Pagamento POS Caffè Torino";Conto 1000/00123456;CONTABILIZZATO;;EUR;-3,29
+27/07/2026;Accredito;"Accredito emolumenti stipendio ACME SRL";Conto 1000/00123456;CONTABILIZZATO;;EUR;2.150,00
+01/08/2026;Bonifico;"Bonifico a favore di Rossi Anna affitto";Conto 1000/00123456;CONTABILIZZATO;;EUR;-680,00
+03/08/2026;Giroconto;"Giroconto verso BBVA";Conto 1000/00123456;CONTABILIZZATO;;EUR;-300,00
+05/08/2026;Addebito;"Addebito SDD Enel Energia bolletta";Conto 1000/00123456;CONTABILIZZATO;;EUR;-60,69
+09/08/2026;Addebito;"Addebito SDD Vodafone Italia";Conto 1000/00123456;CONTABILIZZATO;;EUR;-29,99
+12/08/2026;Pagamento;"Pagamento POS Farmacia Centrale";Conto 1000/00123456;CONTABILIZZATO;;EUR;-9,36
+15/08/2026;Canone;"Canone conto commissioni";Conto 1000/00123456;CONTABILIZZATO;;EUR;-2,00
+16/08/2026;Pagamento;"Pagamento POS Carrefour supermercato";Conto 1000/00123456;CONTABILIZZATO;;EUR;-48,88
+20/08/2026;Pagamento;"Pagamento POS Zara Milano";Conto 1000/00123456;CONTABILIZZATO;;EUR;-73,34
+22/08/2026;Pagamento;"Pagamento POS Caffè Torino";Conto 1000/00123456;CONTABILIZZATO;;EUR;-3,45
+27/08/2026;Accredito;"Accredito emolumenti stipendio ACME SRL";Conto 1000/00123456;CONTABILIZZATO;;EUR;2.150,00
+01/09/2026;Bonifico;"Bonifico a favore di Rossi Anna affitto";Conto 1000/00123456;CONTABILIZZATO;;EUR;-680,00
+03/09/2026;Giroconto;"Giroconto verso BBVA";Conto 1000/00123456;CONTABILIZZATO;;EUR;-300,00
+05/09/2026;Addebito;"Addebito SDD Enel Energia bolletta";Conto 1000/00123456;CONTABILIZZATO;;EUR;-79,05
+09/09/2026;Addebito;"Addebito SDD Vodafone Italia";Conto 1000/00123456;CONTABILIZZATO;;EUR;-29,99
+12/09/2026;Pagamento;"Pagamento POS Farmacia Centrale";Conto 1000/00123456;CONTABILIZZATO;;EUR;-19,18
+15/09/2026;Canone;"Canone conto commissioni";Conto 1000/00123456;CONTABILIZZATO;;EUR;-2,00
+16/09/2026;Pagamento;"Pagamento POS Carrefour supermercato";Conto 1000/00123456;CONTABILIZZATO;;EUR;-66,88
+22/09/2026;Pagamento;"Pagamento POS Caffè Torino";Conto 1000/00123456;CONTABILIZZATO;;EUR;-6,38
+27/09/2026;Accredito;"Accredito emolumenti stipendio ACME SRL";Conto 1000/00123456;CONTABILIZZATO;;EUR;2.150,00
+
+Totale operazioni;57
