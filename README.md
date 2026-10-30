@@ -1,7 +1,9 @@
 # Quadra
 
-PWA personale per tracciare le spese bancarie (BBVA e Intesa Sanpaolo), con resoconti mensili/annuali, budget e backup completi.
+PWA personale per tracciare le spese bancarie, con resoconti mensili/annuali, budget e backup completi.
 Un solo utente, **nessun login, nessun backend, nessun analytics**: i dati restano sul dispositivo (IndexedDB).
+
+App online: https://paoloforin.github.io/quadra/
 
 - React + Vite + TypeScript (strict), Tailwind, Dexie, Recharts, i18next (IT/EN)
 - Offline (service worker), installabile da Safari con «Aggiungi a Home»
@@ -47,15 +49,15 @@ esegue lint, typecheck, test e pubblica su `https://<utente>.github.io/quadra/`.
 
 Riimportare lo stesso file (o uno che si sovrappone) non crea duplicati; due movimenti identici nello stesso giorno restano due movimenti.
 I giroconti tra i due conti (stesso importo, segno opposto, ≤ 3 giorni) vengono rilevati ed esclusi da entrate/uscite.
-Per provare tutto subito usa [samples/bbva-esempio.csv](samples/bbva-esempio.csv) (conto BBVA) e [samples/intesa-esempio.csv](samples/intesa-esempio.csv) (conto Intesa Sanpaolo).
+Per provare tutto subito usa i file di esempio in [samples/](samples/).
 
-> I formati esatti degli export BBVA/Intesa possono cambiare nel tempo. Il riconoscimento si basa sulle intestazioni
+> I formati esatti degli export delle banche possono cambiare nel tempo. Il riconoscimento si basa sulle intestazioni
 > (italiano/inglese/spagnolo); se qualcosa non torna c'è sempre la mappatura manuale.
 
 ### Registri a mano in Excel
 
-`npm run convert-ledger` (legge gli `spese<anno>.xlsx` messi in `private/`) converte fogli mensili (colonne _spesa, data, banca, motivo_) in due CSV
-in `private/` (ignorata da git): `spese-bbva.csv` e `spese-intesa.csv` (le righe senza banca vanno su BBVA). Verifica i totali di ogni foglio e
+`npm run convert-ledger` (legge gli `spese<anno>.xlsx` messi in `private/`) converte fogli mensili (colonne _spesa, data, banca, motivo_) in un CSV per conto
+in `private/` (ignorata da git); le righe senza banca vanno sul conto principale. Verifica i totali di ogni foglio e
 riporta le date corrette. Poi importa ogni CSV scegliendo il conto corrispondente.
 
 ## Backup e ripristino (importante)
