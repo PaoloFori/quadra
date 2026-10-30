@@ -8,8 +8,13 @@
   "range": { "kind": "all" },
   "checksum": "sha256:<hex>",
   "data": {
-    "accounts": [], "transactions": [], "categories": [],
-    "rules": [], "budgets": [], "profiles": [], "settings": {}
+    "accounts": [],
+    "transactions": [],
+    "categories": [],
+    "rules": [],
+    "budgets": [],
+    "profiles": [],
+    "settings": {}
   }
 }
 ```
