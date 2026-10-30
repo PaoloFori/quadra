@@ -63,11 +63,9 @@ export function StatPair({
   const color =
     tone === 'income' ? 'text-income' : tone === 'expense' ? 'text-expense' : 'text-ink';
   return (
-    <div>
-      <p className="text-[13px] text-muted">{label}</p>
-      <p className={`tabular text-xl font-bold ${color}`}>
-        <Amount cents={cents} signed={false} neutral className={color} />
-      </p>
+    <div className="flex min-h-[32px] items-baseline justify-between gap-3">
+      <span className="text-muted">{label}</span>
+      <Amount cents={cents} signed={false} neutral className={`text-lg font-bold ${color}`} />
     </div>
   );
 }

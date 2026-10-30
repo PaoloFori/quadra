@@ -31,7 +31,7 @@ export const TransactionRow = memo(function TransactionRow({
         {tx.isTransfer ? '↔️' : (category?.icon ?? '❔')}
       </span>
       <span className="min-w-0 flex-1 text-left">
-        <span className="line-clamp-1 text-[15px] font-medium">
+        <span className="line-clamp-2 break-words text-[15px] font-medium leading-tight">
           {tx.note || tx.description || categoryLabel}
         </span>
         <span className="line-clamp-1 text-[13px] text-muted">
@@ -46,7 +46,7 @@ export const TransactionRow = memo(function TransactionRow({
       />
     </>
   );
-  const cls = 'flex min-h-[56px] w-full items-center gap-3 px-1 py-2';
+  const cls = 'flex h-full min-h-[56px] w-full items-center gap-3 px-1 py-1.5';
   return onOpen ? (
     <button className={cls} onClick={() => onOpen(tx)}>
       {body}

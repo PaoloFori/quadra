@@ -18,7 +18,7 @@ import { FilterSheet } from './FilterSheet';
 import { TransactionRow } from './TransactionRow';
 import { TransactionSheet } from './TransactionSheet';
 
-const ROW_HEIGHT = 57;
+const ROW_HEIGHT = 74;
 
 export default function TransactionsPage() {
   const { t } = useTranslation();

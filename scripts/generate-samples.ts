@@ -27,12 +27,12 @@ const iso = (y: number, m: number, d: number): string =>
   `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
 const MONTHS: Array<[number, number]> = [
-  [2026, 4],
   [2026, 5],
   [2026, 6],
   [2026, 7],
   [2026, 8],
   [2026, 9],
+  [2026, 10],
 ];
 const bbva: Row[] = [];
 const intesa: Row[] = [];
@@ -140,7 +140,7 @@ const bbvaRows = withBalance(bbva, 300000).reverse(); // BBVA: più recenti prim
 const bbvaCsv = [
   'BBVA - Movimenti conto',
   'Titolare;Paolo',
-  'Periodo;01/04/2026 - 30/09/2026',
+  'Periodo;01/05/2026 - 31/10/2026',
   '',
   'Data;Data valuta;Descrizione;Importo;Saldo',
   ...bbvaRows.map(
@@ -156,7 +156,7 @@ const intesaCsv = [
   'Data;Operazione;Dettagli;Conto o carta;Contabilizzazione;Categoria;Valuta;Importo',
   ...intesaRows.map(
     (r) =>
-      `${dmy(r.date)};${r.description.split(' ')[0]};"${r.description}";Conto 1000/00123456;CONTABILIZZATO;;EUR;${fmt(r.cents)}`,
+      `${dmy(r.date)};${r.description.split(' ')[0]};"${r.description.split(' ').slice(1).join(' ')}";Conto 1000/00123456;CONTABILIZZATO;;EUR;${fmt(r.cents)}`,
   ),
   '',
   `Totale operazioni;${intesaRows.length}`,
