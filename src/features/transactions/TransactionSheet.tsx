@@ -12,6 +12,9 @@ import {
   setTransfer,
   updateTransaction,
 } from '@/db/transactionService';
+import { similarTransactions } from '@/domain/history';
+import { Amount } from '@/components/Amount';
+import { transactionsRepo } from '@/db/repositories';
 import { matchCategory } from '@/domain/rules';
 import type { Transaction } from '@/domain/types';
 import { todayIso } from '@/lib/dates';
@@ -47,6 +50,7 @@ export function TransactionSheet({ tx, onClose }: Props) {
   );
   const [categoryId, setCategoryId] = useState<string | null>(tx?.categoryId ?? null);
   const [categoryTouched, setCategoryTouched] = useState(false);
+  const [description, setDescription] = useState(tx?.description ?? '');
   const [note, setNote] = useState(tx?.note ?? '');
   const [date, setDate] = useState(tx?.date ?? todayIso());
   const [accountId, setAccountId] = useState(tx?.accountId ?? rememberedAccount() ?? '');
@@ -54,6 +58,8 @@ export function TransactionSheet({ tx, onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const all = useLiveQuery(() => (tx ? transactionsRepo.all() : Promise.resolve([])), [tx?.id], []);
+  const similar = useMemo(() => (tx ? similarTransactions(all, tx) : []), [all, tx]);
   const effectiveAccount = accounts.some((a) => a.id === accountId)
     ? accountId
     : (accounts[0]?.id ?? '');
@@ -169,7 +175,19 @@ export function TransactionSheet({ tx, onClose }: Props) {
         </label>
       )}
 
-      {tx?.description && <p className="text-[13px] text-muted">{tx.description}</p>}
+      {tx?.source === 'import' && (
+        <div>
+          <label className="label" htmlFor="tx-desc">
+            {t('tx.description')}
+          </label>
+          <input
+            id="tx-desc"
+            className="input"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+      )}
       <div>
         <label className="label" htmlFor="tx-note">
           {t('common.note')}
@@ -224,6 +242,28 @@ export function TransactionSheet({ tx, onClose }: Props) {
           />
           <span>{t('tx.markTransfer')}</span>
         </label>
+      )}
+      {tx && (
+        <section aria-label={t('tx.lastTimes')}>
+          <h3 className="label">{t('tx.lastTimes')}</h3>
+          {similar.length === 0 ? (
+            <p className="text-[13px] text-muted">{t('tx.noSimilar')}</p>
+          ) : (
+            <ul>
+              {similar.map((s) => (
+                <li
+                  key={s.id}
+                  className="flex min-h-[40px] items-center justify-between gap-3 border-b border-line/60 text-[14px] last:border-0"
+                >
+                  <span className="min-w-0 truncate">
+                    {f.date(s.date)} · {s.note || s.description}
+                  </span>
+                  <Amount cents={s.amountCents} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
       {tx && (
         <p className="text-[12px] text-muted">{f.dateTime(new Date(tx.createdAt).toISOString())}</p>

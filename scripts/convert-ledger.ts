@@ -1,14 +1,14 @@
 /**
  * Converte i registri mensili fatti a mano (un foglio per mese: spesa | data | banca | motivo) in CSV
- * importabili da Quadra, uno per conto. Uso: npm run convert-ledger -- spese2025.xlsx spese2026.xlsx
+ * importabili da Quadra, uno per conto. Uso: npm run convert-ledger [-- file.xlsx ...] (default: gli .xlsx in private/)
  * Output in private/ (ignorata da git). Nessun dato lascia il computer.
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as XLSX from 'xlsx';
 
 const MONTHS = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
-type Account = 'modo1' | 'modo2' | 'senza-banca';
+type Account = 'modo1' | 'modo2';
 
 interface Entry {
   date: string;
@@ -22,11 +22,9 @@ const text = (cell: unknown): string => (cell == null ? '' : String(cell).trim()
 
 function accountOf(bank: string, description: string): Account {
   const b = bank.toLowerCase();
-  if (b === 'modo1') return 'modo1';
-  if (b === 'modo2') return 'modo2';
-  if (/modo1/i.test(description)) return 'modo1';
-  if (/modo2/i.test(description)) return 'modo2';
-  return 'senza-banca';
+  if (b === 'modo2' || (b !== 'modo1' && /modo2/i.test(description))) return 'modo2';
+  // Righe senza banca (es. periodo all'estero): per scelta dell'utente sono tutte Modo1.
+  return 'modo1';
 }
 
 /** Porta una data fuori dal mese del foglio dentro di esso, tenendo lo stesso giorno. */
@@ -77,14 +75,20 @@ const fmt = (cents: number): string => {
 };
 const csvCell = (s: string): string => (/[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s);
 
-const files = process.argv.slice(2);
-if (files.length === 0) throw new Error('Indica almeno un file .xlsx');
+const args = process.argv.slice(2);
+const files =
+  args.length > 0
+    ? args
+    : readdirSync('private')
+        .filter((f) => /^spese\d{4}\.xlsx$/.test(f))
+        .map((f) => join('private', f));
+if (files.length === 0) throw new Error('Nessun file spese<anno>.xlsx trovato in private/');
 
 const all: Entry[] = [];
 const log: string[] = [];
 for (const file of files) {
   const wb = XLSX.read(readFileSync(file), { type: 'buffer', cellDates: true });
-  const year = file.match(/(\d{4})/)?.[1];
+  const year = file.match(/(\d{4})\.xlsx$/)?.[1];
   if (!year) throw new Error(`Anno non riconosciuto nel nome del file: ${file}`);
   for (const name of wb.SheetNames) {
     const m = MONTHS.indexOf(name);
@@ -116,7 +120,7 @@ for (const file of files) {
 }
 
 mkdirSync('private', { recursive: true });
-for (const account of ['modo1', 'modo2', 'senza-banca'] as const) {
+for (const account of ['modo1', 'modo2'] as const) {
   const rows = all
     .filter((e) => e.account === account)
     .sort((a, b) => a.date.localeCompare(b.date));

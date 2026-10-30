@@ -44,3 +44,10 @@ export function parseUserAmount(raw: string): number | null {
   const cents = parseLocaleAmount(text, text.includes(',') ? ',' : '.');
   return cents === null || cents === 0 ? null : Math.abs(cents);
 }
+
+/** Come `parseUserAmount` ma conserva il segno (saldi anche negativi). */
+export function parseSignedAmount(raw: string): number | null {
+  const text = raw.trim();
+  if (text === '') return null;
+  return parseLocaleAmount(text, text.includes(',') ? ',' : '.');
+}

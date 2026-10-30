@@ -43,7 +43,8 @@ export async function addManualTransaction(input: ManualInput): Promise<Transact
 export type EditableFields = Pick<
   Transaction,
   'accountId' | 'date' | 'amountCents' | 'categoryId' | 'note'
->;
+> &
+  Partial<Pick<Transaction, 'description'>>;
 
 export async function updateTransaction(id: string, changes: EditableFields): Promise<void> {
   await db.transactions.update(id, {

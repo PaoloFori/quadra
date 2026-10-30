@@ -140,7 +140,10 @@
     "noResults": "No transactions match the filters.",
     "confirmDelete": "Delete this transaction?",
     "applySimilar": "Also apply to similar uncategorized transactions",
-    "markTransfer": "This is a transfer (excluded from income/expenses)"
+    "markTransfer": "This is a transfer (excluded from income/expenses)",
+    "lastTimes": "Last times",
+    "description": "Description",
+    "noSimilar": "No similar previous expenses."
   },
   "rules": {
     "title": "Automatic rules",
@@ -266,5 +269,18 @@
     "remove": "Remove lock",
     "confirmRemove": "Remove the PIN and Face ID?",
     "limits": "The lock prevents casual access to the app but does not encrypt data on the phone. No data is ever sent to external servers."
+  },
+  "balances": {
+    "title": "My accounts",
+    "set": "Set balances",
+    "hint": "Enter how much money you have right now on each account. Quadra keeps it updated with the transactions you add or import."
+  },
+  "history": {
+    "last": "Last time: {{date}}",
+    "count_one": "{{count}} expense",
+    "count_other": "{{count}} expenses",
+    "total": "total {{amount}}",
+    "tab": "History",
+    "list": "List"
   }
 }
