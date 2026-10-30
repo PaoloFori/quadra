@@ -28,6 +28,13 @@
     <title>Quadra</title>
   </head>
   <body>
+    <script>
+      // tema scelto: applicato subito, prima che l'app parta, per non vedere il colore sbagliato
+      try {
+        var t = localStorage.getItem('quadra:theme');
+        if (t) document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

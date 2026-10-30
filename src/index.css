@@ -2,8 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tema scuro con accento blu: unico colore forte (scheda principale, pulsante principale, voce attiva). */
-:root {
+/* Temi: ogni tema ridefinisce gli stessi colori. Si applica con data-theme sull'elemento <html>
+   (e, per le anteprime in Impostazioni, su un qualunque elemento). Elenco in src/lib/themes.ts. */
+:root,
+[data-theme='blu'] {
   --bg: 10 12 11;
   --card: 17 20 18;
   --raised: 23 26 24;
@@ -21,6 +23,206 @@
   --negative-subtle: 58 28 23;
   --warn: 233 199 125;
   color-scheme: dark;
+}
+
+[data-theme='lime'] {
+  --bg: 10 12 11;
+  --card: 17 20 18;
+  --raised: 23 26 24;
+  --tile: 31 35 32;
+  --ink: 244 246 241;
+  --muted: 156 164 157;
+  --faint: 110 118 111;
+  --line: 43 48 44;
+  --line-strong: 58 64 59;
+  --accent: 198 240 77;
+  --accent-subtle: 42 52 16;
+  --on-accent: 10 12 11;
+  --income: 212 247 107;
+  --expense: 255 122 102;
+  --negative-subtle: 58 28 23;
+  --warn: 233 199 125;
+  color-scheme: dark;
+}
+
+[data-theme='navy'] {
+  --bg: 8 16 36;
+  --card: 14 26 52;
+  --raised: 20 34 66;
+  --tile: 28 46 84;
+  --ink: 232 240 255;
+  --muted: 150 170 205;
+  --faint: 105 125 165;
+  --line: 30 48 86;
+  --line-strong: 46 68 112;
+  --accent: 125 190 255;
+  --accent-subtle: 20 44 90;
+  --on-accent: 6 14 30;
+  --income: 126 217 180;
+  --expense: 255 122 102;
+  --negative-subtle: 58 28 40;
+  --warn: 233 199 125;
+  color-scheme: dark;
+}
+
+[data-theme='plum'] {
+  --bg: 22 8 18;
+  --card: 34 14 28;
+  --raised: 44 20 36;
+  --tile: 58 28 48;
+  --ink: 255 238 246;
+  --muted: 205 160 185;
+  --faint: 150 105 130;
+  --line: 66 32 54;
+  --line-strong: 92 48 76;
+  --accent: 255 130 190;
+  --accent-subtle: 80 24 56;
+  --on-accent: 30 6 20;
+  --income: 126 217 180;
+  --expense: 255 150 110;
+  --negative-subtle: 74 28 30;
+  --warn: 233 199 125;
+  color-scheme: dark;
+}
+
+[data-theme='forest'] {
+  --bg: 8 17 13;
+  --card: 14 27 21;
+  --raised: 20 36 28;
+  --tile: 28 48 38;
+  --ink: 232 245 238;
+  --muted: 150 178 163;
+  --faint: 105 135 120;
+  --line: 30 52 41;
+  --line-strong: 46 76 60;
+  --accent: 110 231 160;
+  --accent-subtle: 18 60 38;
+  --on-accent: 4 20 12;
+  --income: 190 242 120;
+  --expense: 255 122 102;
+  --negative-subtle: 58 28 23;
+  --warn: 233 199 125;
+  color-scheme: dark;
+}
+
+[data-theme='amber'] {
+  --bg: 10 12 11;
+  --card: 17 20 18;
+  --raised: 23 26 24;
+  --tile: 31 35 32;
+  --ink: 244 246 241;
+  --muted: 156 164 157;
+  --faint: 110 118 111;
+  --line: 43 48 44;
+  --line-strong: 58 64 59;
+  --accent: 255 176 46;
+  --accent-subtle: 62 42 8;
+  --on-accent: 24 14 0;
+  --income: 126 217 180;
+  --expense: 255 122 102;
+  --negative-subtle: 58 28 23;
+  --warn: 233 199 125;
+  color-scheme: dark;
+}
+
+[data-theme='violet'] {
+  --bg: 10 12 11;
+  --card: 17 20 18;
+  --raised: 23 26 24;
+  --tile: 31 35 32;
+  --ink: 244 246 241;
+  --muted: 156 164 157;
+  --faint: 110 118 111;
+  --line: 43 48 44;
+  --line-strong: 58 64 59;
+  --accent: 167 139 250;
+  --accent-subtle: 40 28 80;
+  --on-accent: 14 8 36;
+  --income: 126 217 180;
+  --expense: 255 122 102;
+  --negative-subtle: 58 28 23;
+  --warn: 233 199 125;
+  color-scheme: dark;
+}
+
+[data-theme='mono'] {
+  --bg: 10 12 11;
+  --card: 17 20 18;
+  --raised: 23 26 24;
+  --tile: 31 35 32;
+  --ink: 244 246 241;
+  --muted: 156 164 157;
+  --faint: 110 118 111;
+  --line: 43 48 44;
+  --line-strong: 58 64 59;
+  --accent: 244 246 241;
+  --accent-subtle: 50 54 51;
+  --on-accent: 10 12 11;
+  --income: 126 217 180;
+  --expense: 255 122 102;
+  --negative-subtle: 58 28 23;
+  --warn: 233 199 125;
+  color-scheme: dark;
+}
+
+[data-theme='light-blue'] {
+  --bg: 248 250 252;
+  --card: 255 255 255;
+  --raised: 255 255 255;
+  --tile: 237 242 247;
+  --ink: 15 23 42;
+  --muted: 71 85 105;
+  --faint: 120 133 150;
+  --line: 226 232 240;
+  --line-strong: 203 213 225;
+  --accent: 37 99 235;
+  --accent-subtle: 219 234 254;
+  --on-accent: 255 255 255;
+  --income: 22 130 80;
+  --expense: 214 52 52;
+  --negative-subtle: 254 226 226;
+  --warn: 170 100 0;
+  color-scheme: light;
+}
+
+[data-theme='light-pink'] {
+  --bg: 253 247 250;
+  --card: 255 255 255;
+  --raised: 255 255 255;
+  --tile: 248 232 240;
+  --ink: 42 16 32;
+  --muted: 110 74 96;
+  --faint: 160 125 145;
+  --line: 240 222 232;
+  --line-strong: 224 196 212;
+  --accent: 219 39 119;
+  --accent-subtle: 252 228 240;
+  --on-accent: 255 255 255;
+  --income: 22 130 80;
+  --expense: 214 52 52;
+  --negative-subtle: 254 226 226;
+  --warn: 170 100 0;
+  color-scheme: light;
+}
+
+[data-theme='light-green'] {
+  --bg: 247 251 248;
+  --card: 255 255 255;
+  --raised: 255 255 255;
+  --tile: 230 242 234;
+  --ink: 15 36 25;
+  --muted: 66 94 78;
+  --faint: 118 145 130;
+  --line: 218 232 222;
+  --line-strong: 190 212 198;
+  --accent: 22 140 70;
+  --accent-subtle: 220 244 228;
+  --on-accent: 255 255 255;
+  --income: 22 130 80;
+  --expense: 214 52 52;
+  --negative-subtle: 254 226 226;
+  --warn: 170 100 0;
+  color-scheme: light;
 }
 
 html,
