@@ -6,6 +6,7 @@ import './index.css';
 import { requestPersistence } from '@/lib/storage';
 import { App } from '@/app/App';
 import { initI18n } from '@/i18n';
+import { applyTheme } from '@/lib/themes';
 import { getSettings } from '@/db/settings';
 import { DEFAULT_SETTINGS } from '@/db/settings';
 
@@ -14,6 +15,7 @@ void requestPersistence();
 
 async function boot(): Promise<void> {
   const settings = await getSettings().catch(() => DEFAULT_SETTINGS);
+  applyTheme(settings.theme);
   await initI18n(settings.language);
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

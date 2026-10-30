@@ -101,7 +101,7 @@ export function YearBars({ months }: { months: MonthTotals[] }) {
           <Bar
             dataKey="expenses"
             name={t('common.expenses')}
-            fill="#ff7a66"
+            fill="rgb(var(--expense))"
             radius={[3, 3, 0, 0]}
           />
           <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: 'rgb(var(--muted))' }} />

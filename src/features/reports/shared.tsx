@@ -11,8 +11,13 @@ import type { Account } from '@/domain/types';
 import { useFormat } from '@/i18n/useFormat';
 
 const UNCATEGORIZED_COLOR = '#6e766f';
-/** Colori dei puntini (come la palette dei grafici): entrate menta, uscite corallo, risparmio blu. */
-export const DOT = { income: '#7ed9b4', expenses: '#ff7a66', saving: '#6ca8ff', other: '#b7a6f6' };
+/** Colori dei puntini: seguono il tema (entrate, uscite, risparmio). */
+export const DOT = {
+  income: 'rgb(var(--income))',
+  expenses: 'rgb(var(--expense))',
+  saving: 'rgb(var(--accent))',
+  other: '#b7a6f6',
+};
 
 export function useSlices(byCategory: CategoryTotal[]): DonutSlice[] {
   const lookup = useCategoryLookup();

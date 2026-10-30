@@ -71,7 +71,8 @@
     "languageIt": "Italiano",
     "languageEn": "English",
     "dataSection": "Dati",
-    "appearance": "Aspetto e lingua"
+    "appearance": "Aspetto e lingua",
+    "theme": "Tema"
   },
   "categories": {
     "groceries": "Spesa",
@@ -355,5 +356,18 @@
     "goalMonths_other": "{{count}} mesi",
     "noAccounts": "Aggiungi un conto per vedere il patrimonio.",
     "dashedHint": "Tratteggio: stima dei prossimi mesi al ritmo attuale."
+  },
+  "themes": {
+    "blu": "Blu notte",
+    "lime": "Nero e lime",
+    "navy": "Blu e azzurro",
+    "plum": "Rosa e rosa scuro",
+    "forest": "Verde bosco",
+    "amber": "Ambra e nero",
+    "violet": "Viola",
+    "mono": "Grafite e bianco",
+    "light-blue": "Blu e bianco",
+    "light-pink": "Rosa e bianco",
+    "light-green": "Verde e bianco"
   }
 }

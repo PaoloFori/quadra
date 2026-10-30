@@ -71,7 +71,8 @@
     "languageIt": "Italiano",
     "languageEn": "English",
     "dataSection": "Data",
-    "appearance": "Appearance and language"
+    "appearance": "Appearance and language",
+    "theme": "Theme"
   },
   "categories": {
     "groceries": "Groceries",
@@ -355,5 +356,18 @@
     "goalMonths_other": "{{count}} months",
     "noAccounts": "Add an account to see your net worth.",
     "dashedHint": "Dashed: estimate for the coming months at the current pace."
+  },
+  "themes": {
+    "blu": "Night blue",
+    "lime": "Black and lime",
+    "navy": "Blue and light blue",
+    "plum": "Pink and dark pink",
+    "forest": "Forest green",
+    "amber": "Amber and black",
+    "violet": "Violet",
+    "mono": "Graphite and white",
+    "light-blue": "Blue and white",
+    "light-pink": "Pink and white",
+    "light-green": "Green and white"
   }
 }

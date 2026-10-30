@@ -89,6 +89,8 @@ export type LanguagePref = 'auto' | 'it' | 'en';
 
 export interface Settings {
   language: LanguagePref;
+  /** Id del tema (vedi lib/themes). */
+  theme?: string;
   lastBackupAt?: string;
   lastYearEndReminder?: number;
 }
