@@ -14,6 +14,7 @@ import { BackupReminder } from '@/features/backup/BackupReminder';
 import { TransactionRow } from '@/features/transactions/TransactionRow';
 import { TransactionSheet } from '@/features/transactions/TransactionSheet';
 import type { Transaction } from '@/domain/types';
+import { BalancesCard } from '@/features/accounts/BalancesCard';
 import { ProgressBar } from '@/components/ProgressBar';
 
 export default function HomePage() {
@@ -54,6 +55,9 @@ export default function HomePage() {
     >
       <p className="-mt-2 mb-3 px-1 capitalize text-muted">{f.month(month)}</p>
       <BackupReminder />
+      <div className="mb-3">
+        <BalancesCard />
+      </div>
 
       {total === 0 ? (
         <div className="card space-y-3 text-center">

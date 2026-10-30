@@ -54,8 +54,8 @@ Per provare tutto subito usa [samples/bbva-esempio.csv](samples/bbva-esempio.csv
 
 ### Registri a mano in Excel
 
-`npm run convert-ledger -- spese2025.xlsx spese2026.xlsx` converte fogli mensili (colonne _spesa, data, banca, motivo_) in tre CSV
-in `private/` (ignorata da git): `spese-bbva.csv`, `spese-intesa.csv`, `spese-senza-banca.csv`. Verifica i totali di ogni foglio e
+`npm run convert-ledger` (legge gli `spese<anno>.xlsx` messi in `private/`) converte fogli mensili (colonne _spesa, data, banca, motivo_) in due CSV
+in `private/` (ignorata da git): `spese-bbva.csv` e `spese-intesa.csv` (le righe senza banca vanno su BBVA). Verifica i totali di ogni foglio e
 riporta le date corrette. Poi importa ogni CSV scegliendo il conto corrispondente.
 
 ## Backup e ripristino (importante)

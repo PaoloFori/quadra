@@ -9,6 +9,8 @@ export interface Account {
   id: string;
   name: string;
   bank: BankKind;
+  /** Saldo di partenza: il saldo mostrato = questo + somma dei movimenti del conto. */
+  openingBalanceCents?: number;
 }
 
 export interface Transaction {

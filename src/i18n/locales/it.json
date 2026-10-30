@@ -140,7 +140,10 @@
     "noResults": "Nessun movimento corrisponde ai filtri.",
     "confirmDelete": "Eliminare questo movimento?",
     "applySimilar": "Applica anche ai movimenti simili senza categoria",
-    "markTransfer": "È un giroconto (escluso da entrate/uscite)"
+    "markTransfer": "È un giroconto (escluso da entrate/uscite)",
+    "lastTimes": "Le ultime volte",
+    "description": "Descrizione",
+    "noSimilar": "Nessuna spesa simile precedente."
   },
   "rules": {
     "title": "Regole automatiche",
@@ -266,5 +269,18 @@
     "remove": "Rimuovi blocco",
     "confirmRemove": "Rimuovere il PIN e Face ID?",
     "limits": "Il blocco impedisce l'accesso casuale all'app ma non cifra i dati sul telefono. Nessun dato viene mai inviato a server esterni."
+  },
+  "balances": {
+    "title": "I miei conti",
+    "set": "Imposta saldi",
+    "hint": "Scrivi quanti soldi hai adesso su ogni conto. Quadra li aggiorna da sola con i movimenti che aggiungi o importi."
+  },
+  "history": {
+    "last": "Ultima volta: {{date}}",
+    "count_one": "{{count}} spesa",
+    "count_other": "{{count}} spese",
+    "total": "tot. {{amount}}",
+    "tab": "Storico",
+    "list": "Elenco"
   }
 }

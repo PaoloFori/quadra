@@ -14,6 +14,14 @@ export const transactionsRepo = {
   update: (id: string, changes: Partial<Transaction>): Promise<number> =>
     db.transactions.update(id, { ...changes, updatedAt: Date.now() }),
   remove: (id: string): Promise<void> => db.transactions.delete(id),
+  /** Somma dei movimenti per conto (giroconti inclusi: i soldi si spostano davvero). */
+  sumsByAccount: async (): Promise<Map<string, number>> => {
+    const sums = new Map<string, number>();
+    await db.transactions.each((t) =>
+      sums.set(t.accountId, (sums.get(t.accountId) ?? 0) + t.amountCents),
+    );
+    return sums;
+  },
   count: (): Promise<number> => db.transactions.count(),
 };
 
