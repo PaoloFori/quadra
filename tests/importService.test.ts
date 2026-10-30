@@ -1,0 +1,60 @@
+import { readFileSync } from 'node:fs';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { db } from '@/db/database';
+import { commitImport, previewImport } from '@/db/importService';
+import { analyzeTable } from '@/domain/importing/analyze';
+import { parseRows } from '@/domain/importing/parse';
+import { readTable } from '@/domain/importing/table';
+
+async function load(name: string) {
+  const buf = readFileSync(`samples/${name}`);
+  const table = await readTable(
+    name,
+    buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer,
+  );
+  return parseRows(table, analyzeTable(table, [])!);
+}
+
+beforeEach(async () => {
+  await db.delete();
+  await db.open();
+});
+
+describe('import su database', () => {
+  it('importa, rileva giroconti e applica le regole', async () => {
+    const modo1 = await previewImport('modo1', await load('modo1-esempio.csv'));
+    expect(modo1.newCount).toBe(156);
+    await commitImport(modo1, { markTransfers: true });
+
+    const modo2 = await previewImport('modo2', await load('modo2-esempio.csv'));
+    expect(modo2.transferPairs).toHaveLength(6);
+    await commitImport(modo2, { markTransfers: true });
+
+    expect(await db.transactions.count()).toBe(213);
+    expect(await db.transactions.filter((t) => t.isTransfer).count()).toBe(12);
+    const netflix = await db.transactions.filter((t) => t.description.includes('Netflix')).first();
+    expect(netflix?.categoryId).toBe('subscriptions');
+    const salary = await db.transactions.filter((t) => t.description.includes('stipendio')).first();
+    expect(salary?.categoryId).toBe('salary');
+  });
+
+  it('secondo import dello stesso file: tutto già presente', async () => {
+    const file = await load('modo1-esempio.csv');
+    await commitImport(await previewImport('modo1', file), { markTransfers: false });
+    const again = await previewImport('modo1', file);
+    expect(again.newCount).toBe(0);
+    expect(again.duplicateCount).toBe(156);
+    expect(await commitImport(again, { markTransfers: false })).toBe(0);
+    expect(await db.transactions.count()).toBe(156);
+  });
+
+  it('i due caffè identici dello stesso giorno restano due movimenti', async () => {
+    await commitImport(await previewImport('modo1', await load('modo1-esempio.csv')), {
+      markTransfers: false,
+    });
+    const coffees = await db.transactions
+      .filter((t) => t.description.includes('caffe') && t.date === '2026-04-21')
+      .toArray();
+    expect(coffees).toHaveLength(2);
+  });
+});

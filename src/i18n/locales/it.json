@@ -83,5 +83,39 @@
     "other": "Altro",
     "salary": "Stipendio",
     "otherIncome": "Altre entrate"
+  },
+  "import": {
+    "title": "Importa movimenti",
+    "action": "Importa",
+    "account": "Conto",
+    "chooseFile": "Scegli file CSV o XLSX",
+    "hint": "Esporta i movimenti dall'home banking e scegli il file. Il file viene letto sul telefono e non viene inviato a nessuno.",
+    "summary": "{{added}} nuovi, {{existing}} già presenti",
+    "skipped_one": "{{count}} riga ignorata (intestazioni, totali o righe non valide)",
+    "skipped_other": "{{count}} righe ignorate (intestazioni, totali o righe non valide)",
+    "willSaveProfile": "Formato riconosciuto: verrà salvato come profilo per i prossimi import.",
+    "transfers_one": "Segna {{count}} giroconto tra i miei conti (escluso da entrate/uscite)",
+    "transfers_other": "Segna {{count}} giroconti tra i miei conti (esclusi da entrate/uscite)",
+    "sample": "Anteprima",
+    "confirm_one": "Importa {{count}} movimento",
+    "confirm_other": "Importa {{count}} movimenti",
+    "done_one": "Importato {{count}} movimento",
+    "done_other": "Importati {{count}} movimenti",
+    "viewTransactions": "Vedi movimenti",
+    "map": {
+      "intro": "Non ho riconosciuto il formato. Indica quali colonne contengono i dati: il profilo verrà salvato per la prossima volta.",
+      "headerRow": "Riga delle intestazioni",
+      "notUsed": "Non usata",
+      "choose": "Scegli colonna…",
+      "valueDate": "Data valuta (facoltativa)",
+      "splitAmount": "Dare e avere in colonne separate",
+      "debit": "Dare (uscite)",
+      "credit": "Avere (entrate)",
+      "descriptionExtra": "Descrizione aggiuntiva (facoltativa)",
+      "balance": "Saldo (facoltativo)"
+    }
+  },
+  "tx": {
+    "transfer": "Giroconto"
   }
 }
