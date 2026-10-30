@@ -1,0 +1,14 @@
+node_modules
+dist
+*.local
+.DS_Store
+# dati personali: mai nel repository
+/private/
+backups/
+quadra-backup*.json
+quadra-export*.json
+quadra-export*.csv
+# CSV/XLSX reali (gli esempi stanno in samples/)
+*.csv
+*.xlsx
+!samples/*.csv
