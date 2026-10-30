@@ -1,12 +1,22 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useTranslation } from 'react-i18next';
+import { Amount } from '@/components/Amount';
 import { Screen } from '@/components/Screen';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
+import {
+  EMPTY_FILTER,
+  filterTransactions,
+  isFilterActive,
+  type TransactionFilter,
+} from '@/domain/filters';
+import type { Transaction } from '@/domain/types';
+import { FilterSheet } from './FilterSheet';
 import { TransactionRow } from './TransactionRow';
+import { TransactionSheet } from './TransactionSheet';
 
 const ROW_HEIGHT = 57;
 
@@ -16,10 +26,24 @@ export default function TransactionsPage() {
   const accounts = useAccounts();
   const categories = useCategoryLookup();
   const accountById = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
+
+  const [filter, setFilter] = useState<TransactionFilter>(EMPTY_FILTER);
+  const deferredFilter = useDeferredValue(filter);
+  const [editing, setEditing] = useState<Transaction | 'new' | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const rows = useMemo(
+    () => filterTransactions(transactions ?? [], deferredFilter),
+    [transactions, deferredFilter],
+  );
+  const total = useMemo(
+    () => rows.reduce((sum, r) => (r.isTransfer ? sum : sum + r.amountCents), 0),
+    [rows],
+  );
+  const active = isFilterActive(filter);
+
   const listRef = useRef<HTMLDivElement>(null);
   const [listTop, setListTop] = useState(0);
-
-  const rows = transactions ?? [];
   const hasRows = rows.length > 0;
   useLayoutEffect(() => setListTop(listRef.current?.offsetTop ?? 0), [hasRows]);
   const virtualizer = useWindowVirtualizer({
@@ -33,13 +57,47 @@ export default function TransactionsPage() {
     <Screen
       title={t('nav.transactions')}
       action={
-        <Link to="/import" className="btn-secondary">
-          {t('import.action')}
-        </Link>
+        <div className="flex gap-2">
+          <Link to="/import" className="btn-secondary">
+            {t('import.action')}
+          </Link>
+          <button
+            className="btn-primary !min-w-[44px] !px-3 text-xl"
+            aria-label={t('tx.add')}
+            onClick={() => setEditing('new')}
+          >
+            +
+          </button>
+        </div>
       }
     >
-      {transactions && rows.length === 0 && <p className="card text-muted">{t('home.empty')}</p>}
-      <div ref={listRef} className="card !p-2" hidden={rows.length === 0}>
+      <div className="mb-3 flex gap-2">
+        <input
+          type="search"
+          className="input"
+          placeholder={t('tx.search')}
+          aria-label={t('tx.search')}
+          value={filter.text}
+          onChange={(e) => setFilter({ ...filter, text: e.target.value })}
+        />
+        <button
+          className={active ? 'btn-primary' : 'btn-secondary'}
+          onClick={() => setFiltersOpen(true)}
+        >
+          {t('tx.filters')}
+        </button>
+      </div>
+
+      {active && (
+        <p className="mb-2 flex items-center justify-between px-1 text-[13px] text-muted">
+          <span>{t('tx.results', { count: rows.length })}</span>
+          <Amount cents={total} />
+        </p>
+      )}
+      {transactions && rows.length === 0 && (
+        <p className="card text-muted">{active ? t('tx.noResults') : t('home.empty')}</p>
+      )}
+      <div ref={listRef} className="card !p-2" hidden={!hasRows}>
         <ul style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {virtualizer.getVirtualItems().map((item) => {
             const tx = rows[item.index]!;
@@ -57,12 +115,23 @@ export default function TransactionsPage() {
                   category={tx.categoryId ? categories.byId.get(tx.categoryId) : undefined}
                   categoryLabel={categories.label(tx.categoryId)}
                   account={accountById.get(tx.accountId)}
+                  onOpen={setEditing}
                 />
               </li>
             );
           })}
         </ul>
       </div>
+
+      {editing && (
+        <TransactionSheet
+          tx={editing === 'new' ? undefined : editing}
+          onClose={() => setEditing(null)}
+        />
+      )}
+      {filtersOpen && (
+        <FilterSheet value={filter} onApply={setFilter} onClose={() => setFiltersOpen(false)} />
+      )}
     </Screen>
   );
 }

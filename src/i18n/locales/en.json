@@ -82,7 +82,15 @@
     "fees": "Fees",
     "other": "Other",
     "salary": "Salary",
-    "otherIncome": "Other income"
+    "otherIncome": "Other income",
+    "title": "Categories",
+    "add": "New category",
+    "name": "Name",
+    "icon": "Icon",
+    "kind": "Type",
+    "both": "Both",
+    "color": "Color",
+    "confirmDelete": "Delete this category? Linked transactions will become uncategorized."
   },
   "import": {
     "title": "Import transactions",
@@ -116,6 +124,36 @@
     }
   },
   "tx": {
-    "transfer": "Transfer"
+    "transfer": "Transfer",
+    "add": "New transaction",
+    "edit": "Edit transaction",
+    "type": "Type",
+    "search": "Search transactions",
+    "filters": "Filters",
+    "resetFilters": "Reset",
+    "from": "From",
+    "to": "To",
+    "minAmount": "Min amount",
+    "maxAmount": "Max amount",
+    "results_one": "{{count}} result",
+    "results_other": "{{count}} results",
+    "noResults": "No transactions match the filters.",
+    "confirmDelete": "Delete this transaction?",
+    "applySimilar": "Also apply to similar uncategorized transactions",
+    "markTransfer": "This is a transfer (excluded from income/expenses)"
+  },
+  "rules": {
+    "title": "Automatic rules",
+    "add": "New rule",
+    "contains": "If the description contains",
+    "learned": "learned",
+    "intro": "Rules assign a category to new transactions. When you fix a category, Quadra creates or updates a rule."
+  },
+  "accounts": {
+    "title": "Accounts",
+    "add": "New account",
+    "name": "Name",
+    "bank": "Bank",
+    "otherBank": "Other bank"
   }
 }
