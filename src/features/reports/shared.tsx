@@ -2,16 +2,19 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
+import { DonutChart, type DonutSlice } from '@/components/DonutChart';
+import { IconTile, MetricCard } from '@/components/ui';
 import { useCategoryLookup } from '@/db/hooks';
 import { savingsRate, type AccountTotals } from '@/domain/reports/accounts';
 import type { CategoryTotal, Totals } from '@/domain/reports/totals';
 import type { Account } from '@/domain/types';
 import { useFormat } from '@/i18n/useFormat';
-import { CategoryDonut, type Slice } from './charts';
 
-const UNCATEGORIZED_COLOR = '#98989d';
+const UNCATEGORIZED_COLOR = '#6e766f';
+/** Colori dei puntini (come la palette dei grafici): entrate lime, uscite corallo. */
+export const DOT = { income: '#c6f04d', expenses: '#ff7a66', saving: '#c6f04d', other: '#b7a6f6' };
 
-export function useSlices(byCategory: CategoryTotal[]): Slice[] {
+export function useSlices(byCategory: CategoryTotal[]): DonutSlice[] {
   const lookup = useCategoryLookup();
   return useMemo(
     () =>
@@ -26,7 +29,7 @@ export function useSlices(byCategory: CategoryTotal[]): Slice[] {
 }
 
 /** Contenuto di una riga: diventa un link solo se c'è una destinazione. */
-function RowLink({
+export function RowLink({
   to,
   className,
   children,
@@ -44,17 +47,18 @@ function RowLink({
   );
 }
 
-/** Ciambella con il totale al centro + una riga per categoria con barra del peso sulle spese. */
+/**
+ * Ciambella con le categorie principali a destra; l'elenco completo (con barre) è sempre aperto,
+ * oppure a tendina con `collapsible`. Ogni categoria porta ai suoi movimenti se c'è `linkFor`.
+ */
 export function CategoryBreakdown({
   byCategory,
   linkFor,
   collapsible = false,
 }: {
   byCategory: CategoryTotal[];
-  /** Mostra solo la ciambella; l'elenco delle categorie si apre con un tap. */
-  collapsible?: boolean;
-  /** Se presente, ogni categoria porta ai suoi movimenti. */
   linkFor?: (categoryId: string | null) => string;
+  collapsible?: boolean;
 }) {
   const { t } = useTranslation();
   const f = useFormat();
@@ -62,14 +66,35 @@ export function CategoryBreakdown({
   const slices = useSlices(byCategory);
   const [open, setOpen] = useState(!collapsible);
   if (byCategory.length === 0) return <p className="text-muted">{t('reports.noExpenses')}</p>;
-  const total = byCategory.reduce((s, c) => s + c.cents, 0);
   const top = byCategory[0]?.cents ?? 1;
+
   return (
-    <>
-      <CategoryDonut slices={slices} centerLabel={t('reports.spentTotal')} centerValue={total} />
+    <div className="space-y-3">
+      <div className="flex items-center gap-5">
+        <DonutChart slices={slices} centerLabel={t('reports.spentTotal')} />
+        <ul className="min-w-0 flex-1 space-y-1">
+          {byCategory.slice(0, 5).map((c, i) => (
+            <li key={c.categoryId ?? 'none'}>
+              <RowLink
+                to={linkFor?.(c.categoryId)}
+                className="flex min-h-[32px] items-center gap-2 text-[13px]"
+              >
+                <span
+                  aria-hidden="true"
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: slices[i]?.color }}
+                />
+                <span className="min-w-0 flex-1 truncate">{slices[i]?.name}</span>
+                <span className="text-muted">{f.percent(c.share).replace('+', '')}</span>
+              </RowLink>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {collapsible && (
         <button
-          className="btn-secondary mt-1 w-full"
+          className="btn-secondary w-full"
           aria-expanded={open}
           onClick={() => setOpen(!open)}
         >
@@ -79,104 +104,80 @@ export function CategoryBreakdown({
           <span aria-hidden="true">{open ? '▴' : '▾'}</span>
         </button>
       )}
-      <ul className="mt-2" hidden={!open}>
+
+      <ul hidden={!open}>
         {byCategory.map((c, i) => (
-          <li key={c.categoryId ?? 'none'} className="border-b border-line/60 py-2.5 last:border-0">
-            <RowLink to={linkFor?.(c.categoryId)} className="flex min-h-[28px] items-center gap-3">
-              <span
-                aria-hidden="true"
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[16px]"
-                style={{ backgroundColor: `${slices[i]?.color}26` }}
-              >
+          <li key={c.categoryId ?? 'none'} className="border-t border-line py-2.5 first:border-0">
+            <RowLink to={linkFor?.(c.categoryId)} className="flex min-h-[40px] items-center gap-3">
+              <IconTile color={slices[i]?.color}>
                 {(c.categoryId && lookup.byId.get(c.categoryId)?.icon) || '•'}
+              </IconTile>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-medium">{slices[i]?.name}</span>
+                <span
+                  className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-tile"
+                  aria-hidden
+                >
+                  <span
+                    className="block h-full rounded-full"
+                    style={{
+                      width: `${(c.cents / top) * 100}%`,
+                      backgroundColor: slices[i]?.color,
+                    }}
+                  />
+                </span>
               </span>
-              <span className="min-w-0 flex-1 truncate font-medium">{slices[i]?.name}</span>
-              <span className="text-[13px] text-muted">{f.percent(c.share).replace('+', '')}</span>
-              <Amount cents={-c.cents} signed={false} neutral className="font-semibold" />
-              {linkFor && <span className="text-muted">›</span>}
+              <span className="text-right">
+                <Amount cents={-c.cents} signed={false} neutral className="block text-[16px]" />
+                <span className="text-[12px] text-muted">
+                  {f.percent(c.share).replace('+', '')}
+                </span>
+              </span>
+              {linkFor && <span className="text-faint">›</span>}
             </RowLink>
-            <div className="ml-11 mt-1.5 h-1.5 overflow-hidden rounded-full bg-line" aria-hidden>
-              <div
-                className="h-full rounded-full"
-                style={{ width: `${(c.cents / top) * 100}%`, backgroundColor: slices[i]?.color }}
-              />
-            </div>
           </li>
         ))}
       </ul>
-    </>
-  );
-}
-
-export function StatPair({
-  label,
-  cents,
-  tone,
-}: {
-  label: string;
-  cents: number;
-  tone: 'income' | 'expense' | 'neutral';
-}) {
-  const color =
-    tone === 'income' ? 'text-income' : tone === 'expense' ? 'text-expense' : 'text-ink';
-  return (
-    <div className="flex min-h-[32px] items-baseline justify-between gap-3">
-      <span className="text-muted">{label}</span>
-      <Amount cents={cents} signed={false} neutral className={`text-lg font-bold ${color}`} />
     </div>
   );
 }
 
-/** Scheda principale: saldo del periodo, entrate e uscite, quanto è rimasto delle entrate. */
-export function SummaryHero({
+/** Entrate, uscite e risparmio del periodo + una media; entrate e uscite aprono i movimenti. */
+export function MetricsGrid({
   totals,
-  title,
-  subtitle,
   links,
+  average,
 }: {
   totals: Totals;
-  title?: string;
-  subtitle?: string;
-  /** Destinazioni delle due tessere entrate/uscite. */
   links?: { income: string; expenses: string };
+  average?: { label: string; cents: number };
 }) {
   const { t } = useTranslation();
   const f = useFormat();
   const rate = savingsRate(totals);
   return (
-    <section className="hero" aria-label={t('reports.summary')}>
-      <p className="text-[13px] font-medium text-white/80">{title ?? t('common.balance')}</p>
-      <p className="tabular text-4xl font-bold tracking-tight">{f.currencySigned(totals.net)}</p>
-      {subtitle && <p className="text-[13px] text-white/75">{subtitle}</p>}
-      <div className="mt-4 grid grid-cols-2 gap-2.5">
-        {(
-          [
-            ['income', totals.income, '↓'],
-            ['expenses', totals.expenses, '↑'],
-          ] as const
-        ).map(([key, cents, arrow]) => (
-          <RowLink
-            key={key}
-            to={links?.[key]}
-            className="block rounded-2xl bg-white/15 p-3 active:bg-white/25"
-          >
-            <p className="flex items-center gap-1.5 text-[12px] font-medium text-white/85">
-              <span
-                aria-hidden="true"
-                className="flex h-5 w-5 items-center justify-center rounded-full bg-white/25 text-[11px]"
-              >
-                {arrow}
-              </span>
-              {t(`common.${key}`)}
-            </p>
-            <p className="tabular mt-0.5 text-[17px] font-bold">{f.currency(cents)}</p>
-          </RowLink>
-        ))}
-      </div>
-      {rate !== null && (
-        <p className="mt-3 text-[13px] text-white/85">
-          {t('reports.savings')}: <strong>{f.percent(rate).replace('+', '')}</strong>
-        </p>
+    <section className="grid grid-cols-2 gap-3" aria-label={t('reports.summary')}>
+      <RowLink to={links?.income} className="block">
+        <MetricCard label={t('common.income')} dot={DOT.income}>
+          <span className="text-income">{f.currency(totals.income)}</span>
+        </MetricCard>
+      </RowLink>
+      <RowLink to={links?.expenses} className="block">
+        <MetricCard label={t('common.expenses')} dot={DOT.expenses}>
+          {f.currency(totals.expenses)}
+        </MetricCard>
+      </RowLink>
+      <MetricCard
+        label={t('reports.savings')}
+        dot={DOT.saving}
+        badge={rate === null ? undefined : f.percent(rate).replace('+', '')}
+      >
+        <Amount cents={totals.net} className="text-[20px]" />
+      </MetricCard>
+      {average && (
+        <MetricCard label={average.label} dot={DOT.other}>
+          {f.currency(average.cents)}
+        </MetricCard>
       )}
     </section>
   );
@@ -188,10 +189,10 @@ export function AccountsCompare({ rows }: { rows: AccountTotals[] }) {
   const f = useFormat();
   const max = Math.max(...rows.map((r) => Math.max(r.income, r.expenses)), 1);
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-4">
       {rows.map((r) => (
         <li key={r.account.id}>
-          <div className="mb-1 flex items-baseline justify-between gap-3">
+          <div className="mb-1.5 flex items-baseline justify-between gap-3">
             <span className="min-w-0 truncate font-semibold">{r.account.name}</span>
             <span className="text-[12px] text-muted">
               {t('reports.movements', { count: r.count })}
@@ -199,23 +200,23 @@ export function AccountsCompare({ rows }: { rows: AccountTotals[] }) {
           </div>
           {(
             [
-              ['income', r.income, 'bg-income'],
-              ['expenses', r.expenses, 'bg-expense'],
+              ['income', r.income, DOT.income],
+              ['expenses', r.expenses, DOT.expenses],
             ] as const
           ).map(([key, cents, color]) => (
             <div key={key} className="flex items-center gap-2 py-0.5">
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-line" aria-hidden>
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-tile" aria-hidden>
                 <div
-                  className={`h-full rounded-full ${color}`}
-                  style={{ width: `${(cents / max) * 100}%` }}
+                  className="h-full rounded-full"
+                  style={{ width: `${(cents / max) * 100}%`, backgroundColor: color }}
                 />
               </div>
               <span className="tabular w-24 text-right text-[13px]">{f.currency(cents)}</span>
             </div>
           ))}
-          <p className="mt-0.5 flex justify-between text-[13px]">
+          <p className="mt-1 flex justify-between text-[13px]">
             <span className="text-muted">{t('common.balance')}</span>
-            <Amount cents={r.net} className="font-semibold" />
+            <Amount cents={r.net} />
           </p>
         </li>
       ))}
@@ -240,14 +241,14 @@ export function AccountChips({
     <div
       role="group"
       aria-label={t('reports.accountFilter')}
-      className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 pb-1"
+      className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-1"
     >
       {items.map((a) => (
         <button
           key={a.id}
           aria-pressed={value === a.id}
           onClick={() => onChange(a.id)}
-          className={`chip ${value === a.id ? 'bg-accent text-white' : 'bg-card text-ink ring-1 ring-line'}`}
+          className={`chip ${value === a.id ? 'chip-on' : ''}`}
         >
           {a.name}
         </button>

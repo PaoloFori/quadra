@@ -22,7 +22,7 @@ export function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(ratio * 100)}
-      className="h-2.5 overflow-hidden rounded-full bg-line"
+      className="h-2 overflow-hidden rounded-full bg-tile"
     >
       <div
         className={`h-full rounded-full transition-all ${COLOR[level]}`}

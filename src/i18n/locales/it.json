@@ -57,7 +57,12 @@
     "addFirst": "Aggiungi movimento",
     "importFile": "Importa da banca",
     "noAccountsTitle": "Benvenuto in Quadra",
-    "noAccountsBody": "Inizia aggiungendo i tuoi conti: puoi chiamarli come vuoi (banca, carta, contanti). Poi aggiungi i movimenti o importa un file."
+    "noAccountsBody": "Inizia aggiungendo i tuoi conti: puoi chiamarli come vuoi (banca, carta, contanti). Poi aggiungi i movimenti o importa un file.",
+    "overview": "Panoramica",
+    "liquidity": "Liquidità attuale",
+    "newTx": "Nuova",
+    "wealthTrend": "Andamento patrimonio",
+    "topCategories": "Spese per categoria"
   },
   "settings": {
     "title": "Impostazioni",
@@ -146,7 +151,9 @@
     "lastTimes": "Le ultime volte",
     "description": "Descrizione",
     "noSimilar": "Nessuna spesa simile precedente.",
-    "removeFilter": "Togli filtro"
+    "removeFilter": "Togli filtro",
+    "subtitle": "Entrate e uscite di tutti i conti",
+    "allTypes": "Tutte"
   },
   "rules": {
     "title": "Regole automatiche",
@@ -204,7 +211,11 @@
     "average": "Media/giorno",
     "showCategories_one": "Mostra la categoria",
     "showCategories_other": "Mostra le {{count}} categorie",
-    "hideCategories": "Nascondi le categorie"
+    "hideCategories": "Nascondi le categorie",
+    "avgDay": "Spesa media al giorno",
+    "avgMonth": "Spesa media al mese",
+    "allCategories": "Tutte le categorie",
+    "month": "Mese"
   },
   "budget": {
     "add": "Nuovo budget",
@@ -316,5 +327,33 @@
     "total": "tot. {{amount}}",
     "tab": "Storico",
     "list": "Elenco"
+  },
+  "wealth": {
+    "tab": "Patrimonio",
+    "title": "Patrimonio",
+    "vsLastMonth": "Rispetto a fine mese scorso",
+    "history": "Ultimi 12 mesi",
+    "pace": "A questo ritmo",
+    "avgSaving": "Risparmio medio al mese",
+    "avgIncome": "Entrate medie",
+    "avgExpenses": "Spese medie",
+    "in6": "Tra 6 mesi",
+    "in12": "Tra 12 mesi",
+    "shortHistory": "Storico breve: stima indicativa (servono 3 mesi completi con movimenti).",
+    "paceHint": "Media degli ultimi 3 mesi completi, giroconti esclusi.",
+    "goalTitle": "Obiettivo di risparmio",
+    "goalAmount": "Quanto vuoi avere",
+    "goalDate": "Entro il",
+    "goalPast": "Scegli una data futura.",
+    "goalTooSoon": "Manca meno di un mese: dovresti mettere da parte subito {{amount}}.",
+    "goalReached": "Hai già questa cifra: obiettivo raggiunto.",
+    "goalRequired": "Da mettere da parte ogni mese",
+    "goalMaxSpend": "Spesa mensile massima",
+    "goalOk": "Ce la fai: con entrate medie di {{income}} puoi spendere al massimo {{amount}} al mese.",
+    "goalNo": "Con le entrate medie di {{income}} non basta: dovresti spendere meno di quanto serve per risparmiare {{required}} al mese.",
+    "goalMonths_one": "{{count}} mese",
+    "goalMonths_other": "{{count}} mesi",
+    "noAccounts": "Aggiungi un conto per vedere il patrimonio.",
+    "dashedHint": "Tratteggio: stima dei prossimi mesi al ritmo attuale."
   }
 }

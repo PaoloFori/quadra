@@ -57,7 +57,12 @@
     "addFirst": "Add transaction",
     "importFile": "Import from bank",
     "noAccountsTitle": "Welcome to Quadra",
-    "noAccountsBody": "Start by adding your accounts: name them as you like (bank, card, cash). Then add transactions or import a file."
+    "noAccountsBody": "Start by adding your accounts: name them as you like (bank, card, cash). Then add transactions or import a file.",
+    "overview": "Overview",
+    "liquidity": "Current cash",
+    "newTx": "New",
+    "wealthTrend": "Net worth trend",
+    "topCategories": "Spending by category"
   },
   "settings": {
     "title": "Settings",
@@ -146,7 +151,9 @@
     "lastTimes": "Last times",
     "description": "Description",
     "noSimilar": "No similar previous expenses.",
-    "removeFilter": "Remove filter"
+    "removeFilter": "Remove filter",
+    "subtitle": "Income and expenses of all accounts",
+    "allTypes": "All"
   },
   "rules": {
     "title": "Automatic rules",
@@ -204,7 +211,11 @@
     "average": "Avg/day",
     "showCategories_one": "Show the category",
     "showCategories_other": "Show all {{count}} categories",
-    "hideCategories": "Hide categories"
+    "hideCategories": "Hide categories",
+    "avgDay": "Average spending per day",
+    "avgMonth": "Average spending per month",
+    "allCategories": "All categories",
+    "month": "Month"
   },
   "budget": {
     "add": "New budget",
@@ -316,5 +327,33 @@
     "total": "total {{amount}}",
     "tab": "History",
     "list": "List"
+  },
+  "wealth": {
+    "tab": "Net worth",
+    "title": "Net worth",
+    "vsLastMonth": "Versus end of last month",
+    "history": "Last 12 months",
+    "pace": "At this pace",
+    "avgSaving": "Average monthly saving",
+    "avgIncome": "Average income",
+    "avgExpenses": "Average spending",
+    "in6": "In 6 months",
+    "in12": "In 12 months",
+    "shortHistory": "Short history: rough estimate (needs 3 full months with transactions).",
+    "paceHint": "Average of the last 3 full months, transfers excluded.",
+    "goalTitle": "Savings goal",
+    "goalAmount": "How much you want to have",
+    "goalDate": "By",
+    "goalPast": "Pick a future date.",
+    "goalTooSoon": "Less than a month left: you would need to set aside {{amount}} right now.",
+    "goalReached": "You already have that amount: goal reached.",
+    "goalRequired": "To set aside each month",
+    "goalMaxSpend": "Maximum monthly spending",
+    "goalOk": "You can do it: with average income of {{income}} you can spend at most {{amount}} a month.",
+    "goalNo": "With average income of {{income}} it isn't enough: you would need to spend less than what's required to save {{required}} a month.",
+    "goalMonths_one": "{{count}} month",
+    "goalMonths_other": "{{count}} months",
+    "noAccounts": "Add an account to see your net worth.",
+    "dashedHint": "Dashed: estimate for the coming months at the current pace."
   }
 }

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
-import { useFormat } from '@/i18n/useFormat';
+import { IconTile } from '@/components/ui';
 import type { Account, Category, Transaction } from '@/domain/types';
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
   onOpen?: (tx: Transaction) => void;
 }
 
+/** Riga-scheda di un movimento: icona, descrizione, «Categoria · Conto» e importo con segno. */
 export const TransactionRow = memo(function TransactionRow({
   tx,
   category,
@@ -20,33 +21,27 @@ export const TransactionRow = memo(function TransactionRow({
   onOpen,
 }: Props) {
   const { t } = useTranslation();
-  const f = useFormat();
+  const income = tx.amountCents > 0 && !tx.isTransfer;
   const body = (
     <>
-      <span
-        aria-hidden="true"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg"
-        style={{ backgroundColor: `${category?.color ?? '#98989d'}33` }}
-      >
-        {tx.isTransfer ? '↔️' : (category?.icon ?? '❔')}
-      </span>
+      <IconTile accent={income}>
+        <span className={income ? '' : 'opacity-80 grayscale'}>
+          {tx.isTransfer ? '↔️' : (category?.icon ?? '❔')}
+        </span>
+      </IconTile>
       <span className="min-w-0 flex-1 text-left">
         <span className="line-clamp-2 break-words text-[15px] font-medium leading-tight">
           {tx.note || tx.description || categoryLabel}
         </span>
         <span className="line-clamp-1 text-[13px] text-muted">
-          {f.date(tx.date)} · {account?.name ?? tx.accountId} ·{' '}
           {tx.isTransfer ? t('tx.transfer') : categoryLabel}
+          {account ? ` · ${account.name}` : ''}
         </span>
       </span>
-      <Amount
-        cents={tx.amountCents}
-        neutral={tx.isTransfer}
-        className="text-[15px] font-semibold"
-      />
+      <Amount cents={tx.amountCents} neutral={tx.isTransfer} className="text-[17px]" />
     </>
   );
-  const cls = 'flex h-full min-h-[56px] w-full items-center gap-3 px-1 py-1.5';
+  const cls = 'card-row flex min-h-[64px] w-full items-center gap-3 p-3.5';
   return onOpen ? (
     <button className={cls} onClick={() => onOpen(tx)}>
       {body}

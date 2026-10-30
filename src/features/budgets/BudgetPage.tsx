@@ -117,7 +117,17 @@ export default function BudgetPage() {
   );
   const [editing, setEditing] = useState<Budget | 'new' | null>(null);
 
-  const statuses = useMemo(() => budgetStatuses(budgets, txs), [budgets, txs]);
+  const statuses = useMemo(
+    () =>
+      budgetStatuses(budgets, txs).sort((a, b) =>
+        lookup
+          .label(a.budget.categoryId)
+          .localeCompare(lookup.label(b.budget.categoryId), undefined, {
+            sensitivity: 'base',
+          }),
+      ),
+    [budgets, txs, lookup],
+  );
   const taken = useMemo(() => new Set(budgets.map((b) => b.categoryId)), [budgets]);
 
   const totals = useMemo(() => totalRemaining(statuses), [statuses]);
@@ -157,7 +167,7 @@ export default function BudgetPage() {
         </button>
       </div>
 
-      <section className="card mb-3 space-y-1.5 border border-accent/20 bg-accent/5">
+      <section className="card space-y-1.5">
         <h2 className="font-semibold">{t('budget.what')}</h2>
         <p className="text-[14px] text-muted">{t('budget.intro')}</p>
         <p className="text-[14px] text-muted">{t('budget.canExceed')}</p>
@@ -165,7 +175,7 @@ export default function BudgetPage() {
       </section>
 
       {statuses.length > 0 && (
-        <section className="card mb-3" aria-label={t('budget.totalTitle')}>
+        <section className="card" aria-label={t('budget.totalTitle')}>
           <p className="text-[13px] text-muted">{t('budget.totalTitle')}</p>
           <p className="mb-2 text-lg font-bold">
             {t('budget.spentOf', {

@@ -16,7 +16,15 @@ export function HistoryView({ transactions, onPickCategory }: Props) {
   const { t } = useTranslation();
   const f = useFormat();
   const lookup = useCategoryLookup();
-  const rows = useMemo(() => lastSpendingByCategory(transactions), [transactions]);
+  const rows = useMemo(
+    () =>
+      lastSpendingByCategory(transactions).sort((a, b) =>
+        lookup.label(a.categoryId).localeCompare(lookup.label(b.categoryId), undefined, {
+          sensitivity: 'base',
+        }),
+      ),
+    [transactions, lookup],
+  );
 
   if (rows.length === 0) return <p className="card text-muted">{t('tx.noResults')}</p>;
   return (

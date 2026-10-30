@@ -12,6 +12,10 @@ interface Ctx {
   color: (categoryId: string | null) => string;
 }
 
+/** Il PDF usa un font standard senza il meno tipografico: si torna al trattino. */
+const signed = (f: Formatters, cents: number): string =>
+  f.currencySigned(cents).replace('\u2212', '-');
+
 const categoryRows = (rows: CategoryTotal[], { f, label, color }: Ctx) =>
   rows.map((c) => ({
     label: `${label(c.categoryId)} (${f.percent(c.share).replace('+', '')})`,
@@ -20,7 +24,7 @@ const categoryRows = (rows: CategoryTotal[], { f, label, color }: Ctx) =>
   }));
 
 const changeText = (f: Formatters, diff: number, pct: number | null): string =>
-  `${f.currencySigned(diff)}${pct === null ? '' : ` (${f.percent(pct)})`}`;
+  `${signed(f, diff)}${pct === null ? '' : ` (${f.percent(pct)})`}`;
 
 export function monthPdfDoc(r: MonthReport, ctx: Ctx): PdfDoc {
   const { t, f } = ctx;
@@ -33,7 +37,7 @@ export function monthPdfDoc(r: MonthReport, ctx: Ctx): PdfDoc {
         rows: [
           { label: t('common.income'), value: f.currency(r.totals.income) },
           { label: t('common.expenses'), value: f.currency(r.totals.expenses) },
-          { label: t('common.balance'), value: f.currencySigned(r.totals.net) },
+          { label: t('common.balance'), value: signed(f, r.totals.net) },
           {
             label: t('reports.vsPrevious'),
             value: changeText(f, r.expensesChange.diff, r.expensesChange.pct),
@@ -63,7 +67,7 @@ export function yearPdfDoc(r: YearReport, ctx: Ctx): PdfDoc {
         rows: [
           { label: t('common.income'), value: f.currency(r.totals.income) },
           { label: t('common.expenses'), value: f.currency(r.totals.expenses) },
-          { label: t('common.balance'), value: f.currencySigned(r.totals.net) },
+          { label: t('common.balance'), value: signed(f, r.totals.net) },
           { label: t('reports.avgMonthly'), value: f.currency(r.averageMonthlyExpenses) },
           ...(r.mostExpensive
             ? [

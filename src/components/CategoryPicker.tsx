@@ -29,8 +29,10 @@ export function CategoryPicker({ lookup, value, onChange, kind }: Props) {
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(selected ? null : c.id)}
-              className={`flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-xl border px-1 py-2 text-center text-[12px] leading-tight ${
-                selected ? 'border-accent bg-accent/15 font-semibold' : 'border-line bg-card'
+              className={`flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-[14px] border-[1.5px] px-1 py-2 text-center text-[12px] leading-tight ${
+                selected
+                  ? 'border-black bg-accent font-semibold text-on-accent'
+                  : 'border-line bg-card'
               }`}
             >
               <span aria-hidden="true" className="text-xl">
