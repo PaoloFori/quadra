@@ -69,7 +69,7 @@ export interface ColumnMapping {
   /** …oppure colonne dare/avere separate. */
   debit?: number;
   credit?: number;
-  /** Una o più colonne, unite con uno spazio (es. Intesa: Operazione + Dettagli). */
+  /** Una o più colonne, unite con uno spazio (es. Operazione + Dettagli). */
   description: number[];
   balance?: number;
 }
