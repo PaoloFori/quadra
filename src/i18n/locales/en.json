@@ -188,5 +188,83 @@
     "left": "{{amount}} left",
     "warning": "Careful: only {{amount}} left",
     "over": "Over by {{amount}}"
+  },
+  "backup": {
+    "title": "Backup & restore",
+    "saved": "File saved. Keep it in iCloud Drive or Files.",
+    "full": {
+      "title": "Full backup",
+      "last": "Last backup: {{date}}",
+      "never": "You have not made any backup yet.",
+      "action": "Create full backup",
+      "hint": "Includes transactions, categories, rules, budgets, bank profiles and settings. Save it to iCloud Drive: if you remove the app from the Home Screen, data on the phone is deleted."
+    },
+    "export": {
+      "title": "Export by period",
+      "range": "Period",
+      "month": "Month",
+      "year": "Year",
+      "all": "Everything",
+      "format": "Format",
+      "json": "JSON (re-importable)",
+      "csv": "CSV (for spreadsheets)",
+      "action": "Export"
+    },
+    "restore": {
+      "title": "Restore from file",
+      "choose": "Choose backup file (.json)",
+      "summary": "{{added}} new, {{existing}} already present, {{conflicts}} conflicts",
+      "mergeHint": "Merge only adds what is missing. On conflict, the version on this phone is kept.",
+      "merge": "Merge with current data",
+      "replace": "Replace everything",
+      "confirmReplace": "All current data will be deleted and replaced by the file content. Continue?",
+      "done": "Restore completed."
+    },
+    "storage": {
+      "title": "Storage on this device",
+      "persisted": "Persistent storage enabled",
+      "notPersisted": "Storage is not persistent: iOS may delete data when space is needed",
+      "unsupported": "This browser cannot report storage persistence",
+      "request": "Request persistent storage",
+      "warning": "Warning: removing Quadra from the Home Screen deletes all data unless you have a backup."
+    },
+    "reminder": {
+      "action": "Go",
+      "never": {
+        "title": "No backup yet",
+        "body": "Create a backup so you never lose your history."
+      },
+      "stale": {
+        "title": "Backup is old",
+        "body": "Your last backup is over 30 days old."
+      },
+      "yearEnd": {
+        "title": "Year-end backup",
+        "body": "Save a full backup before closing the year."
+      }
+    }
+  },
+  "security": {
+    "title": "Privacy & lock",
+    "enterPin": "Enter your PIN",
+    "wrongPin": "Wrong PIN",
+    "wait": "Too many attempts. Try again in {{seconds}} s",
+    "unlock": "Unlock",
+    "useBiometrics": "Use Face ID",
+    "setPin": "Set a PIN",
+    "changePin": "Change PIN",
+    "newPin": "New PIN",
+    "confirmPin": "Repeat PIN",
+    "pinRule": "4 to 8 digits. The PIN stays on this device only and is not included in backups.",
+    "pinSaved": "PIN saved.",
+    "enableBiometrics": "Enable Face ID",
+    "disableBiometrics": "Disable Face ID",
+    "biometricsEnabled": "Face ID enabled.",
+    "biometricsFailed": "Unable to enable Face ID.",
+    "biometricsUnavailable": "Face ID is not available in this browser.",
+    "lockNow": "Lock now",
+    "remove": "Remove lock",
+    "confirmRemove": "Remove the PIN and Face ID?",
+    "limits": "The lock prevents casual access to the app but does not encrypt data on the phone. No data is ever sent to external servers."
   }
 }
