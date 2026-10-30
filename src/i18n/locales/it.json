@@ -145,7 +145,8 @@
     "markTransfer": "È un giroconto (escluso da entrate/uscite)",
     "lastTimes": "Le ultime volte",
     "description": "Descrizione",
-    "noSimilar": "Nessuna spesa simile precedente."
+    "noSimilar": "Nessuna spesa simile precedente.",
+    "removeFilter": "Togli filtro"
   },
   "rules": {
     "title": "Regole automatiche",

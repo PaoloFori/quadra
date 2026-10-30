@@ -58,3 +58,17 @@ describe('import su database', () => {
     expect(coffees).toHaveLength(2);
   });
 });
+
+describe('categoria sempre presente', () => {
+  it('senza regola: Altro per le uscite, Altre entrate per le entrate', async () => {
+    const { autoCategory } = await import('@/db/importService');
+    const cats = new Map([['salary', { id: 'salary', kind: 'income' } as never]]);
+    expect(autoCategory('qualcosa di sconosciuto', -500, [], cats)).toBe('other');
+    expect(autoCategory('qualcosa di sconosciuto', 500, [], cats)).toBe('otherIncome');
+    const rules = [
+      { id: 'r', pattern: 'stipendio', categoryId: 'salary', origin: 'user' as const },
+    ];
+    expect(autoCategory('stipendio', -500, rules, cats)).toBe('other'); // categoria di entrata su un'uscita
+    expect(autoCategory('stipendio', 500, rules, cats)).toBe('salary');
+  });
+});

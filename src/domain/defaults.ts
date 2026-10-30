@@ -77,7 +77,7 @@ const RULE_SEEDS: Array<[string, string[]]> = [
   ['leisure', ['cinema', 'teatro', 'steam', 'playstation', 'eurobet', 'palestra', 'giochi']],
   ['salary', ['stipendio', 'emolumenti', 'salario', 'nomina']],
   ['cash', ['prelievo', 'bancomat atm', 'reintegro']],
-  ['fees', ['commissioni', 'canone conto', 'imposta di bollo', 'fisco', 'f24']],
+  ['fees', ['commissioni', 'canone conto', 'imposta di bollo']],
 ];
 
 export const DEFAULT_RULES: Rule[] = RULE_SEEDS.flatMap(([categoryId, patterns]) =>

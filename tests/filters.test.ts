@@ -53,3 +53,23 @@ describe('filterTransactions', () => {
     expect(isFilterActive({ text: '', categoryId: null })).toBe(true);
   });
 });
+
+describe('filtro per tipo', () => {
+  const rows = [
+    tx({ id: 'u', amountCents: -500 }),
+    tx({ id: 'e', amountCents: 900, categoryId: 'salary' }),
+    tx({ id: 'g', amountCents: -300, isTransfer: true, categoryId: null }),
+    tx({ id: 'g2', amountCents: 300, isTransfer: true, categoryId: null }),
+  ];
+  it('uscite ed entrate escludono i giroconti', () => {
+    expect(filterTransactions(rows, { ...EMPTY_FILTER, type: 'expense' }).map((r) => r.id)).toEqual(
+      ['u'],
+    );
+    expect(filterTransactions(rows, { ...EMPTY_FILTER, type: 'income' }).map((r) => r.id)).toEqual([
+      'e',
+    ]);
+  });
+  it('è un filtro attivo', () => {
+    expect(isFilterActive({ ...EMPTY_FILTER, type: 'income' })).toBe(true);
+  });
+});

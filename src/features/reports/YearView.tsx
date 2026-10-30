@@ -9,6 +9,7 @@ import { yearOf } from '@/lib/dates';
 import { buildYearReport, type YearReport } from '@/domain/reports/year';
 import { useFormat } from '@/i18n/useFormat';
 import { CumulativeChart, YearBars } from './charts';
+import { movementsLink } from '@/features/transactions/movementsLink';
 import { AccountsCompare, CategoryBreakdown, SummaryHero } from './shared';
 
 interface Props {
@@ -21,6 +22,7 @@ export function YearView({ year, accountId, onReport }: Props) {
   const { t } = useTranslation();
   const f = useFormat();
   const accounts = useAccounts();
+  const scope = accountId === ALL_ACCOUNTS ? undefined : accountId;
   const rawTxs = useLiveQuery(
     () => transactionsRepo.inRange(`${Number(year) - 1}-01-01`, `${year}-12-31`),
     [year],
@@ -52,7 +54,23 @@ export function YearView({ year, accountId, onReport }: Props) {
 
   return (
     <div className="space-y-3">
-      <SummaryHero totals={report.totals} />
+      <SummaryHero
+        totals={report.totals}
+        links={{
+          income: movementsLink({
+            type: 'income',
+            accountId: scope,
+            from: `${year}-01-01`,
+            to: `${year}-12-31`,
+          }),
+          expenses: movementsLink({
+            type: 'expense',
+            accountId: scope,
+            from: `${year}-01-01`,
+            to: `${year}-12-31`,
+          }),
+        }}
+      />
 
       <section className="card space-y-1">
         <p className="flex justify-between gap-3">
@@ -108,7 +126,10 @@ export function YearView({ year, accountId, onReport }: Props) {
 
       <section className="card">
         <h2 className="mb-2 font-semibold">{t('reports.byCategory')}</h2>
-        <CategoryBreakdown byCategory={report.byCategory} />
+        <CategoryBreakdown
+          byCategory={report.byCategory}
+          linkFor={(categoryId) => movementsLink({ categoryId, accountId: scope })}
+        />
       </section>
     </div>
   );

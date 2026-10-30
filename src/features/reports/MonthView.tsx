@@ -12,6 +12,7 @@ import type { MonthKey } from '@/domain/types';
 import { monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
 import { useFormat } from '@/i18n/useFormat';
 import { DailyChart } from './charts';
+import { movementsLink } from '@/features/transactions/movementsLink';
 import { AccountsCompare, CategoryBreakdown, SummaryHero } from './shared';
 
 interface Props {
@@ -24,6 +25,7 @@ export function MonthView({ month, accountId, onReport }: Props) {
   const { t } = useTranslation();
   const f = useFormat();
   const accounts = useAccounts();
+  const scope = accountId === ALL_ACCOUNTS ? undefined : accountId;
   const rawTxs = useLiveQuery(
     () => transactionsRepo.inRange(monthRange(shiftMonth(month, -1)).from, monthRange(month).to),
     [month],
@@ -68,7 +70,13 @@ export function MonthView({ month, accountId, onReport }: Props) {
 
   return (
     <div className="space-y-3">
-      <SummaryHero totals={report.totals} />
+      <SummaryHero
+        totals={report.totals}
+        links={{
+          income: movementsLink({ type: 'income', accountId: scope, ...monthRange(month) }),
+          expenses: movementsLink({ type: 'expense', accountId: scope, ...monthRange(month) }),
+        }}
+      />
 
       <section className="card">
         <h2 className="mb-1 font-semibold">{t('reports.vsPrevious')}</h2>
@@ -91,7 +99,10 @@ export function MonthView({ month, accountId, onReport }: Props) {
 
       <section className="card">
         <h2 className="mb-2 font-semibold">{t('reports.byCategory')}</h2>
-        <CategoryBreakdown byCategory={report.byCategory} />
+        <CategoryBreakdown
+          byCategory={report.byCategory}
+          linkFor={(categoryId) => movementsLink({ categoryId, accountId: scope })}
+        />
       </section>
 
       <section className="card">

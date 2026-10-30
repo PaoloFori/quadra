@@ -6,6 +6,8 @@ export interface TransactionFilter {
   /** `null` = senza categoria; undefined = qualsiasi. */
   categoryId?: string | null;
   accountId?: string;
+  /** Solo entrate o solo uscite (i giroconti sono esclusi, come nei resoconti). */
+  type?: 'income' | 'expense';
   from?: IsoDate;
   to?: IsoDate;
   /** Soglie sull'importo assoluto, in centesimi. */
@@ -29,6 +31,10 @@ export function filterTransactions(
   return txs.filter((t) => {
     if (f.categoryId !== undefined && t.categoryId !== f.categoryId) return false;
     if (f.accountId && t.accountId !== f.accountId) return false;
+    if (f.type) {
+      if (t.isTransfer) return false;
+      if (f.type === 'income' ? t.amountCents <= 0 : t.amountCents >= 0) return false;
+    }
     if (f.from && t.date < f.from) return false;
     if (f.to && t.date > f.to) return false;
     const abs = Math.abs(t.amountCents);

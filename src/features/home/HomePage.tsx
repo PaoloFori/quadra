@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
-import { SummaryHero } from '@/features/reports/shared';
+import { CategoryBreakdown, SummaryHero } from '@/features/reports/shared';
+import { movementsLink } from '@/features/transactions/movementsLink';
 import { Screen } from '@/components/Screen';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { budgetsRepo, transactionsRepo } from '@/db/repositories';
 import { budgetStatuses, totalRemaining } from '@/domain/reports/budget';
-import { totalsOf } from '@/domain/reports/totals';
+import { expensesByCategory, totalsOf } from '@/domain/reports/totals';
 import { monthOf, monthRange, todayIso } from '@/lib/dates';
 import { useFormat } from '@/i18n/useFormat';
-import { BackupReminder } from '@/features/backup/BackupReminder';
 import { TransactionRow } from '@/features/transactions/TransactionRow';
 import { TransactionSheet } from '@/features/transactions/TransactionSheet';
 import type { Transaction } from '@/domain/types';
@@ -34,6 +34,7 @@ export default function HomePage() {
   const [editing, setEditing] = useState<Transaction | 'new' | null>(null);
 
   const totals = useMemo(() => totalsOf(monthTxs ?? []), [monthTxs]);
+  const byCategory = useMemo(() => expensesByCategory(monthTxs ?? []), [monthTxs]);
   const remaining = useMemo(
     () => totalRemaining(budgetStatuses(budgets, monthTxs ?? [])),
     [budgets, monthTxs],
@@ -54,7 +55,6 @@ export default function HomePage() {
       }
     >
       <p className="-mt-2 mb-3 px-1 capitalize text-muted">{f.month(month)}</p>
-      <BackupReminder />
       <div className="mb-3">
         <BalancesCard />
       </div>
@@ -76,7 +76,14 @@ export default function HomePage() {
         </div>
       ) : (
         <div className="space-y-3">
-          <SummaryHero totals={totals} title={t('home.monthBalance')} />
+          <SummaryHero
+            totals={totals}
+            title={t('home.monthBalance')}
+            links={{
+              income: movementsLink({ type: 'income', ...monthRange(month) }),
+              expenses: movementsLink({ type: 'expense', ...monthRange(month) }),
+            }}
+          />
 
           <Link to="/budget" className="card block" aria-label={t('home.budgetLeft')}>
             <p className="text-[13px] text-muted">{t('home.budgetLeft')}</p>
@@ -107,6 +114,16 @@ export default function HomePage() {
               </>
             )}
           </Link>
+
+          {byCategory.length > 0 && (
+            <section className="card" aria-label={t('reports.byCategory')}>
+              <h2 className="mb-2 font-semibold">{t('reports.byCategory')}</h2>
+              <CategoryBreakdown
+                byCategory={byCategory}
+                linkFor={(categoryId) => movementsLink({ categoryId })}
+              />
+            </section>
+          )}
 
           <section className="card !p-3">
             <div className="flex items-center justify-between">
