@@ -7,6 +7,8 @@ export const transactionsRepo = {
   all: (): Promise<Transaction[]> => db.transactions.orderBy('date').reverse().toArray(),
   inRange: (from: string, to: string): Promise<Transaction[]> =>
     db.transactions.where('date').between(from, to, true, true).toArray(),
+  latest: (n: number): Promise<Transaction[]> =>
+    db.transactions.orderBy('date').reverse().limit(n).toArray(),
   get: (id: string): Promise<Transaction | undefined> => db.transactions.get(id),
   put: (tx: Transaction): Promise<string> => db.transactions.put(tx),
   update: (id: string, changes: Partial<Transaction>): Promise<number> =>

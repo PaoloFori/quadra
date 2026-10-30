@@ -155,5 +155,38 @@
     "name": "Name",
     "bank": "Bank",
     "otherBank": "Other bank"
+  },
+  "reports": {
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "summary": "Summary",
+    "byCategory": "By category",
+    "dailyTrend": "Daily trend",
+    "previousMonth": "Previous month",
+    "day": "Day",
+    "top5": "Top 5 expenses",
+    "vsPrevious": "Versus previous month",
+    "vsPreviousYear": "Versus previous year",
+    "recurring": "Recurring subscriptions",
+    "recurringMonths_one": "{{count}} month",
+    "recurringMonths_other": "{{count}} months",
+    "byMonth": "Total by month",
+    "avgMonthly": "Average monthly spending",
+    "mostExpensive": "Most expensive month",
+    "lightest": "Lightest month",
+    "noData": "No transactions in this period.",
+    "noExpenses": "No expenses in this period.",
+    "same": "Unchanged",
+    "previous": "Previous period",
+    "next": "Next period"
+  },
+  "budget": {
+    "add": "New budget",
+    "edit": "Edit budget",
+    "monthlyLimit": "Monthly limit",
+    "empty": "No budgets yet. Set one for a category to keep spending under control.",
+    "left": "{{amount}} left",
+    "warning": "Careful: only {{amount}} left",
+    "over": "Over by {{amount}}"
   }
 }
