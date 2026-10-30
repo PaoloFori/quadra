@@ -18,30 +18,30 @@ Regola: `src/domain` e `src/lib` non importano React né Dexie → testabili in 
 
 ## Cartelle
 
-| Cartella | Contenuto |
-|---|---|
-| `src/app` | entry, router, provider (i18n, tema, lock), error boundary |
+| Cartella         | Contenuto                                                                           |
+| ---------------- | ----------------------------------------------------------------------------------- |
+| `src/app`        | entry, router, provider (i18n, tema, lock), error boundary                          |
 | `src/features/*` | schermate: home, transactions, import, reports, budgets, backup, settings, security |
-| `src/db` | `database.ts` (schema Dexie + versioni), `repositories.ts`, `services.ts` |
-| `src/domain` | `types`, `importing/*`, `transfers`, `rules`, `reports/*`, `backup/*`, `export/*` |
-| `src/lib` | `money`, `dates`, `hash`, `format`, `csv`, `normalize` |
-| `src/i18n` | config + `locales/it.json`, `locales/en.json` |
-| `tests/` | Vitest |
-| `scripts/` | generatore CSV di esempio |
+| `src/db`         | `database.ts` (schema Dexie + versioni), `repositories.ts`, `services.ts`           |
+| `src/domain`     | `types`, `importing/*`, `transfers`, `rules`, `reports/*`, `backup/*`, `export/*`   |
+| `src/lib`        | `money`, `dates`, `hash`, `format`, `csv`, `normalize`                              |
+| `src/i18n`       | config + `locales/it.json`, `locales/en.json`                                       |
+| `tests/`         | Vitest                                                                              |
+| `scripts/`       | generatore CSV di esempio                                                           |
 
 ## Schema dati (Dexie, IndexedDB)
 
 Importi sempre in **centesimi interi** (negativo = uscita). Date come stringhe ISO `YYYY-MM-DD` (nessun problema di fuso).
 
-| Tabella | Chiave / indici | Campi principali |
-|---|---|---|
+| Tabella        | Chiave / indici                                                            | Campi principali                                                                                                        |
+| -------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `transactions` | `id, accountId, date, [accountId+date], categoryId, hash, transferGroupId` | `amountCents, description, note, valueDate, balanceCents, isTransfer, source('manual'\|'import'), createdAt, updatedAt` |
-| `accounts` | `id` | `name, bank('bbva'\|'intesa'\|'other')` |
-| `categories` | `id` | `kind, color, icon, builtin, name?` (solo se personalizzata/rinominata) |
-| `rules` | `id` | `pattern, categoryId, origin('user'\|'learned')` |
-| `budgets` | `id, categoryId` | `monthlyCents` |
-| `profiles` | `id` | profilo banca: mappatura colonne, formato data/decimali, firma intestazioni |
-| `settings` | `key` | `language, lastBackupAt, ...` |
+| `accounts`     | `id`                                                                       | `name, bank('bbva'\|'intesa'\|'other')`                                                                                 |
+| `categories`   | `id`                                                                       | `kind, color, icon, builtin, name?` (solo se personalizzata/rinominata)                                                 |
+| `rules`        | `id`                                                                       | `pattern, categoryId, origin('user'\|'learned')`                                                                        |
+| `budgets`      | `id, categoryId`                                                           | `monthlyCents`                                                                                                          |
+| `profiles`     | `id`                                                                       | profilo banca: mappatura colonne, formato data/decimali, firma intestazioni                                             |
+| `settings`     | `key`                                                                      | `language, lastBackupAt, ...`                                                                                           |
 
 **Deduplica**: `hash = SHA-256(conto|data|importo|descrizione normalizzata)`. Per movimenti identici legittimi
 nello stesso giorno, si aggiunge l'indice d'occorrenza nel file: `id = hash#n`. All'import, se in DB esistono già

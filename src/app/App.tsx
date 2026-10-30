@@ -1,0 +1,41 @@
+import { lazy, Suspense } from 'react';
+import { HashRouter, Route, Routes } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { ErrorBoundary } from './ErrorBoundary';
+import { TabBar } from '@/components/TabBar';
+
+const HomePage = lazy(() => import('@/features/home/HomePage'));
+const TransactionsPage = lazy(() => import('@/features/transactions/TransactionsPage'));
+const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'));
+const BudgetPage = lazy(() => import('@/features/budgets/BudgetPage'));
+const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'));
+
+function Loading() {
+  const { t } = useTranslation();
+  return (
+    <p role="status" className="p-8 text-center text-muted">
+      {t('common.loading')}
+    </p>
+  );
+}
+
+export function App() {
+  return (
+    <ErrorBoundary>
+      <HashRouter>
+        <div className="min-h-full pb-[calc(64px+env(safe-area-inset-bottom))]">
+          <Suspense fallback={<Loading />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/budget" element={<BudgetPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </Suspense>
+        </div>
+        <TabBar />
+      </HashRouter>
+    </ErrorBoundary>
+  );
+}

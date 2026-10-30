@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 242 242 247;
+  --card: 255 255 255;
+  --ink: 28 28 30;
+  --muted: 99 99 102;
+  --line: 229 229 234;
+  --accent: 0 102 214;
+  --income: 22 138 62;
+  --expense: 200 40 40;
+  --warn: 190 100 0;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 0 0 0;
+    --card: 28 28 30;
+    --ink: 245 245 247;
+    --muted: 174 174 178;
+    --line: 58 58 60;
+    --accent: 10 132 255;
+    --income: 48 209 88;
+    --expense: 255 105 97;
+    --warn: 255 179 64;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-bg text-ink antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl bg-card p-4 shadow-sm;
+  }
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 text-[15px] font-semibold transition active:scale-[0.98] disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white;
+  }
+  .btn-secondary {
+    @apply btn bg-line/60 text-ink;
+  }
+  .btn-danger {
+    @apply btn bg-expense/15 text-expense;
+  }
+  .input {
+    @apply min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-[16px] text-ink outline-none focus:border-accent;
+  }
+  .label {
+    @apply mb-1 block text-[13px] font-medium text-muted;
+  }
+  .section-title {
+    @apply mb-2 mt-5 px-1 text-[13px] font-semibold uppercase tracking-wide text-muted;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.animate-sheet {
+  animation: sheet-in 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
