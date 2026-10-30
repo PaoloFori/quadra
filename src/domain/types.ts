@@ -3,7 +3,7 @@
 export type IsoDate = string;
 export type MonthKey = string; // YYYY-MM
 
-export type BankKind = 'bbva' | 'intesa' | 'other';
+export type BankKind = string;
 
 export interface Account {
   id: string;

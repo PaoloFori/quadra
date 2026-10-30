@@ -29,6 +29,19 @@ export class QuadraDb extends Dexie {
       settings: 'key',
     });
 
+    // v2: Quadra non crea più conti da sola. Si tolgono quelli predefiniti delle versioni precedenti
+    // (id bbva/intesa) solo se sono ancora intatti: senza movimenti e senza saldo impostato.
+    this.version(2)
+      .stores({})
+      .upgrade(async (tx) => {
+        for (const id of ['bbva', 'intesa']) {
+          const account = await tx.table('accounts').get(id);
+          if (!account || account.openingBalanceCents !== undefined) continue;
+          if ((await tx.table('transactions').where('accountId').equals(id).count()) > 0) continue;
+          await tx.table('accounts').delete(id);
+        }
+      });
+
     this.on('populate', (tx) => {
       void tx.table('categories').bulkAdd(DEFAULT_CATEGORIES);
       void tx.table('rules').bulkAdd(DEFAULT_RULES);
