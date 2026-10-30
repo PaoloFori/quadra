@@ -48,7 +48,7 @@ export function MonthView({ month, onReport }: Props) {
 
   return (
     <div className="space-y-3">
-      <section className="card grid grid-cols-3 gap-2" aria-label={t('reports.summary')}>
+      <section className="card space-y-1" aria-label={t('reports.summary')}>
         <StatPair label={t('common.income')} cents={report.totals.income} tone="income" />
         <StatPair label={t('common.expenses')} cents={report.totals.expenses} tone="expense" />
         <StatPair label={t('common.balance')} cents={report.totals.net} tone="neutral" />

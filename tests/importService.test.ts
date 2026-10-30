@@ -53,7 +53,7 @@ describe('import su database', () => {
       markTransfers: false,
     });
     const coffees = await db.transactions
-      .filter((t) => t.description.includes('caffe') && t.date === '2026-04-21')
+      .filter((t) => t.description.includes('caffe') && t.date === '2026-05-21')
       .toArray();
     expect(coffees).toHaveLength(2);
   });
