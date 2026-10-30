@@ -7,7 +7,7 @@ interface Props {
   className?: string;
 }
 
-/** Importo con cifre tabulari: entrate «+» in verde-lime, uscite «−» nel colore del testo (il rosso è solo per gli indicatori). */
+/** Importo con cifre tabulari: entrate «+» in verde menta, uscite «−» nel colore del testo (il rosso è solo per gli indicatori). */
 export function Amount({ cents, neutral = false, signed = true, className = '' }: Props) {
   const f = useFormat();
   const color = neutral || cents <= 0 ? 'text-ink' : 'text-income';

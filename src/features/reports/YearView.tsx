@@ -164,6 +164,7 @@ export function YearView({ year, accountId, onReport }: Props) {
         <SectionTitle title={t('reports.byCategory')} />
         <CategoryBreakdown
           byCategory={report.byCategory}
+          collapsible
           linkFor={(categoryId) => movementsLink({ categoryId, accountId: scope })}
         />
       </section>

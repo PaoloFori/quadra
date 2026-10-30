@@ -5,7 +5,7 @@ const H = 140;
 const PAD_Y = 12;
 
 /**
- * Andamento del patrimonio: linea lime con sfumatura, griglia tratteggiata, punto finale cerchiato.
+ * Andamento del patrimonio: linea blu con sfumatura, griglia tratteggiata, punto finale cerchiato.
  * I punti da `projectedFrom` in poi sono una stima: tratteggiati e senza area.
  */
 export function WealthChart({

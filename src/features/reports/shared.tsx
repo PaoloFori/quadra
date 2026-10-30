@@ -11,8 +11,8 @@ import type { Account } from '@/domain/types';
 import { useFormat } from '@/i18n/useFormat';
 
 const UNCATEGORIZED_COLOR = '#6e766f';
-/** Colori dei puntini (come la palette dei grafici): entrate lime, uscite corallo. */
-export const DOT = { income: '#c6f04d', expenses: '#ff7a66', saving: '#c6f04d', other: '#b7a6f6' };
+/** Colori dei puntini (come la palette dei grafici): entrate menta, uscite corallo, risparmio blu. */
+export const DOT = { income: '#7ed9b4', expenses: '#ff7a66', saving: '#6ca8ff', other: '#b7a6f6' };
 
 export function useSlices(byCategory: CategoryTotal[]): DonutSlice[] {
   const lookup = useCategoryLookup();

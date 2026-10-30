@@ -95,7 +95,7 @@ export function YearBars({ months }: { months: MonthTotals[] }) {
           <Bar
             dataKey="income"
             name={t('common.income')}
-            fill="rgb(var(--accent))"
+            fill="rgb(var(--income))"
             radius={[3, 3, 0, 0]}
           />
           <Bar

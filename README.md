@@ -6,7 +6,7 @@ Un solo utente, **nessun login, nessun backend, nessun analytics**: i dati resta
 App online: https://paoloforin.github.io/quadra/
 
 - React + Vite + TypeScript (strict), Tailwind, Dexie, Recharts, i18next (IT/EN)
-- Grafica «Dark Lime» (solo scura, lime come unico colore forte); font Space Grotesk + Geist incluse nell'app, nessuna chiamata esterna
+- Grafica scura con accento blu; font Space Grotesk + Geist incluse nell'app, nessuna chiamata esterna
 - Offline (service worker), installabile da Safari con «Aggiungi a Home»
 - Architettura e formato del backup: [docs/architecture.md](docs/architecture.md), [docs/backup-format.md](docs/backup-format.md)
 
