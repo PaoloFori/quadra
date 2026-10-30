@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
+import { useFormat } from '@/i18n/useFormat';
 import { Amount } from '@/components/Amount';
 import { Sheet } from '@/components/Sheet';
 import { getAccountBalances, setAccountBalance } from '@/db/accountService';
@@ -62,6 +63,7 @@ function BalancesSheet({ balances, onClose }: { balances: AccountBalance[]; onCl
 /** Quanti soldi hai su ciascun conto + totale; un tap per aggiornare i saldi. */
 export function BalancesCard() {
   const { t } = useTranslation();
+  const f = useFormat();
   const balances = useLiveQuery(getAccountBalances, []);
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -70,15 +72,27 @@ export function BalancesCard() {
 
   return (
     <>
-      <section className="card" aria-label={t('balances.title')}>
-        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="w-full text-lg font-bold">{t('balances.title')}</h2>
+      <section className="hero space-y-1" aria-label={t('balances.title')}>
+        <p className="label-caps !text-on-accent">{t('home.liquidity')}</p>
+        <p className="tabular font-display text-[40px] font-medium leading-[44px] tracking-[-0.04em]">
+          {f.currency(total)}
+        </p>
+      </section>
+      <section className="card space-y-1" aria-label={t('balances.title')}>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-[17px] font-semibold tracking-[-0.01em]">{t('balances.title')}</h2>
           <div className="flex gap-2">
-            <button className="btn-secondary !px-3 !text-[14px]" onClick={() => setAdding(true)}>
+            <button
+              className="btn-secondary !min-h-[40px] !px-3 !text-[14px]"
+              onClick={() => setAdding(true)}
+            >
               {t('balances.add')}
             </button>
             {balances.length > 0 && (
-              <button className="btn-secondary !px-3 !text-[14px]" onClick={() => setOpen(true)}>
+              <button
+                className="btn-secondary !min-h-[40px] !px-3 !text-[14px]"
+                onClick={() => setOpen(true)}
+              >
                 {t('balances.set')}
               </button>
             )}
@@ -87,17 +101,14 @@ export function BalancesCard() {
         {balances.length === 0 && <p className="py-2 text-muted">{t('balances.empty')}</p>}
         <ul>
           {balances.map(({ account, balanceCents }) => (
-            <li key={account.id} className="flex min-h-[40px] items-center justify-between">
+            <li
+              key={account.id}
+              className="flex min-h-[48px] items-center justify-between border-t border-line first:border-0"
+            >
               <span className="text-muted">{account.name}</span>
-              <Amount cents={balanceCents} signed={false} neutral className="font-semibold" />
+              <Amount cents={balanceCents} signed={false} neutral className="text-[17px]" />
             </li>
           ))}
-          {balances.length > 1 && (
-            <li className="flex min-h-[40px] items-center justify-between border-t border-line/60">
-              <span className="font-semibold">{t('common.total')}</span>
-              <Amount cents={total} signed={false} neutral className="text-lg font-bold" />
-            </li>
-          )}
         </ul>
       </section>
       {adding && <AccountSheet onClose={() => setAdding(false)} />}

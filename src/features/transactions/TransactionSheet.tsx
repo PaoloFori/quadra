@@ -128,18 +128,14 @@ export function TransactionSheet({ tx, onClose }: Props) {
 
   return (
     <Sheet title={tx ? t('tx.edit') : t('tx.add')} onClose={onClose}>
-      <div
-        role="group"
-        aria-label={t('tx.type')}
-        className="grid grid-cols-2 gap-1 rounded-xl bg-line/60 p-1"
-      >
+      <div role="group" aria-label={t('tx.type')} className="grid grid-cols-2 gap-2">
         {([false, true] as const).map((isIncome) => (
           <button
             key={String(isIncome)}
             type="button"
             aria-pressed={income === isIncome}
             onClick={() => setIncome(isIncome)}
-            className={`min-h-[40px] rounded-lg text-[15px] font-semibold ${income === isIncome ? 'bg-card shadow-sm' : 'text-muted'}`}
+            className={`chip justify-center ${income === isIncome ? 'chip-on' : ''}`}
           >
             {isIncome ? t('common.income') : t('common.expenses')}
           </button>

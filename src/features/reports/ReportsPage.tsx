@@ -11,10 +11,11 @@ import { saveFile } from '@/lib/files';
 import { useFormat } from '@/i18n/useFormat';
 import { MonthView } from './MonthView';
 import { monthPdfDoc, yearPdfDoc } from './pdfDocs';
+import { WealthView } from './WealthView';
 import { YearView } from './YearView';
 import { AccountChips } from './shared';
 
-type Mode = 'month' | 'year';
+type Mode = 'month' | 'year' | 'wealth';
 const SWIPE_PX = 60;
 
 export default function ReportsPage() {
@@ -51,7 +52,11 @@ export default function ReportsPage() {
     touchStart.current = null;
     if (!start || !p) return;
     const dx = p.clientX - start.x;
-    if (Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(p.clientY - start.y) * 1.5)
+    if (
+      mode !== 'wealth' &&
+      Math.abs(dx) > SWIPE_PX &&
+      Math.abs(dx) > Math.abs(p.clientY - start.y) * 1.5
+    )
       step(dx > 0 ? -1 : 1);
   };
 
@@ -92,55 +97,58 @@ export default function ReportsPage() {
   return (
     <Screen
       title={t('nav.reports')}
+      subtitle={mode === 'month' ? f.month(month) : mode === 'year' ? year : t('wealth.title')}
       action={
-        <button className="btn-secondary" disabled={exporting} onClick={() => void exportPdf()}>
-          PDF
-        </button>
+        mode === 'wealth' ? undefined : (
+          <button className="btn-secondary" disabled={exporting} onClick={() => void exportPdf()}>
+            PDF
+          </button>
+        )
       }
     >
-      <div
-        role="group"
-        aria-label={t('nav.reports')}
-        className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-line/60 p-1"
-      >
-        {(['month', 'year'] as const).map((m) => (
+      <div role="group" aria-label={t('nav.reports')} className="flex gap-2">
+        {(['month', 'year', 'wealth'] as const).map((m) => (
           <button
             key={m}
             aria-pressed={mode === m}
             onClick={() => setMode(m)}
-            className={`min-h-[40px] rounded-lg text-[15px] font-semibold ${mode === m ? 'bg-card shadow-sm' : 'text-muted'}`}
+            className={`chip ${mode === m ? 'chip-on' : ''}`}
           >
-            {t(`reports.${m === 'month' ? 'monthly' : 'yearly'}`)}
+            {t(m === 'month' ? 'reports.monthly' : m === 'year' ? 'reports.yearly' : 'wealth.tab')}
           </button>
         ))}
       </div>
 
       <AccountChips accounts={accounts} value={scope} onChange={setAccountId} />
 
-      <div className="mb-3 flex items-center justify-between">
-        <button
-          className="btn-secondary !min-w-[44px] !px-3"
-          aria-label={t('reports.previous')}
-          onClick={() => step(-1)}
-        >
-          ‹
-        </button>
-        <h2 className="text-lg font-semibold capitalize">{title}</h2>
-        <button
-          className="btn-secondary !min-w-[44px] !px-3"
-          aria-label={t('reports.next')}
-          onClick={() => step(1)}
-        >
-          ›
-        </button>
-      </div>
+      {mode !== 'wealth' && (
+        <div className="flex items-center justify-between">
+          <button
+            className="btn-secondary !min-w-[44px] !px-3"
+            aria-label={t('reports.previous')}
+            onClick={() => step(-1)}
+          >
+            ‹
+          </button>
+          <h2 className="font-display text-[20px] font-medium capitalize tracking-[-0.02em]">
+            {title}
+          </h2>
+          <button
+            className="btn-secondary !min-w-[44px] !px-3"
+            aria-label={t('reports.next')}
+            onClick={() => step(1)}
+          >
+            ›
+          </button>
+        </div>
+      )}
 
       <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} className="min-h-[50vh]">
-        {mode === 'month' ? (
+        {mode === 'month' && (
           <MonthView month={month} accountId={scope} onReport={setMonthReport} />
-        ) : (
-          <YearView year={year} accountId={scope} onReport={setYearReport} />
         )}
+        {mode === 'year' && <YearView year={year} accountId={scope} onReport={setYearReport} />}
+        {mode === 'wealth' && <WealthView accountId={scope} />}
       </div>
     </Screen>
   );

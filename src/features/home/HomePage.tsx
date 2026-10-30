@@ -3,20 +3,24 @@ import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
-import { CategoryBreakdown, SummaryHero } from '@/features/reports/shared';
-import { movementsLink } from '@/features/transactions/movementsLink';
+import { ProgressBar } from '@/components/ProgressBar';
 import { Screen } from '@/components/Screen';
+import { Badge, LabelCaps, MetricCard, SectionTitle } from '@/components/ui';
+import { WealthChart } from '@/components/WealthChart';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { budgetsRepo, transactionsRepo } from '@/db/repositories';
-import { budgetStatuses, totalRemaining } from '@/domain/reports/budget';
+import { budgetStatuses, levelOf, totalRemaining } from '@/domain/reports/budget';
+import { savingsRate } from '@/domain/reports/accounts';
 import { expensesByCategory, totalsOf } from '@/domain/reports/totals';
-import { monthOf, monthRange, todayIso } from '@/lib/dates';
-import { useFormat } from '@/i18n/useFormat';
-import { TransactionRow } from '@/features/transactions/TransactionRow';
-import { TransactionSheet } from '@/features/transactions/TransactionSheet';
 import type { Transaction } from '@/domain/types';
 import { BalancesCard } from '@/features/accounts/BalancesCard';
-import { ProgressBar } from '@/components/ProgressBar';
+import { CategoryBreakdown, DOT } from '@/features/reports/shared';
+import { useWealth } from '@/features/reports/useWealth';
+import { movementsLink } from '@/features/transactions/movementsLink';
+import { TransactionRow } from '@/features/transactions/TransactionRow';
+import { TransactionSheet } from '@/features/transactions/TransactionSheet';
+import { useFormat } from '@/i18n/useFormat';
+import { monthOf, monthRange, todayIso } from '@/lib/dates';
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -31,6 +35,7 @@ export default function HomePage() {
   const budgets = useLiveQuery(budgetsRepo.all, [], []);
   const accounts = useAccounts();
   const categories = useCategoryLookup();
+  const wealth = useWealth();
   const [editing, setEditing] = useState<Transaction | 'new' | null>(null);
 
   const totals = useMemo(() => totalsOf(monthTxs ?? []), [monthTxs]);
@@ -40,28 +45,28 @@ export default function HomePage() {
     [budgets, monthTxs],
   );
   const accountById = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
+  const rate = savingsRate(totals);
+  const range = monthRange(month);
 
   return (
     <Screen
-      title={t('home.title')}
+      title={t('home.overview')}
+      eyebrow={f.month(month)}
       action={
         <button
-          className="btn-primary !min-w-[44px] !px-3 text-xl"
+          className="btn-primary !min-h-[44px] !rounded-full"
           aria-label={t('tx.add')}
           onClick={() => setEditing('new')}
         >
-          +
+          + {t('home.newTx')}
         </button>
       }
     >
-      <p className="-mt-2 mb-3 px-1 capitalize text-muted">{f.month(month)}</p>
-      <div className="mb-3">
-        <BalancesCard />
-      </div>
+      <BalancesCard />
 
       {accounts.length === 0 ? (
         <div className="card space-y-2 text-center">
-          <h2 className="text-lg font-bold">{t('home.noAccountsTitle')}</h2>
+          <h2 className="font-display text-[20px] font-medium">{t('home.noAccountsTitle')}</h2>
           <p className="text-muted">{t('home.noAccountsBody')}</p>
         </div>
       ) : total === 0 ? (
@@ -75,23 +80,80 @@ export default function HomePage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
-          <SummaryHero
-            totals={totals}
-            title={t('home.monthBalance')}
-            links={{
-              income: movementsLink({ type: 'income', ...monthRange(month) }),
-              expenses: movementsLink({ type: 'expense', ...monthRange(month) }),
-            }}
-          />
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Link to={movementsLink({ type: 'income', ...range })} className="block">
+              <MetricCard label={t('common.income')} dot={DOT.income}>
+                <span className="text-income">{f.currency(totals.income)}</span>
+              </MetricCard>
+            </Link>
+            <Link to={movementsLink({ type: 'expense', ...range })} className="block">
+              <MetricCard label={t('common.expenses')} dot={DOT.expenses}>
+                {f.currency(totals.expenses)}
+              </MetricCard>
+            </Link>
+          </div>
 
-          <Link to="/budget" className="card block" aria-label={t('home.budgetLeft')}>
-            <p className="text-[13px] text-muted">{t('home.budgetLeft')}</p>
+          <section className="card space-y-3" aria-label={t('reports.savings')}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="space-y-1.5">
+                <LabelCaps>{t('reports.savings')}</LabelCaps>
+                <p className="font-display text-[28px] font-medium leading-8 tracking-[-0.03em]">
+                  <Amount cents={totals.net} />
+                </p>
+              </div>
+              {rate !== null && <Badge accent>{f.percent(rate).replace('+', '')}</Badge>}
+            </div>
+            <ProgressBar
+              ratio={rate === null ? 0 : Math.max(rate, 0)}
+              level="ok"
+              label={t('reports.savings')}
+            />
+          </section>
+
+          {byCategory.length > 0 && (
+            <section className="card space-y-4" aria-label={t('home.topCategories')}>
+              <SectionTitle
+                title={t('home.topCategories')}
+                trailing={
+                  <span className="text-[13px] capitalize text-muted">{f.month(month)}</span>
+                }
+              />
+              <CategoryBreakdown
+                byCategory={byCategory}
+                collapsible
+                linkFor={(categoryId) => movementsLink({ categoryId })}
+              />
+            </section>
+          )}
+
+          {wealth && wealth.projection.values.length > 1 && (
+            <section className="card space-y-3">
+              <SectionTitle
+                title={t('home.wealthTrend')}
+                subtitle={
+                  wealth.projection.delta.months > 0
+                    ? `${wealth.projection.delta.cents >= 0 ? '↑' : '↓'} ${f.currency(Math.abs(wealth.projection.delta.cents))} · ${t('wealth.goalMonths', { count: wealth.projection.delta.months })}`
+                    : undefined
+                }
+              />
+              <WealthChart
+                values={wealth.projection.values}
+                labels={wealth.projection.months.map((m) => f.monthShort(m))}
+                projectedFrom={wealth.projection.projectedFrom}
+                label={t('home.wealthTrend')}
+              />
+              <p className="text-[12px] text-faint">{t('wealth.dashedHint')}</p>
+            </section>
+          )}
+
+          <Link to="/budget" className="card block space-y-2" aria-label={t('home.budgetLeft')}>
+            <LabelCaps>{t('home.budgetLeft')}</LabelCaps>
             {remaining.limit === 0 ? (
               <p className="text-muted">{t('home.budgetNone')}</p>
             ) : (
               <>
-                <p className="mb-2 text-2xl font-bold">
+                <p className="font-display text-[24px] font-medium tracking-[-0.03em]">
                   {remaining.remaining >= 0 ? (
                     <Amount cents={remaining.remaining} signed={false} neutral />
                   ) : (
@@ -102,40 +164,23 @@ export default function HomePage() {
                 </p>
                 <ProgressBar
                   ratio={remaining.spent / remaining.limit}
-                  level={
-                    remaining.spent >= remaining.limit
-                      ? 'over'
-                      : remaining.spent / remaining.limit >= 0.8
-                        ? 'warning'
-                        : 'ok'
-                  }
+                  level={levelOf(remaining.spent / remaining.limit)}
                   label={t('home.budgetLeft')}
                 />
               </>
             )}
           </Link>
 
-          {byCategory.length > 0 && (
-            <section className="card" aria-label={t('reports.byCategory')}>
-              <h2 className="mb-2 font-semibold">{t('reports.byCategory')}</h2>
-              <CategoryBreakdown
-                byCategory={byCategory}
-                collapsible
-                linkFor={(categoryId) => movementsLink({ categoryId })}
-              />
-            </section>
-          )}
-
-          <section className="card !p-3">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold">{t('home.latest')}</h2>
-              <Link to="/transactions" className="text-accent">
+          <section className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-[17px] font-semibold tracking-[-0.01em]">{t('home.latest')}</h2>
+              <Link to="/transactions" className="text-[14px] text-accent">
                 {t('home.seeAll')}
               </Link>
             </div>
-            <ul>
+            <ul className="space-y-2">
               {latest.map((tx) => (
-                <li key={tx.id} className="border-b border-line/60 last:border-0">
+                <li key={tx.id}>
                   <TransactionRow
                     tx={tx}
                     category={tx.categoryId ? categories.byId.get(tx.categoryId) : undefined}
@@ -147,7 +192,7 @@ export default function HomePage() {
               ))}
             </ul>
           </section>
-        </div>
+        </>
       )}
       {editing && (
         <TransactionSheet

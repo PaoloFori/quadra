@@ -8,6 +8,8 @@ export interface Formatters {
   percent: (ratio: number) => string;
   date: (iso: IsoDate) => string;
   dateLong: (iso: IsoDate) => string;
+  /** «mer 15 ottobre»: intestazione di un giorno. */
+  dayHeader: (iso: IsoDate) => string;
   month: (key: MonthKey) => string;
   monthShort: (key: MonthKey) => string;
   dateTime: (iso: string) => string;
@@ -37,17 +39,20 @@ export function createFormatters(locale: string): Formatters {
     month: 'long',
     year: 'numeric',
   });
+  const dDay = new Intl.DateTimeFormat(locale, { weekday: 'short', day: 'numeric', month: 'long' });
   const mLong = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
   const mShort = new Intl.DateTimeFormat(locale, { month: 'short' });
   const dt = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
   return {
     currency: (c) => eur.format(c / 100),
-    currencySigned: (c) => eurSigned.format(c / 100),
+    // meno tipografico (U+2212): più leggibile del trattino davanti alle cifre
+    currencySigned: (c) => eurSigned.format(c / 100).replace('-', '\u2212'),
     number: (v, digits = 0) =>
       new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(v),
     percent: (r) => pct.format(r),
     date: (iso) => dShort.format(parse(iso)),
     dateLong: (iso) => dLong.format(parse(iso)),
+    dayHeader: (iso) => dDay.format(parse(iso)),
     month: (k) => mLong.format(parse(`${k}-01`)),
     monthShort: (k) => mShort.format(parse(`${k}-01`)),
     dateTime: (iso) => dt.format(new Date(iso)),
