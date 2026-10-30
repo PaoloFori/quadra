@@ -188,5 +188,83 @@
     "left": "Restano {{amount}}",
     "warning": "Attenzione: restano solo {{amount}}",
     "over": "Superato di {{amount}}"
+  },
+  "backup": {
+    "title": "Backup e ripristino",
+    "saved": "File salvato. Conservalo in iCloud Drive o in File.",
+    "full": {
+      "title": "Backup completo",
+      "last": "Ultimo backup: {{date}}",
+      "never": "Non hai ancora fatto nessun backup.",
+      "action": "Crea backup completo",
+      "hint": "Contiene movimenti, categorie, regole, budget, profili banca e impostazioni. Salvalo su iCloud Drive: se rimuovi l'app dalla Home, i dati sul telefono vengono cancellati."
+    },
+    "export": {
+      "title": "Esporta per periodo",
+      "range": "Periodo",
+      "month": "Mese",
+      "year": "Anno",
+      "all": "Tutto",
+      "format": "Formato",
+      "json": "JSON (reimportabile)",
+      "csv": "CSV (per fogli di calcolo)",
+      "action": "Esporta"
+    },
+    "restore": {
+      "title": "Ripristina da file",
+      "choose": "Scegli file di backup (.json)",
+      "summary": "{{added}} nuovi, {{existing}} già presenti, {{conflicts}} conflitti",
+      "mergeHint": "Unisci aggiunge solo ciò che manca. In caso di conflitto resta la versione che hai sul telefono.",
+      "merge": "Unisci ai dati attuali",
+      "replace": "Sostituisci tutto",
+      "confirmReplace": "Tutti i dati attuali verranno cancellati e sostituiti dal contenuto del file. Continuare?",
+      "done": "Ripristino completato."
+    },
+    "storage": {
+      "title": "Archiviazione sul dispositivo",
+      "persisted": "Archiviazione persistente attiva",
+      "notPersisted": "Archiviazione non persistente: iOS potrebbe cancellare i dati se serve spazio",
+      "unsupported": "Questo browser non permette di verificare la persistenza",
+      "request": "Richiedi archiviazione persistente",
+      "warning": "Attenzione: rimuovere Quadra dalla Home cancella tutti i dati se non hai un backup."
+    },
+    "reminder": {
+      "action": "Vai",
+      "never": {
+        "title": "Nessun backup",
+        "body": "Crea un backup per non perdere lo storico."
+      },
+      "stale": {
+        "title": "Backup vecchio",
+        "body": "L'ultimo backup ha più di 30 giorni."
+      },
+      "yearEnd": {
+        "title": "Backup di fine anno",
+        "body": "Salva un backup completo prima di chiudere l'anno."
+      }
+    }
+  },
+  "security": {
+    "title": "Privacy e blocco",
+    "enterPin": "Inserisci il PIN",
+    "wrongPin": "PIN errato",
+    "wait": "Troppi tentativi. Riprova tra {{seconds}} s",
+    "unlock": "Sblocca",
+    "useBiometrics": "Usa Face ID",
+    "setPin": "Imposta un PIN",
+    "changePin": "Cambia PIN",
+    "newPin": "Nuovo PIN",
+    "confirmPin": "Ripeti il PIN",
+    "pinRule": "Da 4 a 8 cifre. Il PIN resta solo su questo dispositivo e non è incluso nei backup.",
+    "pinSaved": "PIN salvato.",
+    "enableBiometrics": "Attiva Face ID",
+    "disableBiometrics": "Disattiva Face ID",
+    "biometricsEnabled": "Face ID attivato.",
+    "biometricsFailed": "Impossibile attivare Face ID.",
+    "biometricsUnavailable": "Face ID non disponibile in questo browser.",
+    "lockNow": "Blocca ora",
+    "remove": "Rimuovi blocco",
+    "confirmRemove": "Rimuovere il PIN e Face ID?",
+    "limits": "Il blocco impedisce l'accesso casuale all'app ma non cifra i dati sul telefono. Nessun dato viene mai inviato a server esterni."
   }
 }

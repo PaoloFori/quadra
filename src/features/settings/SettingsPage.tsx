@@ -11,6 +11,8 @@ export default function SettingsPage() {
       <LanguageSetting />
       <h2 className="section-title">{t('settings.dataSection')}</h2>
       <div className="card !p-2">
+        <NavRow to="/settings/backup" label={t('backup.title')} />
+        <NavRow to="/settings/security" label={t('security.title')} />
         <NavRow to="/settings/accounts" label={t('accounts.title')} />
         <NavRow to="/settings/categories" label={t('categories.title')} />
         <NavRow to="/settings/rules" label={t('rules.title')} />
