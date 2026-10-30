@@ -145,7 +145,8 @@
     "markTransfer": "This is a transfer (excluded from income/expenses)",
     "lastTimes": "Last times",
     "description": "Description",
-    "noSimilar": "No similar previous expenses."
+    "noSimilar": "No similar previous expenses.",
+    "removeFilter": "Remove filter"
   },
   "rules": {
     "title": "Automatic rules",

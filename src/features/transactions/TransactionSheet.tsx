@@ -74,13 +74,16 @@ export function TransactionSheet({ tx, onClose }: Props) {
     setSaving(true);
     try {
       const signed = income ? cents : -cents;
+      // nessun movimento resta senza categoria (i giroconti non ne hanno)
+      const finalCategory =
+        shownCategory ?? (tx?.isTransfer ? null : income ? 'otherIncome' : 'other');
       if (tx) {
         if (categoryChanged) await recategorize(tx, shownCategory!, applySimilar);
         await updateTransaction(tx.id, {
           accountId: effectiveAccount,
           date,
           amountCents: signed,
-          categoryId: shownCategory,
+          categoryId: finalCategory,
           note,
         });
       } else {
@@ -88,7 +91,7 @@ export function TransactionSheet({ tx, onClose }: Props) {
           accountId: effectiveAccount,
           date,
           amountCents: signed,
-          categoryId: shownCategory,
+          categoryId: finalCategory,
           note,
         });
       }

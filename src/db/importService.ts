@@ -70,17 +70,17 @@ export async function previewImport(
   };
 }
 
-function autoCategory(
+/** Ogni movimento ha sempre una categoria: quella della regola, altrimenti «Altro» / «Altre entrate». */
+export function autoCategory(
   description: string,
   amountCents: number,
   rules: Rule[],
   categories: Map<string, Category>,
-): string | null {
+): string {
   const id = matchCategory(description, rules);
   const kind = id ? categories.get(id)?.kind : undefined;
-  if (!id || !kind) return null;
-  if (amountCents < 0 && kind === 'income') return null;
-  return id;
+  if (id && kind && !(amountCents < 0 && kind === 'income')) return id;
+  return amountCents < 0 ? 'other' : 'otherIncome';
 }
 
 export interface CommitOptions {

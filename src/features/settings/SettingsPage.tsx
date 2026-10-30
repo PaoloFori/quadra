@@ -1,12 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { NavRow } from '@/components/NavRow';
 import { Screen } from '@/components/Screen';
+import { BackupReminder } from '@/features/backup/BackupReminder';
 import { LanguageSetting } from './LanguageSetting';
 
 export default function SettingsPage() {
   const { t } = useTranslation();
   return (
     <Screen title={t('settings.title')}>
+      <BackupReminder />
       <h2 className="section-title">{t('settings.appearance')}</h2>
       <LanguageSetting />
       <h2 className="section-title">{t('settings.dataSection')}</h2>

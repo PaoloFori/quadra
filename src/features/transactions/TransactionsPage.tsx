@@ -1,5 +1,5 @@
 import { useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,8 @@ import {
   type TransactionFilter,
 } from '@/domain/filters';
 import type { Transaction } from '@/domain/types';
+import { useFormat } from '@/i18n/useFormat';
+import { filterFromParams } from './movementsLink';
 import { HistoryView } from './HistoryView';
 import { FilterSheet } from './FilterSheet';
 import { TransactionRow } from './TransactionRow';
@@ -21,14 +23,21 @@ import { TransactionSheet } from './TransactionSheet';
 
 const ROW_HEIGHT = 74;
 
+/** Si rimonta quando cambiano i parametri dell'indirizzo, così i filtri arrivano dai link di Home e Resoconti. */
 export default function TransactionsPage() {
+  const [params] = useSearchParams();
+  return <TransactionsView key={params.toString()} initial={filterFromParams(params)} />;
+}
+
+function TransactionsView({ initial }: { initial: TransactionFilter }) {
   const { t } = useTranslation();
+  const f = useFormat();
   const transactions = useLiveQuery(transactionsRepo.all, []);
   const accounts = useAccounts();
   const categories = useCategoryLookup();
   const accountById = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
 
-  const [filter, setFilter] = useState<TransactionFilter>(EMPTY_FILTER);
+  const [filter, setFilter] = useState<TransactionFilter>(initial);
   const deferredFilter = useDeferredValue(filter);
   const [view, setView] = useState<'list' | 'history'>('list');
   const [editing, setEditing] = useState<Transaction | 'new' | null>(null);
@@ -43,6 +52,17 @@ export default function TransactionsPage() {
     [rows],
   );
   const active = isFilterActive(filter);
+  const chips: Array<[string, string]> = [];
+  if (filter.categoryId !== undefined)
+    chips.push(['categoryId', categories.label(filter.categoryId)]);
+  if (filter.type)
+    chips.push(['type', t(filter.type === 'income' ? 'common.income' : 'common.expenses')]);
+  if (filter.accountId) chips.push(['accountId', accountById.get(filter.accountId)?.name ?? '']);
+  if (filter.from || filter.to)
+    chips.push([
+      'period',
+      `${filter.from ? f.date(filter.from) : '…'} – ${filter.to ? f.date(filter.to) : '…'}`,
+    ]);
 
   const listRef = useRef<HTMLDivElement>(null);
   const [listTop, setListTop] = useState(0);
@@ -116,6 +136,27 @@ export default function TransactionsPage() {
           {t('tx.filters')}
         </button>
       </div>
+
+      {view === 'list' && (
+        <div className="-mx-4 mb-2 flex gap-2 overflow-x-auto px-4">
+          {chips.map(([key, label]) => (
+            <button
+              key={key}
+              className="chip shrink-0 bg-accent/15 text-accent"
+              aria-label={`${t('tx.removeFilter')}: ${label}`}
+              onClick={() =>
+                setFilter(
+                  key === 'period'
+                    ? { ...filter, from: undefined, to: undefined }
+                    : { ...filter, [key]: undefined },
+                )
+              }
+            >
+              {label} ✕
+            </button>
+          ))}
+        </div>
+      )}
 
       {view === 'list' && active && (
         <p className="mb-2 flex items-center justify-between px-1 text-[13px] text-muted">

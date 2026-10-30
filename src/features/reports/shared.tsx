@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
 import { useCategoryLookup } from '@/db/hooks';
@@ -24,8 +25,34 @@ export function useSlices(byCategory: CategoryTotal[]): Slice[] {
   );
 }
 
+/** Contenuto di una riga: diventa un link solo se c'è una destinazione. */
+function RowLink({
+  to,
+  className,
+  children,
+}: {
+  to?: string;
+  className: string;
+  children: ReactNode;
+}) {
+  return to ? (
+    <Link to={to} className={className}>
+      {children}
+    </Link>
+  ) : (
+    <div className={className}>{children}</div>
+  );
+}
+
 /** Ciambella con il totale al centro + una riga per categoria con barra del peso sulle spese. */
-export function CategoryBreakdown({ byCategory }: { byCategory: CategoryTotal[] }) {
+export function CategoryBreakdown({
+  byCategory,
+  linkFor,
+}: {
+  byCategory: CategoryTotal[];
+  /** Se presente, ogni categoria porta ai suoi movimenti. */
+  linkFor?: (categoryId: string | null) => string;
+}) {
   const { t } = useTranslation();
   const f = useFormat();
   const lookup = useCategoryLookup();
@@ -39,7 +66,7 @@ export function CategoryBreakdown({ byCategory }: { byCategory: CategoryTotal[] 
       <ul className="mt-2">
         {byCategory.map((c, i) => (
           <li key={c.categoryId ?? 'none'} className="border-b border-line/60 py-2.5 last:border-0">
-            <div className="flex min-h-[28px] items-center gap-3">
+            <RowLink to={linkFor?.(c.categoryId)} className="flex min-h-[28px] items-center gap-3">
               <span
                 aria-hidden="true"
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[16px]"
@@ -50,7 +77,8 @@ export function CategoryBreakdown({ byCategory }: { byCategory: CategoryTotal[] 
               <span className="min-w-0 flex-1 truncate font-medium">{slices[i]?.name}</span>
               <span className="text-[13px] text-muted">{f.percent(c.share).replace('+', '')}</span>
               <Amount cents={-c.cents} signed={false} neutral className="font-semibold" />
-            </div>
+              {linkFor && <span className="text-muted">›</span>}
+            </RowLink>
             <div className="ml-11 mt-1.5 h-1.5 overflow-hidden rounded-full bg-line" aria-hidden>
               <div
                 className="h-full rounded-full"
@@ -88,10 +116,13 @@ export function SummaryHero({
   totals,
   title,
   subtitle,
+  links,
 }: {
   totals: Totals;
   title?: string;
   subtitle?: string;
+  /** Destinazioni delle due tessere entrate/uscite. */
+  links?: { income: string; expenses: string };
 }) {
   const { t } = useTranslation();
   const f = useFormat();
@@ -108,7 +139,11 @@ export function SummaryHero({
             ['expenses', totals.expenses, '↑'],
           ] as const
         ).map(([key, cents, arrow]) => (
-          <div key={key} className="rounded-2xl bg-white/15 p-3">
+          <RowLink
+            key={key}
+            to={links?.[key]}
+            className="block rounded-2xl bg-white/15 p-3 active:bg-white/25"
+          >
             <p className="flex items-center gap-1.5 text-[12px] font-medium text-white/85">
               <span
                 aria-hidden="true"
@@ -119,7 +154,7 @@ export function SummaryHero({
               {t(`common.${key}`)}
             </p>
             <p className="tabular mt-0.5 text-[17px] font-bold">{f.currency(cents)}</p>
-          </div>
+          </RowLink>
         ))}
       </div>
       {rate !== null && (

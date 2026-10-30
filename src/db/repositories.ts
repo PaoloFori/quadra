@@ -36,7 +36,12 @@ export const categoriesRepo = {
   put: (c: Category): Promise<string> => db.categories.put(c),
   remove: async (id: string): Promise<void> => {
     await db.transaction('rw', db.categories, db.transactions, db.rules, db.budgets, async () => {
-      await db.transactions.where('categoryId').equals(id).modify({ categoryId: null });
+      await db.transactions
+        .where('categoryId')
+        .equals(id)
+        .modify((tx) => {
+          tx.categoryId = tx.isTransfer ? null : tx.amountCents < 0 ? 'other' : 'otherIncome';
+        });
       await db.rules.where('categoryId').equals(id).delete();
       await db.budgets.where('categoryId').equals(id).delete();
       await db.categories.delete(id);
