@@ -52,6 +52,12 @@ Per provare tutto subito usa [samples/bbva-esempio.csv](samples/bbva-esempio.csv
 > I formati esatti degli export BBVA/Intesa possono cambiare nel tempo. Il riconoscimento si basa sulle intestazioni
 > (italiano/inglese/spagnolo); se qualcosa non torna c'è sempre la mappatura manuale.
 
+### Registri a mano in Excel
+
+`npm run convert-ledger -- spese2025.xlsx spese2026.xlsx` converte fogli mensili (colonne _spesa, data, banca, motivo_) in tre CSV
+in `private/` (ignorata da git): `spese-bbva.csv`, `spese-intesa.csv`, `spese-senza-banca.csv`. Verifica i totali di ogni foglio e
+riporta le date corrette. Poi importa ogni CSV scegliendo il conto corrispondente.
+
 ## Backup e ripristino (importante)
 
 **Rimuovere l'app dalla Home cancella tutti i dati** se non hai un backup. Safari può anche svuotare l'archiviazione dei siti non usati da molto tempo.

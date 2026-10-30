@@ -13,7 +13,8 @@
     "format": "prettier --write .",
     "typecheck": "tsc -b --noEmit",
     "samples": "tsx scripts/generate-samples.ts",
-    "icons": "tsx scripts/generate-icons.ts"
+    "icons": "tsx scripts/generate-icons.ts",
+    "convert-ledger": "tsx scripts/convert-ledger.ts"
   },
   "dependencies": {
     "dexie": "^4.4.7",
