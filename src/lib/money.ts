@@ -36,3 +36,11 @@ export function parseLocaleAmount(raw: string, decimal: ',' | '.'): number | nul
   const cents = toCents(Number(s));
   return negative ? -cents : cents;
 }
+
+/** Importo digitato dall'utente: accetta sia "12,50" sia "12.50" (la tastiera iOS segue la lingua). */
+export function parseUserAmount(raw: string): number | null {
+  const text = raw.trim();
+  if (text === '') return null;
+  const cents = parseLocaleAmount(text, text.includes(',') ? ',' : '.');
+  return cents === null || cents === 0 ? null : Math.abs(cents);
+}

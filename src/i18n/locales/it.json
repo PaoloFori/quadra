@@ -82,7 +82,15 @@
     "fees": "Commissioni",
     "other": "Altro",
     "salary": "Stipendio",
-    "otherIncome": "Altre entrate"
+    "otherIncome": "Altre entrate",
+    "title": "Categorie",
+    "add": "Nuova categoria",
+    "name": "Nome",
+    "icon": "Icona",
+    "kind": "Tipo",
+    "both": "Entrambe",
+    "color": "Colore",
+    "confirmDelete": "Eliminare la categoria? I movimenti collegati resteranno senza categoria."
   },
   "import": {
     "title": "Importa movimenti",
@@ -116,6 +124,36 @@
     }
   },
   "tx": {
-    "transfer": "Giroconto"
+    "transfer": "Giroconto",
+    "add": "Nuovo movimento",
+    "edit": "Modifica movimento",
+    "type": "Tipo",
+    "search": "Cerca movimenti",
+    "filters": "Filtri",
+    "resetFilters": "Azzera",
+    "from": "Dal",
+    "to": "Al",
+    "minAmount": "Importo minimo",
+    "maxAmount": "Importo massimo",
+    "results_one": "{{count}} risultato",
+    "results_other": "{{count}} risultati",
+    "noResults": "Nessun movimento corrisponde ai filtri.",
+    "confirmDelete": "Eliminare questo movimento?",
+    "applySimilar": "Applica anche ai movimenti simili senza categoria",
+    "markTransfer": "È un giroconto (escluso da entrate/uscite)"
+  },
+  "rules": {
+    "title": "Regole automatiche",
+    "add": "Nuova regola",
+    "contains": "Se la descrizione contiene",
+    "learned": "appresa",
+    "intro": "Le regole assegnano la categoria ai nuovi movimenti. Quando correggi una categoria, Quadra crea o aggiorna una regola."
+  },
+  "accounts": {
+    "title": "Conti",
+    "add": "Nuovo conto",
+    "name": "Nome",
+    "bank": "Banca",
+    "otherBank": "Altra banca"
   }
 }

@@ -32,7 +32,7 @@ export const TransactionRow = memo(function TransactionRow({
       </span>
       <span className="min-w-0 flex-1 text-left">
         <span className="line-clamp-1 text-[15px] font-medium">
-          {tx.description || categoryLabel}
+          {tx.note || tx.description || categoryLabel}
         </span>
         <span className="line-clamp-1 text-[13px] text-muted">
           {f.date(tx.date)} · {account?.name ?? tx.accountId} ·{' '}
