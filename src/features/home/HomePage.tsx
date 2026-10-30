@@ -120,6 +120,7 @@ export default function HomePage() {
               <h2 className="mb-2 font-semibold">{t('reports.byCategory')}</h2>
               <CategoryBreakdown
                 byCategory={byCategory}
+                collapsible
                 linkFor={(categoryId) => movementsLink({ categoryId })}
               />
             </section>

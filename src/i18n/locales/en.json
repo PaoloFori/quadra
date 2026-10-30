@@ -201,7 +201,10 @@
     "movements_one": "{{count}} transaction",
     "movements_other": "{{count}} transactions",
     "share": "Share of spending",
-    "average": "Avg/day"
+    "average": "Avg/day",
+    "showCategories_one": "Show the category",
+    "showCategories_other": "Show all {{count}} categories",
+    "hideCategories": "Hide categories"
   },
   "budget": {
     "add": "New budget",

@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
@@ -48,8 +48,11 @@ function RowLink({
 export function CategoryBreakdown({
   byCategory,
   linkFor,
+  collapsible = false,
 }: {
   byCategory: CategoryTotal[];
+  /** Mostra solo la ciambella; l'elenco delle categorie si apre con un tap. */
+  collapsible?: boolean;
   /** Se presente, ogni categoria porta ai suoi movimenti. */
   linkFor?: (categoryId: string | null) => string;
 }) {
@@ -57,13 +60,26 @@ export function CategoryBreakdown({
   const f = useFormat();
   const lookup = useCategoryLookup();
   const slices = useSlices(byCategory);
+  const [open, setOpen] = useState(!collapsible);
   if (byCategory.length === 0) return <p className="text-muted">{t('reports.noExpenses')}</p>;
   const total = byCategory.reduce((s, c) => s + c.cents, 0);
   const top = byCategory[0]?.cents ?? 1;
   return (
     <>
       <CategoryDonut slices={slices} centerLabel={t('reports.spentTotal')} centerValue={total} />
-      <ul className="mt-2">
+      {collapsible && (
+        <button
+          className="btn-secondary mt-1 w-full"
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+        >
+          {open
+            ? t('reports.hideCategories')
+            : t('reports.showCategories', { count: byCategory.length })}
+          <span aria-hidden="true">{open ? '▴' : '▾'}</span>
+        </button>
+      )}
+      <ul className="mt-2" hidden={!open}>
         {byCategory.map((c, i) => (
           <li key={c.categoryId ?? 'none'} className="border-b border-line/60 py-2.5 last:border-0">
             <RowLink to={linkFor?.(c.categoryId)} className="flex min-h-[28px] items-center gap-3">
