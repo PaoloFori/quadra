@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { filterByAccount, savingsRate, totalsByAccount } from '@/domain/reports/accounts';
 import { budgetStatuses, levelOf } from '@/domain/reports/budget';
 import { buildMonthReport } from '@/domain/reports/month';
 import { detectRecurring } from '@/domain/reports/recurring';
@@ -137,5 +138,41 @@ describe('budget', () => {
       [tx('2026-03-01', -8500)],
     );
     expect(s).toMatchObject({ spent: 8500, remaining: 1500, level: 'warning' });
+  });
+});
+
+describe('resoconti per conto', () => {
+  const mk = (accountId: string, amountCents: number, isTransfer = false): Transaction => ({
+    id: `${accountId}${amountCents}${isTransfer}`,
+    accountId,
+    date: '2026-03-10',
+    amountCents,
+    description: 'x',
+    categoryId: null,
+    hash: 'h',
+    isTransfer,
+    source: 'manual',
+    createdAt: 0,
+    updatedAt: 0,
+  });
+  const txs = [mk('a', 100000), mk('a', -20000), mk('b', -5000), mk('b', -7000, true)];
+
+  it('filtra per conto o li tiene tutti', () => {
+    expect(filterByAccount(txs, 'all')).toHaveLength(4);
+    expect(filterByAccount(txs, 'b')).toHaveLength(2);
+  });
+  it('totali per conto, giroconti esclusi', () => {
+    const rows = totalsByAccount(txs, [
+      { id: 'a', name: 'A', bank: 'other' },
+      { id: 'b', name: 'B', bank: 'other' },
+    ]);
+    expect(rows.map((r) => [r.income, r.expenses, r.net])).toEqual([
+      [100000, 20000, 80000],
+      [0, 5000, -5000],
+    ]);
+  });
+  it('quota di risparmio', () => {
+    expect(savingsRate({ income: 100000, expenses: 20000, net: 80000 })).toBe(0.8);
+    expect(savingsRate({ income: 0, expenses: 5, net: -5 })).toBeNull();
   });
 });

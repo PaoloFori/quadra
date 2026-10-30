@@ -55,7 +55,9 @@
     "budgetOver": "Superato di {{amount}}",
     "empty": "Ancora nessun movimento. Aggiungine uno o importa un file dalla tua banca.",
     "addFirst": "Aggiungi movimento",
-    "importFile": "Importa da banca"
+    "importFile": "Importa da banca",
+    "noAccountsTitle": "Benvenuto in Quadra",
+    "noAccountsBody": "Inizia aggiungendo i tuoi conti: puoi chiamarli come vuoi (banca, carta, contanti). Poi aggiungi i movimenti o importa un file."
   },
   "settings": {
     "title": "Impostazioni",
@@ -156,8 +158,14 @@
     "title": "Conti",
     "add": "Nuovo conto",
     "name": "Nome",
-    "bank": "Banca",
-    "otherBank": "Altra banca"
+    "intro": "Aggiungi i conti che vuoi tenere sotto controllo (banca, carta, contanti…). Servono per registrare i movimenti e importare i file della banca.",
+    "empty": "Non hai ancora nessun conto.",
+    "namePlaceholder": "Es. Conto principale",
+    "hasMovements": "Questo conto ha {{count}} movimenti: eliminali o spostali prima di cancellare il conto.",
+    "deleteConfirm": "Eliminare il conto «{{name}}»?",
+    "addFirst": "Aggiungi il tuo primo conto",
+    "needOne": "Prima di tutto aggiungi un conto",
+    "needOneBody": "Crea almeno un conto (per esempio il nome della tua banca): i movimenti si registrano e si importano sempre su un conto."
   },
   "reports": {
     "monthly": "Mensile",
@@ -181,7 +189,18 @@
     "noExpenses": "Nessuna spesa in questo periodo.",
     "same": "Invariato",
     "previous": "Periodo precedente",
-    "next": "Periodo successivo"
+    "next": "Periodo successivo",
+    "allAccounts": "Tutti i conti",
+    "byAccount": "Per conto",
+    "savings": "Risparmio",
+    "savedOfIncome": "{{pct}} delle entrate",
+    "spentTotal": "Spese",
+    "cumulative": "Saldo cumulato",
+    "accountFilter": "Conto",
+    "movements_one": "{{count}} movimento",
+    "movements_other": "{{count}} movimenti",
+    "share": "Peso sulle spese",
+    "average": "Media/giorno"
   },
   "budget": {
     "add": "Nuovo budget",
@@ -190,7 +209,16 @@
     "empty": "Nessun budget. Impostane uno per una categoria e tieni sotto controllo le spese.",
     "left": "Restano {{amount}}",
     "warning": "Attenzione: restano solo {{amount}}",
-    "over": "Superato di {{amount}}"
+    "over": "Superato di {{amount}}",
+    "what": "Cos'è un budget?",
+    "intro": "Un budget è la cifra massima che vuoi spendere ogni mese per una categoria, per esempio Ristoranti 150 €. Quadra ti mostra quanto hai già speso e quanto ti resta.",
+    "canExceed": "Non blocca nulla: puoi spendere anche di più. Quando superi il limite la barra diventa rossa e ti dico di quanto lo hai superato.",
+    "howTo": "Tocca «Nuovo budget», scegli la categoria e il limite mensile.",
+    "totalTitle": "Budget del mese",
+    "spentOf": "Spesi {{spent}} su {{limit}}",
+    "percentUsed": "{{pct}}% usato",
+    "exceeded_one": "{{count}} budget superato",
+    "exceeded_other": "{{count}} budget superati"
   },
   "backup": {
     "title": "Backup e ripristino",
@@ -273,7 +301,9 @@
   "balances": {
     "title": "I miei conti",
     "set": "Imposta saldi",
-    "hint": "Scrivi quanti soldi hai adesso su ogni conto. Quadra li aggiorna da sola con i movimenti che aggiungi o importi."
+    "hint": "Scrivi quanti soldi hai adesso su ogni conto. Quadra li aggiorna da sola con i movimenti che aggiungi o importi.",
+    "add": "Aggiungi conto",
+    "empty": "Nessun conto: aggiungine uno per vedere quanti soldi hai."
   },
   "history": {
     "last": "Ultima volta: {{date}}",

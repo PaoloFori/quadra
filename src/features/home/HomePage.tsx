@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
+import { SummaryHero } from '@/features/reports/shared';
 import { Screen } from '@/components/Screen';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { budgetsRepo, transactionsRepo } from '@/db/repositories';
@@ -38,7 +39,6 @@ export default function HomePage() {
     [budgets, monthTxs],
   );
   const accountById = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
-  const maxBar = Math.max(totals.income, totals.expenses, 1);
 
   return (
     <Screen
@@ -59,7 +59,12 @@ export default function HomePage() {
         <BalancesCard />
       </div>
 
-      {total === 0 ? (
+      {accounts.length === 0 ? (
+        <div className="card space-y-2 text-center">
+          <h2 className="text-lg font-bold">{t('home.noAccountsTitle')}</h2>
+          <p className="text-muted">{t('home.noAccountsBody')}</p>
+        </div>
+      ) : total === 0 ? (
         <div className="card space-y-3 text-center">
           <p className="text-muted">{t('home.empty')}</p>
           <button className="btn-primary w-full" onClick={() => setEditing('new')}>
@@ -71,34 +76,7 @@ export default function HomePage() {
         </div>
       ) : (
         <div className="space-y-3">
-          <section className="card" aria-label={t('home.monthBalance')}>
-            <p className="text-[13px] text-muted">{t('home.monthBalance')}</p>
-            <p className="text-4xl font-bold">
-              <Amount cents={totals.net} />
-            </p>
-          </section>
-
-          <section className="card space-y-3" aria-label={t('home.incomeVsExpenses')}>
-            {(
-              [
-                ['income', totals.income, 'bg-income'],
-                ['expenses', totals.expenses, 'bg-expense'],
-              ] as const
-            ).map(([key, cents, color]) => (
-              <div key={key}>
-                <div className="mb-1 flex justify-between text-[14px]">
-                  <span className="text-muted">{t(`common.${key}`)}</span>
-                  <Amount cents={cents} signed={false} neutral className="font-semibold" />
-                </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-line" aria-hidden="true">
-                  <div
-                    className={`h-full rounded-full ${color}`}
-                    style={{ width: `${(cents / maxBar) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </section>
+          <SummaryHero totals={totals} title={t('home.monthBalance')} />
 
           <Link to="/budget" className="card block" aria-label={t('home.budgetLeft')}>
             <p className="text-[13px] text-muted">{t('home.budgetLeft')}</p>

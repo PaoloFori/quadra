@@ -1,4 +1,4 @@
-import type { Account, Category, Rule } from './types';
+import type { Category, Rule } from './types';
 
 type CategorySeed = Pick<Category, 'id' | 'kind' | 'color' | 'icon'>;
 
@@ -26,23 +26,58 @@ export const DEFAULT_CATEGORIES: Category[] = SEEDS.map((s) => ({ ...s, builtin:
 const RULE_SEEDS: Array<[string, string[]]> = [
   [
     'groceries',
-    ['esselunga', 'coop', 'conad', 'carrefour', 'lidl', 'eurospin', 'supermercato', 'mercadona'],
+    [
+      'esselunga',
+      'coop',
+      'conad',
+      'carrefour',
+      'lidl',
+      'eurospin',
+      'supermercato',
+      'mercadona',
+      'spesa',
+      'auchan',
+      'pingo',
+      'continente',
+      'corte ingles',
+    ],
   ],
   [
     'restaurants',
-    ['ristorante', 'pizzeria', 'trattoria', 'osteria', 'mcdonald', 'bar ', 'restaurante'],
+    [
+      'ristorante',
+      'pizzeria',
+      'trattoria',
+      'osteria',
+      'mcdonald',
+      'bar ',
+      'restaurante',
+      'cena',
+      'pranzo',
+      'drink',
+      'birra',
+      'birre',
+      'spritz',
+      'gelato',
+      'sushi',
+      'aperitivo',
+      'coca cola',
+    ],
   ],
-  ['transport', ['trenitalia', 'italo', 'atm ', 'metro', 'taxi', 'uber', 'flixbus']],
+  ['transport', ['trenitalia', 'italo', 'atm ', 'metro', 'taxi', 'uber', 'flixbus', 'bolt']],
   ['fuel', ['eni station', 'q8', 'tamoil', 'ip station', 'benzina', 'carburante']],
   ['rent', ['affitto', 'locazione', 'alquiler']],
-  ['utilities', ['enel', 'a2a', 'hera', 'vodafone', 'tim ', 'wind tre', 'iliad', 'bolletta']],
+  [
+    'utilities',
+    ['enel', 'a2a', 'hera', 'vodafone', 'tim ', 'wind tre', 'iliad', 'bolletta', 'bollette'],
+  ],
   ['subscriptions', ['netflix', 'spotify', 'disney', 'prime video', 'icloud', 'youtube premium']],
-  ['health', ['farmacia', 'ospedale', 'medico', 'dentista']],
-  ['shopping', ['amazon', 'zara', 'h&m', 'ikea', 'zalando']],
-  ['leisure', ['cinema', 'teatro', 'steam', 'playstation']],
+  ['health', ['farmacia', 'ospedale', 'medico', 'dentista', 'visita']],
+  ['shopping', ['amazon', 'zara', 'h&m', 'ikea', 'zalando', 'tabacco']],
+  ['leisure', ['cinema', 'teatro', 'steam', 'playstation', 'eurobet', 'palestra', 'giochi']],
   ['salary', ['stipendio', 'emolumenti', 'salario', 'nomina']],
   ['cash', ['prelievo', 'bancomat atm', 'reintegro']],
-  ['fees', ['commissioni', 'canone conto', 'imposta di bollo']],
+  ['fees', ['commissioni', 'canone conto', 'imposta di bollo', 'fisco', 'f24']],
 ];
 
 export const DEFAULT_RULES: Rule[] = RULE_SEEDS.flatMap(([categoryId, patterns]) =>
@@ -53,8 +88,3 @@ export const DEFAULT_RULES: Rule[] = RULE_SEEDS.flatMap(([categoryId, patterns])
     origin: 'user' as const,
   })),
 );
-
-export const DEFAULT_ACCOUNTS: Account[] = [
-  { id: 'bbva', name: 'BBVA', bank: 'bbva' },
-  { id: 'intesa', name: 'Intesa Sanpaolo', bank: 'intesa' },
-];

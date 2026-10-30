@@ -7,7 +7,12 @@ import { Screen } from '@/components/Screen';
 import { Sheet } from '@/components/Sheet';
 import { useCategoryLookup } from '@/db/hooks';
 import { budgetsRepo, newId, transactionsRepo } from '@/db/repositories';
-import { budgetStatuses, type BudgetStatus } from '@/domain/reports/budget';
+import {
+  budgetStatuses,
+  levelOf,
+  totalRemaining,
+  type BudgetStatus,
+} from '@/domain/reports/budget';
 import type { Budget } from '@/domain/types';
 import { monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
@@ -115,6 +120,9 @@ export default function BudgetPage() {
   const statuses = useMemo(() => budgetStatuses(budgets, txs), [budgets, txs]);
   const taken = useMemo(() => new Set(budgets.map((b) => b.categoryId)), [budgets]);
 
+  const totals = useMemo(() => totalRemaining(statuses), [statuses]);
+  const exceeded = statuses.filter((s) => s.level === 'over').length;
+
   const message = (s: BudgetStatus): string =>
     s.level === 'over'
       ? t('budget.over', { amount: f.currency(-s.remaining) })
@@ -149,7 +157,35 @@ export default function BudgetPage() {
         </button>
       </div>
 
-      {statuses.length === 0 && <p className="card text-muted">{t('budget.empty')}</p>}
+      <section className="card mb-3 space-y-1.5 border border-accent/20 bg-accent/5">
+        <h2 className="font-semibold">{t('budget.what')}</h2>
+        <p className="text-[14px] text-muted">{t('budget.intro')}</p>
+        <p className="text-[14px] text-muted">{t('budget.canExceed')}</p>
+        {statuses.length === 0 && <p className="text-[14px] text-muted">{t('budget.howTo')}</p>}
+      </section>
+
+      {statuses.length > 0 && (
+        <section className="card mb-3" aria-label={t('budget.totalTitle')}>
+          <p className="text-[13px] text-muted">{t('budget.totalTitle')}</p>
+          <p className="mb-2 text-lg font-bold">
+            {t('budget.spentOf', {
+              spent: f.currency(totals.spent),
+              limit: f.currency(totals.limit),
+            })}
+          </p>
+          <ProgressBar
+            ratio={totals.limit === 0 ? 0 : totals.spent / totals.limit}
+            level={levelOf(totals.limit === 0 ? 0 : totals.spent / totals.limit)}
+            label={t('budget.totalTitle')}
+          />
+          {exceeded > 0 && (
+            <p className="mt-1.5 text-[13px] font-semibold text-expense">
+              ⛔ {t('budget.exceeded', { count: exceeded })}
+            </p>
+          )}
+        </section>
+      )}
+
       <ul className="space-y-3">
         {statuses.map((s) => {
           const cat = lookup.byId.get(s.budget.categoryId);
@@ -177,7 +213,7 @@ export default function BudgetPage() {
                   className={`mt-1.5 block text-[13px] ${s.level === 'over' ? 'font-semibold text-expense' : s.level === 'warning' ? 'font-semibold text-warn' : 'text-muted'}`}
                 >
                   {s.level === 'over' ? '⛔ ' : s.level === 'warning' ? '⚠️ ' : ''}
-                  {message(s)}
+                  {message(s)} · {t('budget.percentUsed', { pct: Math.round(s.ratio * 100) })}
                 </span>
               </button>
             </li>

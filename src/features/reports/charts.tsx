@@ -24,11 +24,19 @@ export interface Slice {
   color: string;
 }
 
-export function CategoryDonut({ slices }: { slices: Slice[] }) {
+export function CategoryDonut({
+  slices,
+  centerLabel,
+  centerValue,
+}: {
+  slices: Slice[];
+  centerLabel?: string;
+  centerValue?: number;
+}) {
   const f = useFormat();
   return (
     <div
-      className="h-52"
+      className="relative h-52"
       role="img"
       aria-label={slices.map((s) => `${s.name}: ${f.currency(s.value)}`).join(', ')}
     >
@@ -38,9 +46,10 @@ export function CategoryDonut({ slices }: { slices: Slice[] }) {
             data={slices}
             dataKey="value"
             nameKey="name"
-            innerRadius="62%"
-            outerRadius="95%"
-            paddingAngle={1}
+            innerRadius="66%"
+            outerRadius="96%"
+            paddingAngle={2}
+            cornerRadius={4}
             stroke="none"
           >
             {slices.map((s) => (
@@ -50,6 +59,12 @@ export function CategoryDonut({ slices }: { slices: Slice[] }) {
           <Tooltip formatter={(v) => f.currency(Number(v))} />
         </PieChart>
       </ResponsiveContainer>
+      {centerValue !== undefined && (
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-[12px] text-muted">{centerLabel}</span>
+          <span className="tabular text-xl font-bold">{f.currency(centerValue)}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -127,6 +142,31 @@ export function YearBars({ months }: { months: MonthTotals[] }) {
           />
           <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
         </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function CumulativeChart({ data }: { data: { name: string; value: number }[] }) {
+  const { t } = useTranslation();
+  const f = useFormat();
+  return (
+    <div className="h-48" role="img" aria-label={t('reports.cumulative')}>
+      <ResponsiveContainer>
+        <AreaChart data={data} margin={{ left: 16, right: 16, top: 8, bottom: 0 }}>
+          <XAxis dataKey="name" tickLine={false} axisLine={false} fontSize={10} interval={0} />
+          <YAxis hide />
+          <Tooltip formatter={(v) => f.currency(Number(v))} />
+          <Area
+            type="monotone"
+            dataKey="value"
+            name={t('reports.cumulative')}
+            stroke="rgb(var(--accent))"
+            fill="rgb(var(--accent))"
+            fillOpacity={0.15}
+            strokeWidth={2}
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

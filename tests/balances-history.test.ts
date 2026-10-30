@@ -22,6 +22,15 @@ const tx = (date: string, amountCents: number, over: Partial<Transaction> = {}):
   ...over,
 });
 
+describe('conti', () => {
+  it('un database nuovo non ha conti predefiniti ma ha le categorie', async () => {
+    await db.delete();
+    await db.open();
+    expect(await db.accounts.count()).toBe(0);
+    expect(await db.categories.count()).toBeGreaterThan(0);
+  });
+});
+
 describe('saldi', () => {
   it('saldo = apertura + movimenti', () => {
     const [a] = accountBalances(
@@ -36,6 +45,7 @@ describe('saldi', () => {
   it('impostare il saldo aggiorna il conto e resta coerente con nuovi movimenti', async () => {
     await db.delete();
     await db.open();
+    await db.accounts.put({ id: 'bbva', name: 'Conto A', bank: 'other' });
     await addManualTransaction({
       accountId: 'bbva',
       date: '2026-01-01',
