@@ -201,7 +201,10 @@
     "movements_one": "{{count}} movimento",
     "movements_other": "{{count}} movimenti",
     "share": "Peso sulle spese",
-    "average": "Media/giorno"
+    "average": "Media/giorno",
+    "showCategories_one": "Mostra la categoria",
+    "showCategories_other": "Mostra le {{count}} categorie",
+    "hideCategories": "Nascondi le categorie"
   },
   "budget": {
     "add": "Nuovo budget",

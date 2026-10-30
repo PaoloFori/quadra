@@ -27,6 +27,8 @@ interface Personal {
   categories: Category[];
   rules: Record<string, string[]>;
   transferDescriptions: string[];
+  /** Prefissi di descrizione → categoria, usati solo quando nessuna regola combacia. */
+  fallback?: Record<string, string>;
 }
 const PERSONAL_FILE = join('private', 'categorie-personali.json');
 const personal: Personal = existsSync(PERSONAL_FILE)
@@ -55,7 +57,12 @@ const transferTexts = new Set(personal.transferDescriptions.map(normalizeText));
 
 /** Una categoria per ogni movimento: regola, poi coerenza col segno, poi "Altro". */
 function categoryFor(description: string, cents: number): string {
-  const matched = matchCategory(description, rules);
+  const matched =
+    matchCategory(description, rules) ??
+    Object.entries(personal.fallback ?? {}).find(([prefix]) =>
+      normalizeText(description).startsWith(prefix),
+    )?.[1] ??
+    null;
   const kind = matched ? kindOf.get(matched) : undefined;
   if (matched && cents > 0 && kind === 'expense') return refundId; // soldi che tornano indietro
   if (matched && !(cents < 0 && kind === 'income')) return matched;
