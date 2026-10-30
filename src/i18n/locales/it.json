@@ -155,5 +155,38 @@
     "name": "Nome",
     "bank": "Banca",
     "otherBank": "Altra banca"
+  },
+  "reports": {
+    "monthly": "Mensile",
+    "yearly": "Annuale",
+    "summary": "Riepilogo",
+    "byCategory": "Per categoria",
+    "dailyTrend": "Andamento giornaliero",
+    "previousMonth": "Mese precedente",
+    "day": "Giorno",
+    "top5": "Top 5 spese",
+    "vsPrevious": "Rispetto al mese precedente",
+    "vsPreviousYear": "Rispetto all'anno precedente",
+    "recurring": "Abbonamenti ricorrenti",
+    "recurringMonths_one": "{{count}} mese",
+    "recurringMonths_other": "{{count}} mesi",
+    "byMonth": "Totale per mese",
+    "avgMonthly": "Spesa media mensile",
+    "mostExpensive": "Mese più caro",
+    "lightest": "Mese più leggero",
+    "noData": "Nessun movimento in questo periodo.",
+    "noExpenses": "Nessuna spesa in questo periodo.",
+    "same": "Invariato",
+    "previous": "Periodo precedente",
+    "next": "Periodo successivo"
+  },
+  "budget": {
+    "add": "Nuovo budget",
+    "edit": "Modifica budget",
+    "monthlyLimit": "Limite mensile",
+    "empty": "Nessun budget. Impostane uno per una categoria e tieni sotto controllo le spese.",
+    "left": "Restano {{amount}}",
+    "warning": "Attenzione: restano solo {{amount}}",
+    "over": "Superato di {{amount}}"
   }
 }
