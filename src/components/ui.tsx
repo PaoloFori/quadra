@@ -16,7 +16,7 @@ export function LabelCaps({ children, dot }: { children: ReactNode; dot?: string
   );
 }
 
-/** Tessera 40px con icona: neutra, o lime per le entrate. */
+/** Tessera 40px con icona: neutra, o blu tenue per le entrate. */
 export function IconTile({
   children,
   accent = false,

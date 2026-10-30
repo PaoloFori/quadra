@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tema «Dark Lime»: solo scuro. Il lime è l'unico colore forte (hero, pulsante principale, voce attiva). */
+/* Tema scuro con accento blu: unico colore forte (scheda principale, pulsante principale, voce attiva). */
 :root {
   --bg: 10 12 11;
   --card: 17 20 18;
@@ -13,10 +13,10 @@
   --faint: 110 118 111;
   --line: 43 48 44;
   --line-strong: 58 64 59;
-  --accent: 198 240 77;
-  --accent-subtle: 42 52 16;
-  --on-accent: 10 12 11;
-  --income: 212 247 107;
+  --accent: 108 168 255;
+  --accent-subtle: 20 38 72;
+  --on-accent: 6 12 26;
+  --income: 126 217 180;
   --expense: 255 122 102;
   --negative-subtle: 58 28 23;
   --warn: 233 199 125;
@@ -54,7 +54,7 @@ body {
   .card-row {
     @apply rounded-2xl border-[1.5px] border-line bg-card;
   }
-  /* L'unico blocco forte di una schermata: lime, bordo nero 2px e ombra piena. */
+  /* L'unico blocco forte di una schermata: blu, bordo nero 2px e ombra piena. */
   .hero {
     @apply rounded-[20px] border-2 border-black bg-accent p-5 text-on-accent;
     box-shadow: 5px 5px 0 #000;

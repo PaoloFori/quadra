@@ -30,7 +30,7 @@ const TABS = [
   },
 ] as const;
 
-/** Barra flottante a pillola: superficie rialzata, bordo sottile, voce attiva su pillola lime. */
+/** Barra flottante a pillola: superficie rialzata, bordo sottile, voce attiva su pillola blu. */
 export function TabBar() {
   const { t } = useTranslation();
   return (
