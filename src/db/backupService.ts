@@ -5,7 +5,7 @@ import { db } from './database';
 import { getSettings, setSetting } from './settings';
 
 export async function readAllData(): Promise<BackupData> {
-  const [accounts, transactions, categories, rules, budgets, profiles, settings] =
+  const [accounts, transactions, categories, rules, budgets, profiles, recurrences, settings] =
     await Promise.all([
       db.accounts.toArray(),
       db.transactions.toArray(),
@@ -13,12 +13,22 @@ export async function readAllData(): Promise<BackupData> {
       db.rules.toArray(),
       db.budgets.toArray(),
       db.profiles.toArray(),
+      db.recurrences.toArray(),
       getSettings(),
     ]);
   // lastBackupAt descrive questo dispositivo, non i dati: non viaggia nei backup.
   const { lastBackupAt: _ignored, ...portable } = settings;
   void _ignored;
-  return { accounts, transactions, categories, rules, budgets, profiles, settings: portable };
+  return {
+    accounts,
+    transactions,
+    categories,
+    rules,
+    budgets,
+    profiles,
+    recurrences,
+    settings: portable,
+  };
 }
 
 export async function exportBackup(range: BackupRange): Promise<BackupFile> {
@@ -41,6 +51,7 @@ async function writeAll(data: BackupData): Promise<void> {
   await db.rules.bulkPut(data.rules);
   await db.budgets.bulkPut(data.budgets);
   await db.profiles.bulkPut(data.profiles);
+  await db.recurrences.bulkPut(data.recurrences);
   await db.settings.bulkPut(Object.entries(data.settings).map(([key, value]) => ({ key, value })));
 }
 
@@ -54,6 +65,7 @@ export async function restoreBackup(file: BackupFile, mode: RestoreMode): Promis
     db.rules,
     db.budgets,
     db.profiles,
+    db.recurrences,
     db.settings,
   ];
   await db.transaction('rw', tables, async () => {

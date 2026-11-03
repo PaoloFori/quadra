@@ -1,5 +1,13 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { Account, BankProfile, Budget, Category, Rule, Transaction } from '@/domain/types';
+import type {
+  Account,
+  BankProfile,
+  Budget,
+  Category,
+  Recurrence,
+  Rule,
+  Transaction,
+} from '@/domain/types';
 import { DEFAULT_CATEGORIES, DEFAULT_RULES } from '@/domain/defaults';
 
 export interface SettingRow {
@@ -14,6 +22,7 @@ export class QuadraDb extends Dexie {
   rules!: EntityTable<Rule, 'id'>;
   budgets!: EntityTable<Budget, 'id'>;
   profiles!: EntityTable<BankProfile, 'id'>;
+  recurrences!: EntityTable<Recurrence, 'id'>;
   settings!: EntityTable<SettingRow, 'key'>;
 
   constructor(name = 'quadra') {
@@ -41,6 +50,13 @@ export class QuadraDb extends Dexie {
           await tx.table('accounts').delete(id);
         }
       });
+
+    // v3: ricorrenze (stipendio, affitto, abbonamenti…) e indice per trovare i movimenti che ne nascono.
+    this.version(3).stores({
+      transactions:
+        'id, accountId, date, [accountId+date], categoryId, hash, transferGroupId, recurrenceId',
+      recurrences: 'id, nextDue',
+    });
 
     this.on('populate', (tx) => {
       void tx.table('categories').bulkAdd(DEFAULT_CATEGORIES);

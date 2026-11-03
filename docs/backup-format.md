@@ -3,7 +3,7 @@
 ```json
 {
   "app": "quadra",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "createdAt": "2026-10-30T09:00:00.000Z",
   "range": { "kind": "all" },
   "checksum": "sha256:<hex>",
@@ -40,3 +40,8 @@ più nuova dell'app viene rifiutata con messaggio chiaro.
 ## Export CSV
 
 Colonne: `date,account,amount,description,category,note,transfer` — importo decimale con punto, `category` = id stabile.
+
+## Versioni
+
+- **1**: prima versione.
+- **2**: aggiunge `recurrences` (movimenti che si ripetono) e, nei movimenti, i campi facoltativi `recurrenceId` e `dueDate`. I backup v1 si importano con `recurrences: []`.

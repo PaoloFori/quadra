@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { CategoryPicker } from '@/components/CategoryPicker';
 import { Sheet } from '@/components/Sheet';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
-import { rulesRepo } from '@/db/repositories';
+import { recurrencesRepo, rulesRepo } from '@/db/repositories';
+import { autoRegisterDue, makeRecurring } from '@/db/recurrenceService';
 import {
   addManualTransaction,
   deleteTransaction,
@@ -17,7 +18,8 @@ import { similarTransactions } from '@/domain/history';
 import { Amount } from '@/components/Amount';
 import { transactionsRepo } from '@/db/repositories';
 import { matchCategory } from '@/domain/rules';
-import type { Transaction } from '@/domain/types';
+import { FREQUENCIES } from '@/domain/recurrence';
+import type { Frequency, Transaction } from '@/domain/types';
 import { todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
@@ -56,6 +58,13 @@ export function TransactionSheet({ tx, onClose }: Props) {
   const [date, setDate] = useState(tx?.date ?? todayIso());
   const [accountId, setAccountId] = useState(tx?.accountId ?? rememberedAccount() ?? '');
   const [applySimilar, setApplySimilar] = useState(true);
+  const [frequency, setFrequency] = useState<Frequency | ''>('');
+  const [remind, setRemind] = useState(true);
+  const recurrence = useLiveQuery(
+    () => (tx?.recurrenceId ? recurrencesRepo.all() : Promise.resolve([])),
+    [tx?.recurrenceId],
+    [],
+  ).find((r) => r.id === tx?.recurrenceId);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -86,14 +95,23 @@ export function TransactionSheet({ tx, onClose }: Props) {
           categoryId: finalCategory,
           note,
         });
+        if (frequency && !tx.recurrenceId) {
+          const updated = await transactionsRepo.get(tx.id);
+          if (updated) await makeRecurring(updated, { frequency, remind });
+          await autoRegisterDue(todayIso());
+        }
       } else {
-        await addManualTransaction({
+        const created = await addManualTransaction({
           accountId: effectiveAccount,
           date,
           amountCents: signed,
           categoryId: finalCategory,
           note,
         });
+        if (frequency) {
+          await makeRecurring(created, { frequency, remind });
+          await autoRegisterDue(todayIso());
+        }
       }
       try {
         localStorage.setItem(LAST_ACCOUNT_KEY, effectiveAccount);
@@ -243,11 +261,57 @@ export function TransactionSheet({ tx, onClose }: Props) {
         </div>
       </div>
 
+      {tx?.recurrenceId ? (
+        <p className="rounded-xl bg-tile p-3 text-[13px] text-muted">
+          🔁 {t('recurrence.partOf', { title: recurrence?.title ?? '…' })}{' '}
+          <Link to="/settings/recurrences" className="text-accent" onClick={onClose}>
+            {t('recurrence.manage')}
+          </Link>
+        </p>
+      ) : (
+        !tx?.isTransfer && (
+          <div className="space-y-2">
+            <div>
+              <label className="label" htmlFor="tx-repeat">
+                {t('recurrence.repeat')}
+              </label>
+              <select
+                id="tx-repeat"
+                className="input"
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value as Frequency | '')}
+              >
+                <option value="">{t('recurrence.never')}</option>
+                {FREQUENCIES.map((fr) => (
+                  <option key={fr} value={fr}>
+                    {t(`recurrence.freq.${fr}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {frequency && (
+              <label className="flex min-h-[44px] items-start gap-3">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-5 w-5 accent-[rgb(var(--accent))]"
+                  checked={remind}
+                  onChange={(e) => setRemind(e.target.checked)}
+                />
+                <span>
+                  <span className="block">{t('recurrence.remind')}</span>
+                  <span className="block text-[12px] text-muted">{t('recurrence.remindHint')}</span>
+                </span>
+              </label>
+            )}
+          </div>
+        )
+      )}
+
       {tx && (
         <label className="flex min-h-[44px] items-center gap-3">
           <input
             type="checkbox"
-            className="h-5 w-5"
+            className="h-5 w-5 accent-[rgb(var(--accent))]"
             checked={tx.isTransfer}
             onChange={(e) => void setTransfer(tx, e.target.checked).then(onClose)}
           />

@@ -130,6 +130,7 @@ const backup = await createBackup(
     rules,
     budgets: [],
     profiles: [],
+    recurrences: [],
     settings: { language: 'auto' },
   },
   { kind: 'all' },

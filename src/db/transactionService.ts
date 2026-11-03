@@ -12,11 +12,15 @@ export interface ManualInput {
   amountCents: number;
   categoryId: string | null;
   note: string;
+  /** Se il movimento nasce da una scadenza di una ricorrenza. */
+  recurrenceId?: string;
+  dueDate?: string;
 }
 
-export async function addManualTransaction(input: ManualInput): Promise<Transaction> {
+/** Costruisce il movimento (con il suo hash) senza scriverlo: serve prima di aprire una transazione del database. */
+export async function buildManualTransaction(input: ManualInput): Promise<Transaction> {
   const now = Date.now();
-  const tx: Transaction = {
+  return {
     id: newId(),
     accountId: input.accountId,
     date: input.date,
@@ -33,9 +37,14 @@ export async function addManualTransaction(input: ManualInput): Promise<Transact
     ),
     isTransfer: false,
     source: 'manual',
+    ...(input.recurrenceId ? { recurrenceId: input.recurrenceId, dueDate: input.dueDate } : {}),
     createdAt: now,
     updatedAt: now,
   };
+}
+
+export async function addManualTransaction(input: ManualInput): Promise<Transaction> {
+  const tx = await buildManualTransaction(input);
   await db.transactions.add(tx);
   return tx;
 }

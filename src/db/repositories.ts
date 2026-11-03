@@ -1,4 +1,12 @@
-import type { Account, BankProfile, Budget, Category, Rule, Transaction } from '@/domain/types';
+import type {
+  Account,
+  BankProfile,
+  Budget,
+  Category,
+  Rule,
+  Transaction,
+  Recurrence,
+} from '@/domain/types';
 import { db } from './database';
 
 export const newId = (): string => crypto.randomUUID();
@@ -47,6 +55,12 @@ export const categoriesRepo = {
       await db.categories.delete(id);
     });
   },
+};
+
+export const recurrencesRepo = {
+  all: (): Promise<Recurrence[]> => db.recurrences.toArray(),
+  put: (r: Recurrence): Promise<string> => db.recurrences.put(r),
+  remove: (id: string): Promise<void> => db.recurrences.delete(id),
 };
 
 export const rulesRepo = {

@@ -69,6 +69,12 @@ riporta le date corrette. Poi importa ogni CSV scegliendo il conto corrispondent
 Per fare tutto in un colpo: `npm run build-backup` crea `private/quadra-backup-spese.json` (conti, movimenti, categorie e giroconti già pronti).
 In Quadra: _Impostazioni → Backup → Ripristina da file → Sostituisci tutto_.
 
+## Ricorrenze
+
+Stipendio, affitto, abbonamenti: nel «+» (o in _Impostazioni → Ricorrenze_) scegli ogni quanto si ripete (settimana, 2 settimane, mese, 3 mesi, anno).
+Con **Avvisami** attivo, alla scadenza compare in Home e ti chiede di confermare (importo e data si possono cambiare per quella volta sola);
+con l'avviso spento viene registrata da sola. Non ci sono notifiche a app chiusa: i promemoria si vedono quando apri Quadra.
+
 ## Backup e ripristino (importante)
 
 **Rimuovere l'app dalla Home cancella tutti i dati** se non hai un backup. Safari può anche svuotare l'archiviazione dei siti non usati da molto tempo.

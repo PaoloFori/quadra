@@ -7,6 +7,7 @@ import { LockProvider } from '@/features/security/LockProvider';
 const HomePage = lazy(() => import('@/features/home/HomePage'));
 const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'));
 const CategoryPage = lazy(() => import('@/features/category/CategoryPage'));
+const RecurrencesPage = lazy(() => import('@/features/recurrences/RecurrencesPage'));
 const BudgetPage = lazy(() => import('@/features/budgets/BudgetPage'));
 const ImportPage = lazy(() => import('@/features/import/ImportPage'));
 const CategoriesPage = lazy(() => import('@/features/settings/CategoriesPage'));
@@ -29,6 +30,7 @@ export function App() {
               <Route path="/category/:id" element={<CategoryPage />} />
               <Route path="/budget" element={<BudgetPage />} />
               <Route path="/settings/categories" element={<CategoriesPage />} />
+              <Route path="/settings/recurrences" element={<RecurrencesPage />} />
               <Route path="/settings/rules" element={<RulesPage />} />
               <Route path="/settings/accounts" element={<AccountsPage />} />
               <Route path="/settings/backup" element={<BackupPage />} />

@@ -28,6 +28,9 @@ export interface Transaction {
   isTransfer: boolean;
   transferGroupId?: string;
   source: 'manual' | 'import';
+  /** Ricorrenza da cui nasce (se registrato da una scadenza) e la data di scadenza che copre. */
+  recurrenceId?: string;
+  dueDate?: IsoDate;
   createdAt: number;
   updatedAt: number;
 }
@@ -95,6 +98,28 @@ export interface Settings {
   lastYearEndReminder?: number;
 }
 
+export type Frequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
+
+/** Movimento che si ripete (stipendio, affitto, abbonamenti…) con la sua prossima scadenza. */
+export interface Recurrence {
+  id: string;
+  /** Nome mostrato e nota dei movimenti generati. */
+  title: string;
+  accountId: string;
+  /** Importo abituale, con segno: negativo = uscita. */
+  amountCents: number;
+  categoryId: string | null;
+  frequency: Frequency;
+  /** Prossima scadenza non ancora registrata né saltata. */
+  nextDue: IsoDate;
+  /** Giorno del mese di partenza: tiene il 31 anche dopo un febbraio. */
+  anchorDay: number;
+  /** Vero: l'app avvisa e chiede conferma. Falso: registra da sola alla scadenza. */
+  remind: boolean;
+  active: boolean;
+  createdAt: number;
+}
+
 export interface BackupData {
   accounts: Account[];
   transactions: Transaction[];
@@ -102,5 +127,6 @@ export interface BackupData {
   rules: Rule[];
   budgets: Budget[];
   profiles: BankProfile[];
+  recurrences: Recurrence[];
   settings: Settings;
 }

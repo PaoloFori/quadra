@@ -14,6 +14,7 @@ export interface RestorePreview {
   budgets: TableDiff;
   accounts: TableDiff;
   profiles: TableDiff;
+  recurrences: TableDiff;
 }
 
 type Keyed = { id: string };
@@ -47,6 +48,7 @@ export function previewMerge(local: BackupData, incoming: BackupData): RestorePr
     budgets: diffTable(local.budgets, incoming.budgets),
     accounts: diffTable(local.accounts, incoming.accounts),
     profiles: diffTable(local.profiles, incoming.profiles),
+    recurrences: diffTable(local.recurrences, incoming.recurrences),
   };
 }
 
@@ -64,6 +66,7 @@ export function missingData(local: BackupData, incoming: BackupData): BackupData
     rules: onlyNew(local.rules, incoming.rules),
     budgets: onlyNew(local.budgets, incoming.budgets),
     profiles: onlyNew(local.profiles, incoming.profiles),
+    recurrences: onlyNew(local.recurrences, incoming.recurrences),
     settings: local.settings,
   };
 }
@@ -78,6 +81,7 @@ export function mergeData(local: BackupData, incoming: BackupData): BackupData {
     rules: [...local.rules, ...extra.rules],
     budgets: [...local.budgets, ...extra.budgets],
     profiles: [...local.profiles, ...extra.profiles],
+    recurrences: [...local.recurrences, ...extra.recurrences],
     settings: local.settings,
   };
 }

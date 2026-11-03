@@ -14,6 +14,7 @@ import { savingsRate } from '@/domain/reports/accounts';
 import { expensesByCategory, totalsOf } from '@/domain/reports/totals';
 import type { Transaction } from '@/domain/types';
 import { BalancesCard } from '@/features/accounts/BalancesCard';
+import { DueCard } from '@/features/recurrences/DueCard';
 import { CategoryBreakdown, DOT } from '@/features/reports/shared';
 import { useWealth } from '@/features/reports/useWealth';
 import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
@@ -51,6 +52,7 @@ export default function HomePage() {
   return (
     <Screen title={t('home.overview')} eyebrow={f.month(month)}>
       <BalancesCard />
+      <DueCard />
 
       {accounts.length === 0 ? (
         <div className="card space-y-2 text-center">

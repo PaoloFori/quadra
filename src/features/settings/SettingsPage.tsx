@@ -17,6 +17,7 @@ export default function SettingsPage() {
       <div className="card !p-2">
         <NavRow icon="💾" to="/settings/backup" label={t('backup.title')} />
         <NavRow icon="🔒" to="/settings/security" label={t('security.title')} />
+        <NavRow icon="🔁" to="/settings/recurrences" label={t('recurrence.title')} />
         <NavRow icon="🏦" to="/settings/accounts" label={t('accounts.title')} />
         <NavRow icon="🏷️" to="/settings/categories" label={t('categories.title')} />
         <NavRow icon="⚙️" to="/settings/rules" label={t('rules.title')} />

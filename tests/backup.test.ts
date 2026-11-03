@@ -33,6 +33,7 @@ const normalize = (d: BackupData): BackupData => ({
   rules: byId(d.rules),
   budgets: byId(d.budgets),
   profiles: byId(d.profiles),
+  recurrences: byId(d.recurrences),
 });
 
 async function seed(): Promise<void> {
@@ -53,6 +54,19 @@ async function seed(): Promise<void> {
     icon: '🐶',
     builtin: false,
     name: 'Cane',
+  });
+  await db.recurrences.put({
+    id: 'rec1',
+    title: 'Stipendio',
+    accountId: 'modo1',
+    amountCents: 150000,
+    categoryId: 'salary',
+    frequency: 'monthly',
+    nextDue: '2026-10-27',
+    anchorDay: 27,
+    remind: true,
+    active: true,
+    createdAt: 0,
   });
   await setSetting('language', 'en');
 }
@@ -76,6 +90,7 @@ describe('backup: esporta → cancella tutto → reimporta → dati identici', (
         db.budgets,
         db.accounts,
         db.profiles,
+        db.recurrences,
         db.settings,
       ].map((t) => t.clear()),
     );
@@ -84,6 +99,7 @@ describe('backup: esporta → cancella tutto → reimporta → dati identici', (
     await restoreBackup(await parseBackup(json), 'replace');
     expect(normalize(await readAllData())).toEqual(before);
     expect(before.settings.language).toBe('en');
+    expect(before.recurrences).toHaveLength(1);
     expect(before.transactions.length).toBeGreaterThan(200);
   });
 

@@ -1,6 +1,6 @@
 import type { BackupData } from '../types';
 
-export const CURRENT_SCHEMA_VERSION = 1;
+export const CURRENT_SCHEMA_VERSION = 2;
 
 type Raw = Record<string, unknown>;
 type Migration = (data: Raw) => Raw;
@@ -10,7 +10,10 @@ type Migration = (data: Raw) => Raw;
  * Per cambiare il formato: incrementare CURRENT_SCHEMA_VERSION e aggiungere qui la funzione pura.
  * Esempio: `1: (d) => ({ ...d, budgets: (d.budgets as Raw[]).map(...) })`
  */
-export const MIGRATIONS: Record<number, Migration> = {};
+export const MIGRATIONS: Record<number, Migration> = {
+  // v2: aggiunte le ricorrenze
+  1: (d) => ({ ...d, recurrences: d.recurrences ?? [] }),
+};
 
 const EMPTY: BackupData = {
   accounts: [],
@@ -19,6 +22,7 @@ const EMPTY: BackupData = {
   rules: [],
   budgets: [],
   profiles: [],
+  recurrences: [],
   settings: { language: 'auto' },
 };
 

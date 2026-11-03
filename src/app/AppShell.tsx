@@ -2,6 +2,8 @@ import { Suspense, useEffect, useRef, useState, type ReactNode, type TouchEvent 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { TabBar } from '@/components/TabBar';
+import { autoRegisterDue } from '@/db/recurrenceService';
+import { todayIso } from '@/lib/dates';
 import { TransactionSheet } from '@/features/transactions/TransactionSheet';
 import { ScrollContext } from './scrollContext';
 import { SWIPE_TABS, tabIndexOf } from './tabs';
@@ -43,6 +45,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
   }, [pathname]);
+
+  // le ricorrenze senza avviso si registrano da sole all'apertura e quando si torna sull'app
+  useEffect(() => {
+    const run = (): void => void autoRegisterDue(todayIso()).catch(console.error);
+    run();
+    const onVisible = (): void => {
+      if (document.visibilityState === 'visible') run();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, []);
 
   const onTouchStart = (e: TouchEvent<HTMLDivElement>): void => {
     const p = e.touches[0];
