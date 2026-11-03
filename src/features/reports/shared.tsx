@@ -52,8 +52,30 @@ export function RowLink({
   );
 }
 
+const VARIANT_KEY = 'quadra.chartVariant';
+
+/** Ciambella o torta: la scelta resta memorizzata sul dispositivo e vale per tutte le schermate. */
+function useChartVariant() {
+  const [variant, set] = useState<'donut' | 'pie'>(() => {
+    try {
+      return localStorage.getItem(VARIANT_KEY) === 'pie' ? 'pie' : 'donut';
+    } catch {
+      return 'donut';
+    }
+  });
+  const setVariant = (v: 'donut' | 'pie') => {
+    set(v);
+    try {
+      localStorage.setItem(VARIANT_KEY, v);
+    } catch {
+      /* ignora */
+    }
+  };
+  return [variant, setVariant] as const;
+}
+
 /**
- * Ciambella con le categorie principali a destra; l'elenco completo (con barre) è sempre aperto,
+ * Ciambella o torta con le categorie principali a destra; l'elenco completo (con barre) è sempre aperto,
  * oppure a tendina con `collapsible`. Ogni categoria porta ai suoi movimenti se c'è `linkFor`.
  */
 export function CategoryBreakdown({
@@ -70,13 +92,26 @@ export function CategoryBreakdown({
   const lookup = useCategoryLookup();
   const slices = useSlices(byCategory);
   const [open, setOpen] = useState(!collapsible);
+  const [variant, setVariant] = useChartVariant();
   if (byCategory.length === 0) return <p className="text-muted">{t('reports.noExpenses')}</p>;
   const top = byCategory[0]?.cents ?? 1;
 
   return (
     <div className="space-y-3">
+      <div className="flex gap-2" role="group" aria-label={t('reports.chartType')}>
+        {(['donut', 'pie'] as const).map((v) => (
+          <button
+            key={v}
+            className={variant === v ? 'chip chip-on' : 'chip'}
+            aria-pressed={variant === v}
+            onClick={() => setVariant(v)}
+          >
+            {t(`reports.chart_${v}`)}
+          </button>
+        ))}
+      </div>
       <div className="flex items-center gap-5">
-        <DonutChart slices={slices} centerLabel={t('reports.spentTotal')} />
+        <DonutChart slices={slices} centerLabel={t('reports.spentTotal')} variant={variant} />
         <ul className="min-w-0 flex-1 space-y-1">
           {byCategory.slice(0, 5).map((c, i) => (
             <li key={c.categoryId ?? 'none'}>

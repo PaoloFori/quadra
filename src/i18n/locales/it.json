@@ -219,7 +219,10 @@
     "avgDay": "Spesa media al giorno",
     "avgMonth": "Spesa media al mese",
     "allCategories": "Tutte le categorie",
-    "month": "Mese"
+    "month": "Mese",
+    "chartType": "Tipo di grafico",
+    "chart_donut": "Ciambella",
+    "chart_pie": "Torta"
   },
   "budget": {
     "add": "Nuovo budget",

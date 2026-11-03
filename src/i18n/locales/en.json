@@ -219,7 +219,10 @@
     "avgDay": "Average spending per day",
     "avgMonth": "Average spending per month",
     "allCategories": "All categories",
-    "month": "Month"
+    "month": "Month",
+    "chartType": "Chart type",
+    "chart_donut": "Donut",
+    "chart_pie": "Pie"
   },
   "budget": {
     "add": "New budget",
