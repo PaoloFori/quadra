@@ -13,7 +13,7 @@ interface Props {
 export function Screen({ title, eyebrow, subtitle, action, children }: Props) {
   return (
     <main
-      className="mx-auto max-w-xl px-6 pb-36"
+      className="mx-auto max-w-xl px-6 pb-8"
       style={{ paddingTop: 'max(env(safe-area-inset-top), 12px)' }}
     >
       <header className="flex min-h-[44px] items-center justify-between gap-3 pb-4 pt-3">

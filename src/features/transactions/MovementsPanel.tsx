@@ -1,16 +1,15 @@
 import { useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
-import { Screen } from '@/components/Screen';
+import { useScrollElement } from '@/app/scrollContext';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
 import { filterTransactions, isFilterActive, type TransactionFilter } from '@/domain/filters';
 import type { IsoDate, Transaction } from '@/domain/types';
 import { useFormat } from '@/i18n/useFormat';
-import { filterFromParams } from './movementsLink';
 import { HistoryView } from './HistoryView';
 import { FilterSheet } from './FilterSheet';
 import { TransactionRow } from './TransactionRow';
@@ -41,15 +40,10 @@ function withDayHeaders(rows: readonly Transaction[]): Item[] {
   return items;
 }
 
-/** Si rimonta quando cambiano i parametri dell'indirizzo, così i filtri arrivano dai link di Home e Resoconti. */
-export default function TransactionsPage() {
-  const [params] = useSearchParams();
-  return <TransactionsView key={params.toString()} initial={filterFromParams(params)} />;
-}
-
 const TYPES = [undefined, 'income', 'expense'] as const;
 
-function TransactionsView({ initial }: { initial: TransactionFilter }) {
+/** Elenco dei movimenti con ricerca, filtri e storico per categoria (una scheda dei Resoconti). */
+export function MovementsPanel({ initial }: { initial: TransactionFilter }) {
   const { t } = useTranslation();
   const f = useFormat();
   const transactions = useLiveQuery(transactionsRepo.all, []);
@@ -85,11 +79,24 @@ function TransactionsView({ initial }: { initial: TransactionFilter }) {
       `${filter.from ? f.date(filter.from) : '…'} – ${filter.to ? f.date(filter.to) : '…'}`,
     ]);
 
+  const scrollRef = useScrollElement();
   const listRef = useRef<HTMLDivElement>(null);
   const [listTop, setListTop] = useState(0);
   const hasRows = rows.length > 0;
-  useLayoutEffect(() => setListTop(listRef.current?.offsetTop ?? 0), [hasRows, chips.length]);
-  const virtualizer = useWindowVirtualizer({
+  // posizione dell'elenco dentro l'area che scorre
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    const scroller = scrollRef.current;
+    if (list && scroller)
+      setListTop(
+        list.getBoundingClientRect().top -
+          scroller.getBoundingClientRect().top +
+          scroller.scrollTop,
+      );
+  }, [hasRows, chips.length, active, scrollRef]);
+  // eslint-disable-next-line react-hooks/incompatible-library -- l'elenco virtualizzato non viene memoizzato
+  const virtualizer = useVirtualizer({
+    getScrollElement: () => scrollRef.current,
     count: items.length,
     estimateSize: (i) => (items[i]?.kind === 'day' ? 44 : 80),
     overscan: 12,
@@ -97,19 +104,7 @@ function TransactionsView({ initial }: { initial: TransactionFilter }) {
   });
 
   return (
-    <Screen
-      title={t('nav.transactions')}
-      subtitle={t('tx.subtitle')}
-      action={
-        <button
-          className="btn-primary !min-h-[44px] !rounded-full"
-          aria-label={t('tx.add')}
-          onClick={() => setEditing('new')}
-        >
-          + {t('home.newTx')}
-        </button>
-      }
-    >
+    <>
       <div className="flex gap-2" role="group" aria-label={t('nav.transactions')}>
         {(['list', 'history'] as const).map((v) => (
           <button
@@ -282,6 +277,6 @@ function TransactionsView({ initial }: { initial: TransactionFilter }) {
       {filtersOpen && (
         <FilterSheet value={filter} onApply={setFilter} onClose={() => setFiltersOpen(false)} />
       )}
-    </Screen>
+    </>
   );
 }

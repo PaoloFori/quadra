@@ -233,6 +233,7 @@ body,
 
 body {
   @apply bg-bg text-ink antialiased;
+  overflow: hidden;
   font-family:
     'Geist Variable',
     -apple-system,
@@ -313,6 +314,34 @@ body {
 }
 .animate-sheet {
   animation: sheet-in 0.2s ease-out;
+}
+
+/* Cambio pagina: entra da destra andando avanti, da sinistra tornando indietro. */
+@keyframes slide-from-right {
+  from {
+    transform: translateX(28px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes slide-from-left {
+  from {
+    transform: translateX(-28px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.slide-from-right {
+  animation: slide-from-right 0.22s ease-out;
+}
+.slide-from-left {
+  animation: slide-from-left 0.22s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

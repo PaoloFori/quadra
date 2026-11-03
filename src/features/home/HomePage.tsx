@@ -49,19 +49,7 @@ export default function HomePage() {
   const range = monthRange(month);
 
   return (
-    <Screen
-      title={t('home.overview')}
-      eyebrow={f.month(month)}
-      action={
-        <button
-          className="btn-primary !min-h-[44px] !rounded-full"
-          aria-label={t('tx.add')}
-          onClick={() => setEditing('new')}
-        >
-          + {t('home.newTx')}
-        </button>
-      }
-    >
+    <Screen title={t('home.overview')} eyebrow={f.month(month)}>
       <BalancesCard />
 
       {accounts.length === 0 ? (

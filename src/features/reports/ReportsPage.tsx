@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState, type TouchEvent } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Screen } from '@/components/Screen';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
@@ -9,16 +10,24 @@ import type { YearReport } from '@/domain/reports/year';
 import { monthOf, shiftMonth, todayIso } from '@/lib/dates';
 import { saveFile } from '@/lib/files';
 import { useFormat } from '@/i18n/useFormat';
+import { filterFromParams } from '@/features/transactions/movementsLink';
+import { MovementsPanel } from '@/features/transactions/MovementsPanel';
 import { MonthView } from './MonthView';
 import { monthPdfDoc, yearPdfDoc } from './pdfDocs';
 import { WealthView } from './WealthView';
 import { YearView } from './YearView';
 import { AccountChips } from './shared';
 
-type Mode = 'month' | 'year' | 'wealth';
-const SWIPE_PX = 60;
+export type ReportsMode = 'month' | 'year' | 'wealth' | 'movements';
+const MODES: ReportsMode[] = ['month', 'year', 'wealth', 'movements'];
+const MODE_LABEL: Record<ReportsMode, string> = {
+  month: 'reports.monthly',
+  year: 'reports.yearly',
+  wealth: 'wealth.tab',
+  movements: 'nav.transactions',
+};
 
-export default function ReportsPage() {
+export default function ReportsPage({ initialMode = 'month' }: { initialMode?: ReportsMode }) {
   const { t } = useTranslation();
   const f = useFormat();
   const lookup = useCategoryLookup();
@@ -29,35 +38,18 @@ export default function ReportsPage() {
     accountId === ALL_ACCOUNTS || accounts.some((a) => a.id === accountId)
       ? accountId
       : ALL_ACCOUNTS;
-  const [mode, setMode] = useState<Mode>('month');
+  const [mode, setMode] = useState<ReportsMode>(initialMode);
+  // i filtri dei movimenti arrivano dall'indirizzo (link da grafici e schede); si riparte quando cambiano
+  const [params] = useSearchParams();
   const [month, setMonth] = useState(monthOf(todayIso()));
   const [year, setYear] = useState(todayIso().slice(0, 4));
   const monthReport = useRef<MonthReport | undefined>(undefined);
   const yearReport = useRef<YearReport | undefined>(undefined);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const [exporting, setExporting] = useState(false);
 
   const step = (delta: number): void => {
     if (mode === 'month') setMonth((m) => shiftMonth(m, delta));
     else setYear((y) => String(Number(y) + delta));
-  };
-
-  const onTouchStart = (e: TouchEvent): void => {
-    const p = e.touches[0];
-    touchStart.current = p ? { x: p.clientX, y: p.clientY } : null;
-  };
-  const onTouchEnd = (e: TouchEvent): void => {
-    const start = touchStart.current;
-    const p = e.changedTouches[0];
-    touchStart.current = null;
-    if (!start || !p) return;
-    const dx = p.clientX - start.x;
-    if (
-      mode !== 'wealth' &&
-      Math.abs(dx) > SWIPE_PX &&
-      Math.abs(dx) > Math.abs(p.clientY - start.y) * 1.5
-    )
-      step(dx > 0 ? -1 : 1);
   };
 
   const setMonthReport = useCallback(
@@ -97,31 +89,33 @@ export default function ReportsPage() {
   return (
     <Screen
       title={t('nav.reports')}
-      subtitle={mode === 'month' ? f.month(month) : mode === 'year' ? year : t('wealth.title')}
+      subtitle={mode === 'month' ? f.month(month) : mode === 'year' ? year : t(MODE_LABEL[mode])}
       action={
-        mode === 'wealth' ? undefined : (
+        mode === 'wealth' || mode === 'movements' ? undefined : (
           <button className="btn-secondary" disabled={exporting} onClick={() => void exportPdf()}>
             PDF
           </button>
         )
       }
     >
-      <div role="group" aria-label={t('nav.reports')} className="flex gap-2">
-        {(['month', 'year', 'wealth'] as const).map((m) => (
+      <div role="group" aria-label={t('nav.reports')} className="grid grid-cols-4 gap-1.5">
+        {MODES.map((m) => (
           <button
             key={m}
             aria-pressed={mode === m}
             onClick={() => setMode(m)}
-            className={`chip ${mode === m ? 'chip-on' : ''}`}
+            className={`chip justify-center !px-1 !text-[13px] ${mode === m ? 'chip-on' : ''}`}
           >
-            {t(m === 'month' ? 'reports.monthly' : m === 'year' ? 'reports.yearly' : 'wealth.tab')}
+            {t(MODE_LABEL[m])}
           </button>
         ))}
       </div>
 
-      <AccountChips accounts={accounts} value={scope} onChange={setAccountId} />
+      {mode !== 'movements' && (
+        <AccountChips accounts={accounts} value={scope} onChange={setAccountId} />
+      )}
 
-      {mode !== 'wealth' && (
+      {(mode === 'month' || mode === 'year') && (
         <div className="flex items-center justify-between">
           <button
             className="btn-secondary !min-w-[44px] !px-3"
@@ -143,12 +137,15 @@ export default function ReportsPage() {
         </div>
       )}
 
-      <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} className="min-h-[50vh]">
+      <div className="min-h-[50vh]">
         {mode === 'month' && (
           <MonthView month={month} accountId={scope} onReport={setMonthReport} />
         )}
         {mode === 'year' && <YearView year={year} accountId={scope} onReport={setYearReport} />}
         {mode === 'wealth' && <WealthView accountId={scope} />}
+        {mode === 'movements' && (
+          <MovementsPanel key={params.toString()} initial={filterFromParams(params)} />
+        )}
       </div>
     </Screen>
   );
