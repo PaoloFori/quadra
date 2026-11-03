@@ -16,7 +16,7 @@ import type { Transaction } from '@/domain/types';
 import { BalancesCard } from '@/features/accounts/BalancesCard';
 import { CategoryBreakdown, DOT } from '@/features/reports/shared';
 import { useWealth } from '@/features/reports/useWealth';
-import { movementsLink } from '@/features/transactions/movementsLink';
+import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
 import { TransactionRow } from '@/features/transactions/TransactionRow';
 import { TransactionSheet } from '@/features/transactions/TransactionSheet';
 import { useFormat } from '@/i18n/useFormat';
@@ -107,11 +107,7 @@ export default function HomePage() {
                   <span className="text-[13px] capitalize text-muted">{f.month(month)}</span>
                 }
               />
-              <CategoryBreakdown
-                byCategory={byCategory}
-                collapsible
-                linkFor={(categoryId) => movementsLink({ categoryId })}
-              />
+              <CategoryBreakdown byCategory={byCategory} collapsible linkFor={categoryLink} />
             </section>
           )}
 

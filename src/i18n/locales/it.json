@@ -72,7 +72,10 @@
     "languageEn": "English",
     "dataSection": "Dati",
     "appearance": "Aspetto e lingua",
-    "theme": "Tema"
+    "theme": "Tema",
+    "changeTheme": "Cambia tema",
+    "closeThemes": "Chiudi",
+    "currentTheme": "Tema attuale"
   },
   "categories": {
     "groceries": "Spesa",
@@ -369,5 +372,28 @@
     "light-blue": "Blu e bianco",
     "light-pink": "Rosa e bianco",
     "light-green": "Verde e bianco"
+  },
+  "category": {
+    "back": "Resoconti",
+    "total": "Totale",
+    "thisMonth": "Questo mese",
+    "avgMonth": "Media al mese",
+    "perMovement": "Per movimento",
+    "share": "Quota sulle spese",
+    "shareIncome": "Quota sulle entrate",
+    "last12": "Ultimi 12 mesi",
+    "vsAverage": "Rispetto alla tua media",
+    "merchants": "Dove spendi di più",
+    "merchantsIncome": "Da dove arrivano",
+    "biggest": "I movimenti più alti",
+    "recent": "Ultimi movimenti",
+    "seeAll": "Vedi tutti i movimenti",
+    "empty": "Nessun movimento in questa categoria.",
+    "budget": "Budget del mese",
+    "times_one": "{{count}} volta",
+    "times_other": "{{count}} volte",
+    "since": "dal {{date}}",
+    "movements_one": "{{count}} movimento",
+    "movements_other": "{{count}} movimenti"
   }
 }

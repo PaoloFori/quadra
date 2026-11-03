@@ -11,7 +11,7 @@ import { buildYearReport, type YearReport } from '@/domain/reports/year';
 import { useFormat } from '@/i18n/useFormat';
 import { YearBars } from './charts';
 import { WealthChart } from '@/components/WealthChart';
-import { movementsLink } from '@/features/transactions/movementsLink';
+import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
 import { AccountsCompare, CategoryBreakdown, MetricsGrid } from './shared';
 import { SectionTitle } from '@/components/ui';
 
@@ -162,11 +162,7 @@ export function YearView({ year, accountId, onReport }: Props) {
 
       <section className="card space-y-3">
         <SectionTitle title={t('reports.byCategory')} />
-        <CategoryBreakdown
-          byCategory={report.byCategory}
-          collapsible
-          linkFor={(categoryId) => movementsLink({ categoryId, accountId: scope })}
-        />
+        <CategoryBreakdown byCategory={report.byCategory} collapsible linkFor={categoryLink} />
       </section>
     </div>
   );

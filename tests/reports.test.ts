@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { filterByAccount, savingsRate, totalsByAccount } from '@/domain/reports/accounts';
 import { budgetStatuses, levelOf } from '@/domain/reports/budget';
+import { buildCategoryReport } from '@/domain/reports/category';
 import { buildMonthReport } from '@/domain/reports/month';
 import { detectRecurring } from '@/domain/reports/recurring';
 import { compare, expensesByCategory, totalsOf } from '@/domain/reports/totals';
@@ -174,5 +175,62 @@ describe('resoconti per conto', () => {
   it('quota di risparmio', () => {
     expect(savingsRate({ income: 100000, expenses: 20000, net: 80000 })).toBe(0.8);
     expect(savingsRate({ income: 0, expenses: 5, net: -5 })).toBeNull();
+  });
+});
+
+describe('analisi di una categoria', () => {
+  const mk = (
+    date: string,
+    amountCents: number,
+    description: string,
+    categoryId: string | null = 'groceries',
+    isTransfer = false,
+  ): Transaction => ({
+    id: `${date}${amountCents}${description}`,
+    accountId: 'a',
+    date,
+    amountCents,
+    description,
+    categoryId,
+    hash: 'h',
+    isTransfer,
+    source: 'manual',
+    createdAt: 0,
+    updatedAt: 0,
+  });
+  const txs = [
+    mk('2026-08-03', -3000, 'spesa lidl 123'),
+    mk('2026-09-04', -4000, 'spesa lidl 456'),
+    mk('2026-10-05', -2000, 'spesa auchan'),
+    mk('2026-10-07', -1000, 'spesa lidl 789'),
+    mk('2026-10-08', 500, 'rimborso', 'groceries'),
+    mk('2026-10-09', -9999, 'altro', 'fuel'),
+    mk('2026-10-10', -7000, 'giroconto', 'groceries', true),
+  ];
+  const r = buildCategoryReport(txs, 'groceries', '2026-10-20');
+
+  it('totali, mese corrente e precedente (rimborsi e giroconti inclusi/esclusi)', () => {
+    expect(r.kind).toBe('expense');
+    expect(r.count).toBe(5);
+    expect(r.totalCents).toBe(9500); // 3000+4000+2000+1000-500
+    expect(r.thisMonthCents).toBe(2500);
+    expect(r.previousMonthCents).toBe(4000);
+  });
+  it('media mensile dai mesi trascorsi dal primo movimento', () => {
+    expect(r.avgMonthlyCents).toBe(Math.round(9500 / 3));
+    expect(r.months).toHaveLength(12);
+    expect(r.months[11]).toEqual({ month: '2026-10', cents: 2500 });
+  });
+  it('raggruppa gli esercenti ignorando i numeri', () => {
+    expect(r.topMerchants[0]).toMatchObject({ count: 3, cents: 8000 });
+    expect(r.topMerchants[0]?.label).toContain('lidl');
+  });
+  it('quota sul totale delle spese', () => {
+    expect(r.share).toBeCloseTo(9500 / (9500 + 500 + 9999), 1);
+  });
+  it('una categoria senza movimenti ha tutto a zero', () => {
+    const empty = buildCategoryReport(txs, 'health', '2026-10-20');
+    expect(empty.count).toBe(0);
+    expect(empty.avgMonthlyCents).toBe(0);
   });
 });

@@ -72,7 +72,10 @@
     "languageEn": "English",
     "dataSection": "Data",
     "appearance": "Appearance and language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "changeTheme": "Change theme",
+    "closeThemes": "Close",
+    "currentTheme": "Current theme"
   },
   "categories": {
     "groceries": "Groceries",
@@ -369,5 +372,28 @@
     "light-blue": "Blue and white",
     "light-pink": "Pink and white",
     "light-green": "Green and white"
+  },
+  "category": {
+    "back": "Reports",
+    "total": "Total",
+    "thisMonth": "This month",
+    "avgMonth": "Monthly average",
+    "perMovement": "Per transaction",
+    "share": "Share of spending",
+    "shareIncome": "Share of income",
+    "last12": "Last 12 months",
+    "vsAverage": "Versus your average",
+    "merchants": "Where you spend most",
+    "merchantsIncome": "Where it comes from",
+    "biggest": "Largest transactions",
+    "recent": "Latest transactions",
+    "seeAll": "See all transactions",
+    "empty": "No transactions in this category.",
+    "budget": "Month budget",
+    "times_one": "{{count}} time",
+    "times_other": "{{count}} times",
+    "since": "since {{date}}",
+    "movements_one": "{{count}} transaction",
+    "movements_other": "{{count}} transactions"
   }
 }

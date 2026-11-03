@@ -13,7 +13,7 @@ import type { MonthKey } from '@/domain/types';
 import { daysInMonth, monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
 import { useFormat } from '@/i18n/useFormat';
 import { DailyChart } from './charts';
-import { movementsLink } from '@/features/transactions/movementsLink';
+import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
 import { AccountsCompare, CategoryBreakdown, MetricsGrid } from './shared';
 
 interface Props {
@@ -107,11 +107,7 @@ export function MonthView({ month, accountId, onReport }: Props) {
 
       <section className="card space-y-3">
         <SectionTitle title={t('reports.byCategory')} />
-        <CategoryBreakdown
-          byCategory={report.byCategory}
-          collapsible
-          linkFor={(categoryId) => movementsLink({ categoryId, accountId: scope })}
-        />
+        <CategoryBreakdown byCategory={report.byCategory} collapsible linkFor={categoryLink} />
       </section>
 
       <section className="card space-y-3">

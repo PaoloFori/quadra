@@ -6,6 +6,7 @@ import { LockProvider } from '@/features/security/LockProvider';
 
 const HomePage = lazy(() => import('@/features/home/HomePage'));
 const ReportsPage = lazy(() => import('@/features/reports/ReportsPage'));
+const CategoryPage = lazy(() => import('@/features/category/CategoryPage'));
 const BudgetPage = lazy(() => import('@/features/budgets/BudgetPage'));
 const ImportPage = lazy(() => import('@/features/import/ImportPage'));
 const CategoriesPage = lazy(() => import('@/features/settings/CategoriesPage'));
@@ -25,6 +26,7 @@ export function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/transactions" element={<ReportsPage initialMode="movements" />} />
               <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/category/:id" element={<CategoryPage />} />
               <Route path="/budget" element={<BudgetPage />} />
               <Route path="/settings/categories" element={<CategoriesPage />} />
               <Route path="/settings/rules" element={<RulesPage />} />

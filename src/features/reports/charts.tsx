@@ -4,6 +4,7 @@ import {
   Bar,
   BarChart,
   Legend,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -105,6 +106,47 @@ export function YearBars({ months }: { months: MonthTotals[] }) {
             radius={[3, 3, 0, 0]}
           />
           <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: 'rgb(var(--muted))' }} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+/** Barre mensili di una sola serie, con una linea facoltativa (es. il budget). */
+export function MonthlyBars({
+  data,
+  label,
+  limitCents,
+  color = 'rgb(var(--accent))',
+}: {
+  data: Array<{ name: string; value: number }>;
+  label: string;
+  limitCents?: number;
+  color?: string;
+}) {
+  const f = useFormat();
+  return (
+    <div className="h-48" role="img" aria-label={label}>
+      <ResponsiveContainer>
+        <BarChart data={data} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+          <XAxis
+            dataKey="name"
+            stroke="rgb(var(--faint))"
+            tickLine={false}
+            axisLine={false}
+            fontSize={10}
+            interval={0}
+          />
+          <YAxis hide />
+          <Tooltip
+            contentStyle={TOOLTIP_STYLE}
+            cursor={{ fill: 'rgb(var(--tile))' }}
+            formatter={(v) => f.currency(Number(v))}
+          />
+          {limitCents !== undefined && limitCents > 0 && (
+            <ReferenceLine y={limitCents} stroke="rgb(var(--warn))" strokeDasharray="4 4" />
+          )}
+          <Bar dataKey="value" name={label} fill={color} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
