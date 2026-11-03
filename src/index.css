@@ -274,20 +274,15 @@ body {
   .card-row {
     @apply rounded-2xl border-[1.5px] border-line bg-card;
   }
-  /* L'unico blocco forte di una schermata: blu, bordo nero 2px e ombra piena. */
+  /* L'unico blocco forte di una schermata: blu, bordo nero 2px. */
   .hero {
     @apply rounded-[20px] border-2 border-black bg-accent p-5 text-on-accent;
-    box-shadow: 5px 5px 0 #000;
   }
   .btn {
     @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] px-[18px] text-[15px] font-medium transition active:translate-x-px active:translate-y-px disabled:opacity-40;
   }
   .btn-primary {
     @apply btn border-2 border-black bg-accent text-on-accent;
-    box-shadow: 3px 3px 0 #000;
-  }
-  .btn-primary:active {
-    box-shadow: 1px 1px 0 #000;
   }
   .btn-secondary {
     @apply btn border-[1.5px] border-line-strong text-ink;
