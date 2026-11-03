@@ -73,7 +73,7 @@ export function MonthView({ month, accountId, onReport }: Props) {
   const elapsedDays = monthOf(today) === month ? Number(today.slice(8, 10)) : daysInMonth(month);
 
   return (
-    <div className="space-y-4">
+    <div className="masonry">
       <MetricsGrid
         totals={report.totals}
         links={{

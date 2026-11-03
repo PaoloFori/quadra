@@ -50,7 +50,7 @@ export default function HomePage() {
   const range = monthRange(month);
 
   return (
-    <Screen title={t('home.overview')} eyebrow={f.month(month)}>
+    <Screen title={t('home.overview')} eyebrow={f.month(month)} masonry>
       <BalancesCard />
       <DueCard />
 

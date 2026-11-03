@@ -18,24 +18,24 @@ const icon = (d: string): ReactNode => (
   </svg>
 );
 
-const isActive = {
+export const isTabActive = {
   home: (p: string) => p === '/',
   reports: (p: string) => p.startsWith('/reports') || p.startsWith('/transactions'),
   budget: (p: string) => p.startsWith('/budget'),
   settings: (p: string) => p.startsWith('/settings') || p.startsWith('/import'),
 };
 
-const TABS = [
+export const NAV_ITEMS = [
   { to: '/', key: 'home', icon: icon('M3 11l9-8 9 8M5 10v10h14V10') },
   { to: '/reports', key: 'reports', icon: icon('M5 20V10M12 20V4M19 20v-7') },
   { to: '/budget', key: 'budget', icon: icon('M12 3a9 9 0 1 0 9 9h-9V3z') },
   { to: '/settings', key: 'settings', icon: icon('M5 12h.01M12 12h.01M19 12h.01') },
 ] as const;
 
-function Tab({ tab }: { tab: (typeof TABS)[number] }) {
+function Tab({ tab }: { tab: (typeof NAV_ITEMS)[number] }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const active = isActive[tab.key](pathname);
+  const active = isTabActive[tab.key](pathname);
   return (
     <li className="flex-1">
       <Link
@@ -65,12 +65,12 @@ export function TabBar({ onAdd }: { onAdd: () => void }) {
   return (
     <nav
       aria-label="Principale"
-      className="shrink-0 bg-bg px-4 pt-2"
+      className="shrink-0 bg-bg px-4 pt-2 lg:hidden"
       style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 12px)' }}
     >
       <ul className="mx-auto flex max-w-xl items-center rounded-[26px] border-[1.5px] border-line bg-raised p-1.5">
-        <Tab tab={TABS[0]} />
-        <Tab tab={TABS[1]} />
+        <Tab tab={NAV_ITEMS[0]} />
+        <Tab tab={NAV_ITEMS[1]} />
         <li className="flex w-[72px] justify-center">
           <button
             aria-label={t('tx.add')}
@@ -80,8 +80,8 @@ export function TabBar({ onAdd }: { onAdd: () => void }) {
             +
           </button>
         </li>
-        <Tab tab={TABS[2]} />
-        <Tab tab={TABS[3]} />
+        <Tab tab={NAV_ITEMS[2]} />
+        <Tab tab={NAV_ITEMS[3]} />
       </ul>
     </nav>
   );

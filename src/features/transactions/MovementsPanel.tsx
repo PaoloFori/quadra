@@ -104,7 +104,7 @@ export function MovementsPanel({ initial }: { initial: TransactionFilter }) {
   });
 
   return (
-    <>
+    <div className="mx-auto w-full max-w-3xl space-y-4">
       <div className="flex gap-2" role="group" aria-label={t('nav.transactions')}>
         {(['list', 'history'] as const).map((v) => (
           <button
@@ -277,6 +277,6 @@ export function MovementsPanel({ initial }: { initial: TransactionFilter }) {
       {filtersOpen && (
         <FilterSheet value={filter} onApply={setFilter} onClose={() => setFiltersOpen(false)} />
       )}
-    </>
+    </div>
   );
 }

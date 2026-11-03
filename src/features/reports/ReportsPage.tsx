@@ -98,7 +98,11 @@ export default function ReportsPage({ initialMode = 'month' }: { initialMode?: R
         )
       }
     >
-      <div role="group" aria-label={t('nav.reports')} className="grid grid-cols-4 gap-1.5">
+      <div
+        role="group"
+        aria-label={t('nav.reports')}
+        className="grid grid-cols-4 gap-1.5 md:max-w-lg"
+      >
         {MODES.map((m) => (
           <button
             key={m}

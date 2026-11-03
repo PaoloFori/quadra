@@ -58,7 +58,7 @@ export function YearView({ year, accountId, onReport }: Props) {
   const monthsWithData = report.months.filter((m) => m.hasData);
 
   return (
-    <div className="space-y-4">
+    <div className="masonry">
       <MetricsGrid
         totals={report.totals}
         links={{

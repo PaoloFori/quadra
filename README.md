@@ -7,6 +7,7 @@ App online: https://paoloforin.github.io/quadra/
 
 - React + Vite + TypeScript (strict), Tailwind, Dexie, Recharts, i18next (IT/EN)
 - Grafica scura con accento blu; font Space Grotesk + Geist incluse nell'app, nessuna chiamata esterna
+- Telefono e computer: sul telefono barra in basso e scorrimento laterale tra le pagine; su schermi larghi menu laterale, schede su due colonne, finestre centrate, tasto «N» per un nuovo movimento
 - Offline (service worker), installabile da Safari con «Aggiungi a Home»
 - Architettura e formato del backup: [docs/architecture.md](docs/architecture.md), [docs/backup-format.md](docs/backup-format.md)
 

@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { SideNav } from '@/components/SideNav';
 import { TabBar } from '@/components/TabBar';
 import { autoRegisterDue } from '@/db/recurrenceService';
 import { todayIso } from '@/lib/dates';
@@ -46,6 +47,23 @@ export function AppShell({ children }: { children: ReactNode }) {
     scrollRef.current?.scrollTo({ top: 0 });
   }, [pathname]);
 
+  // da tastiera (computer): «N» apre un nuovo movimento
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      const target = e.target as HTMLElement;
+      if (
+        e.key.toLowerCase() === 'n' &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !target.closest('input, textarea, select, [role="dialog"]')
+      )
+        setAdding(true);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   // le ricorrenze senza avviso si registrano da sole all'apertura e quando si torna sull'app
   useEffect(() => {
     const run = (): void => void autoRegisterDue(todayIso()).catch(console.error);
@@ -82,31 +100,36 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="flex h-dvh flex-col bg-bg">
-      <div
-        ref={scrollRef}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
-        <ScrollContext.Provider value={scrollRef}>
-          <div
-            key={pathname}
-            className={direction > 0 ? 'slide-from-right' : direction < 0 ? 'slide-from-left' : ''}
-          >
-            <Suspense
-              fallback={
-                <p role="status" className="p-8 text-center text-muted">
-                  {t('common.loading')}
-                </p>
+    <div className="flex h-dvh bg-bg">
+      <SideNav onAdd={() => setAdding(true)} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div
+          ref={scrollRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          <ScrollContext.Provider value={scrollRef}>
+            <div
+              key={pathname}
+              className={
+                direction > 0 ? 'slide-from-right' : direction < 0 ? 'slide-from-left' : ''
               }
             >
-              {children}
-            </Suspense>
-          </div>
-        </ScrollContext.Provider>
+              <Suspense
+                fallback={
+                  <p role="status" className="p-8 text-center text-muted">
+                    {t('common.loading')}
+                  </p>
+                }
+              >
+                {children}
+              </Suspense>
+            </div>
+          </ScrollContext.Provider>
+        </div>
+        <TabBar onAdd={() => setAdding(true)} />
       </div>
-      <TabBar onAdd={() => setAdding(true)} />
       {adding && <TransactionSheet onClose={() => setAdding(false)} />}
     </div>
   );

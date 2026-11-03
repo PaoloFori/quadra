@@ -145,7 +145,7 @@ export function WealthView({ accountId }: { accountId: string }) {
   const up = projection.delta.cents >= 0;
 
   return (
-    <div className="space-y-4">
+    <div className="masonry">
       <section className="hero space-y-1" aria-label={t('wealth.title')}>
         <p className="label-caps !text-on-accent">{t('wealth.title')}</p>
         <p className="tabular font-display text-[40px] font-medium leading-[44px] tracking-[-0.04em]">

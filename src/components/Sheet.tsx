@@ -21,13 +21,16 @@ export function Sheet({ title, onClose, children }: Props) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/70" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-40 flex items-end justify-center bg-black/70 md:items-center md:p-6"
+      onClick={onClose}
+    >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(e) => e.stopPropagation()}
-        className="animate-sheet max-h-[92%] w-full max-w-xl overflow-y-auto rounded-t-3xl border-[1.5px] border-b-0 border-line bg-raised px-6 pt-3"
+        className="animate-sheet max-h-[92%] w-full max-w-xl overflow-y-auto rounded-t-3xl border-[1.5px] border-b-0 border-line bg-raised px-6 pt-3 md:rounded-3xl md:border-b-[1.5px] md:px-8 md:pb-4 md:pt-5"
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
       >
         <div className="flex min-h-[44px] items-center justify-between gap-2">

@@ -59,6 +59,7 @@ export default function CategoryPage() {
 
   return (
     <Screen
+      masonry
       title={title}
       subtitle={
         report.firstDate
