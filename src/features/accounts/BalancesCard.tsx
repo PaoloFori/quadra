@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { useFormat } from '@/i18n/useFormat';
 import { Amount } from '@/components/Amount';
+import { PrivacyToggle } from '@/components/PrivacyToggle';
 import { Sheet } from '@/components/Sheet';
 import { getAccountBalances, setAccountBalance } from '@/db/accountService';
 import type { AccountBalance } from '@/domain/balances';
@@ -73,7 +74,10 @@ export function BalancesCard() {
   return (
     <>
       <section className="hero space-y-1" aria-label={t('balances.title')}>
-        <p className="label-caps !text-on-accent">{t('home.liquidity')}</p>
+        <div className="flex items-center justify-between">
+          <p className="label-caps !text-on-accent">{t('home.liquidity')}</p>
+          <PrivacyToggle className="-my-2 -mr-2 text-on-accent" />
+        </div>
         <p className="tabular font-display text-[40px] font-medium leading-[44px] tracking-[-0.04em]">
           {f.currency(total)}
         </p>

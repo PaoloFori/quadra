@@ -441,5 +441,9 @@
     "auto": "Automatic",
     "autoDone_one": "{{count}} recurring item recorded automatically",
     "autoDone_other": "{{count}} recurring items recorded automatically"
+  },
+  "privacy": {
+    "hide": "Hide amounts",
+    "show": "Show amounts"
   }
 }

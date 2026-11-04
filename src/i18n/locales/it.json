@@ -441,5 +441,9 @@
     "auto": "Automatica",
     "autoDone_one": "{{count}} ricorrenza registrata in automatico",
     "autoDone_other": "{{count}} ricorrenze registrate in automatico"
+  },
+  "privacy": {
+    "hide": "Nascondi importi",
+    "show": "Mostra importi"
   }
 }
