@@ -94,6 +94,7 @@ export function TransactionSheet({ tx, onClose }: Props) {
           amountCents: signed,
           categoryId: finalCategory,
           note,
+          ...(tx.source === 'import' ? { description } : {}),
         });
         if (frequency && !tx.recurrenceId) {
           const updated = await transactionsRepo.get(tx.id);
@@ -183,6 +184,19 @@ export function TransactionSheet({ tx, onClose }: Props) {
         )}
       </div>
 
+      <div>
+        <label className="label" htmlFor="tx-note">
+          {t('common.note')}
+        </label>
+        <input
+          id="tx-note"
+          className="input"
+          placeholder={t('tx.notePlaceholder')}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+      </div>
+
       <CategoryPicker
         lookup={lookup}
         kind={income ? 'income' : 'expense'}
@@ -217,17 +231,6 @@ export function TransactionSheet({ tx, onClose }: Props) {
           />
         </div>
       )}
-      <div>
-        <label className="label" htmlFor="tx-note">
-          {t('common.note')}
-        </label>
-        <input
-          id="tx-note"
-          className="input"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-      </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div>

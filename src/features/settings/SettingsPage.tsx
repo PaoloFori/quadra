@@ -22,6 +22,7 @@ export default function SettingsPage() {
         <NavRow icon="🏷️" to="/settings/categories" label={t('categories.title')} />
         <NavRow icon="⚙️" to="/settings/rules" label={t('rules.title')} />
         <NavRow icon="📥" to="/import" label={t('import.title')} />
+        <NavRow icon="🧾" to="/check" label={t('statement.title')} />
       </div>
     </Screen>
   );

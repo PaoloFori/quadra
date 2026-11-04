@@ -15,6 +15,7 @@ const RulesPage = lazy(() => import('@/features/settings/RulesPage'));
 const AccountsPage = lazy(() => import('@/features/settings/AccountsPage'));
 const BackupPage = lazy(() => import('@/features/backup/BackupPage'));
 const SecurityPage = lazy(() => import('@/features/security/SecurityPage'));
+const StatementCheckPage = lazy(() => import('@/features/statements/StatementCheckPage'));
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'));
 
 export function App() {
@@ -36,6 +37,7 @@ export function App() {
               <Route path="/settings/backup" element={<BackupPage />} />
               <Route path="/settings/security" element={<SecurityPage />} />
               <Route path="/import" element={<ImportPage />} />
+              <Route path="/check" element={<StatementCheckPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </AppShell>

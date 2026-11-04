@@ -12,3 +12,5 @@ quadra-export*.csv
 *.csv
 *.xlsx
 !samples/*.csv
+*.tsbuildinfo
+/tests/

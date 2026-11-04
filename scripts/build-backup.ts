@@ -16,12 +16,12 @@ import { detectTransfers } from '@/domain/transfers';
 import type { Account, Category, Rule, Transaction } from '@/domain/types';
 import { normalizeText } from '@/lib/normalize';
 import { sha256 } from '@/lib/hash';
-import { ledgerFiles, readLedgers, type LedgerAccount } from './ledger';
+import { applyCorrections } from './corrections';
+import { ledgerAccounts, ledgerFiles, readLedgers } from './ledger';
 
-const ACCOUNTS: Record<LedgerAccount, Account> = {
-  modo1: { id: 'modo1', name: 'Modo1', bank: 'other' },
-  modo2: { id: 'modo2', name: 'Modo2', bank: 'other' },
-};
+const ACCOUNTS: Record<string, Account> = Object.fromEntries(
+  ledgerAccounts.map((a) => [a.id, { id: a.id, name: a.name, bank: 'other' }]),
+);
 
 interface Personal {
   categories: Category[];
@@ -50,7 +50,9 @@ const rules: Rule[] = [
 const unknown = rules.filter((r) => !categories.some((c) => c.id === r.categoryId));
 if (unknown.length > 0) throw new Error(`Categoria inesistente: ${unknown[0]!.categoryId}`);
 
-const { entries, log } = readLedgers(ledgerFiles(process.argv.slice(2)));
+const read = readLedgers(ledgerFiles(process.argv.slice(2)));
+const log = read.log;
+const { entries, applied } = applyCorrections(read.entries);
 const kindOf = new Map(categories.map((c) => [c.id, c.kind]));
 const refundId = kindOf.has('refunds') ? 'refunds' : 'otherIncome';
 const transferTexts = new Set(personal.transferDescriptions.map(normalizeText));
@@ -84,7 +86,7 @@ for (const e of [...entries].sort((a, b) => a.date.localeCompare(b.date))) {
     date: e.date,
     amountCents: e.cents,
     description: e.description,
-    categoryId: categoryFor(e.description, e.cents),
+    categoryId: e.categoryId ?? categoryFor(e.description, e.cents),
     hash,
     isTransfer: false,
     source: 'import',
@@ -124,7 +126,7 @@ for (const t of manual) {
 const used = new Set(transactions.map((t) => t.accountId));
 const backup = await createBackup(
   {
-    accounts: Object.values(ACCOUNTS).filter((a) => used.has(a.id as LedgerAccount)),
+    accounts: Object.values(ACCOUNTS).filter((a) => used.has(a.id)),
     transactions,
     categories,
     rules,
@@ -146,9 +148,10 @@ const fallback = transactions.filter(
   (t) => t.categoryId === 'other' || t.categoryId === 'otherIncome',
 ).length;
 console.log(
-  `\n${out}: ${transactions.length} movimenti (${[...used].map((a) => `${ACCOUNTS[a as LedgerAccount].name} ${count(a)}`).join(', ')})`,
+  `\n${out}: ${transactions.length} movimenti (${[...used].map((a) => `${ACCOUNTS[a]!.name} ${count(a)}`).join(', ')})`,
 );
 console.log(
   `Giroconti: ${transactions.filter((t) => t.isTransfer).length} movimenti · senza categoria: ${uncategorized} · in "Altro": ${fallback}`,
 );
 if (log.length > 0) console.log(`Date corrette: ${log.length}`);
+if (applied > 0) console.log(`Correzioni applicate: ${applied}`);

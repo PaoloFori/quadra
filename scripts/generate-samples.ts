@@ -111,7 +111,11 @@ for (const [y, m] of MONTHS) {
       cents: -between(4, 35),
     });
   }
-  modo1.push({ date: iso(y, m, 25), description: 'Libreria Città Milano', cents: -between(12, 40) });
+  modo1.push({
+    date: iso(y, m, 25),
+    description: 'Libreria Città Milano',
+    cents: -between(12, 40),
+  });
   modo1.push({ date: iso(y, m, 14), description: 'Amazon EU SARL', cents: -between(10, 90) });
   modo1.push({
     date: iso(y, m, 18),

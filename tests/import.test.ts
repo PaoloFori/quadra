@@ -40,7 +40,7 @@ describe('parseDate', () => {
   });
 });
 
-describe('import Modo1 (UTF-8, intestazioni e footer)', () => {
+describe('import modo1 (UTF-8, intestazioni e footer)', () => {
   it('rileva formato e legge tutte le righe', async () => {
     const table = await readTable('modo1-esempio.csv', sample('modo1-esempio.csv'));
     const analysis = analyzeTable(table, []);
@@ -54,7 +54,7 @@ describe('import Modo1 (UTF-8, intestazioni e footer)', () => {
   });
 });
 
-describe('import Modo2 (Windows-1252, descrizione su due colonne)', () => {
+describe('import modo2 (Windows-1252, descrizione su due colonne)', () => {
   it('decodifica gli accenti e unisce Operazione + Dettagli', async () => {
     const table = await readTable('modo2-esempio.csv', sample('modo2-esempio.csv'));
     const analysis = analyzeTable(table, [])!;

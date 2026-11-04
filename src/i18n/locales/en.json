@@ -157,7 +157,8 @@
     "noSimilar": "No similar previous expenses.",
     "removeFilter": "Remove filter",
     "subtitle": "Income and expenses of all accounts",
-    "allTypes": "All"
+    "allTypes": "All",
+    "notePlaceholder": "E.g. lunch with Sam (optional)"
   },
   "rules": {
     "title": "Automatic rules",
@@ -445,5 +446,42 @@
   "privacy": {
     "hide": "Hide amounts",
     "show": "Show amounts"
+  },
+  "statement": {
+    "title": "Check statement",
+    "intro": "Upload the PDF statement of an account: Quadra checks the dates and amounts of every line and tells you what doesn't add up. The file stays on your device.",
+    "account": "Account to check",
+    "choose": "Choose the statement PDF",
+    "formats": "Available reading modes: modo1 and modo2.",
+    "unsupported": "I can't read this statement format. Please contact the administrator to get it supported.",
+    "readError": "I can't open this PDF. Make sure it is a statement without a password.",
+    "verdict": "Result",
+    "allGood": "Everything matches ✓",
+    "toCheck": "Needs checking",
+    "summary": "{{account}}, {{from}} to {{to}}: {{statement}} lines in the statement, {{quadra}} transactions in Quadra, {{matched}} match.",
+    "wrongAccount": "Almost no line matches: are you sure you picked the right account?",
+    "readWarning": "Reading the PDF doesn't agree with the balances or totals printed on the statement: check by hand too.",
+    "totals": "Totals",
+    "statementCol": "Statement",
+    "quadraCol": "Quadra",
+    "in": "Income",
+    "out": "Spending",
+    "sumsMatch": "The totals match.",
+    "sumsDiffer": "Difference between Quadra and the statement: {{diff}}. Check the lines below.",
+    "missing": "In the statement but not in Quadra",
+    "missingHint": "Spending or income the bank recorded and you didn't: check whether you forgot them.",
+    "elsewhere": "Found on {{account}}: {{date}} · {{text}} (maybe on the wrong account)",
+    "amountDiff": "Different amount",
+    "amountDiffHint": "Same date and sign, but a different figure: maybe a typo. Below is what you have in Quadra.",
+    "inQuadra": "In Quadra: {{amount}} · {{date}} · {{text}}",
+    "notInStatement": "In Quadra but not in the statement",
+    "notInStatementHint": "Transactions the bank doesn't show: check amount, date and that they are on the right account.",
+    "pending": "From the last few days: it may not be charged yet.",
+    "dateDiff": "Different date",
+    "dateDiffHint": "Same amount but the date in Quadra is far from the bank's.",
+    "bankDate": "The bank records it on {{date}} ({{days}} days apart)",
+    "ok": "Matching",
+    "okHint": "Lines with the same amount and a compatible date.",
+    "show": "Show the list"
   }
 }

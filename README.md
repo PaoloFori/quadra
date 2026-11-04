@@ -70,6 +70,15 @@ riporta le date corrette. Poi importa ogni CSV scegliendo il conto corrispondent
 Per fare tutto in un colpo: `npm run build-backup` crea `private/quadra-backup-spese.json` (conti, movimenti, categorie e giroconti già pronti).
 In Quadra: _Impostazioni → Backup → Ripristina da file → Sostituisci tutto_.
 
+## Controllo dell'estratto conto
+
+_Impostazioni → Controlla estratto_: scegli il conto e carica il PDF dell'estratto. Quadra confronta riga per riga
+date e importi con i movimenti del conto e segnala: righe nell'estratto che mancano in Quadra (con il suggerimento
+dell'altro conto, se è finita lì), importi diversi, date lontane, movimenti in Quadra che la banca non mostra e
+somme che non quadrano. Modi di lettura: modo1 e modo2; per
+gli altri formati compare un messaggio che invita a contattare l'amministratore. Il PDF viene letto sul dispositivo e non
+viene mai inviato. Da terminale: `npm run check-statement -- <estratto.pdf> <backup.json> <idConto>`.
+
 ## Ricorrenze
 
 Stipendio, affitto, abbonamenti: nel «+» (o in _Impostazioni → Ricorrenze_) scegli ogni quanto si ripete (settimana, 2 settimane, mese, 3 mesi, anno).

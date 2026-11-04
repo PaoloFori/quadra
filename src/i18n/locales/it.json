@@ -157,7 +157,8 @@
     "noSimilar": "Nessuna spesa simile precedente.",
     "removeFilter": "Togli filtro",
     "subtitle": "Entrate e uscite di tutti i conti",
-    "allTypes": "Tutte"
+    "allTypes": "Tutte",
+    "notePlaceholder": "Es. pranzo con Silvia (facoltativa)"
   },
   "rules": {
     "title": "Regole automatiche",
@@ -445,5 +446,42 @@
   "privacy": {
     "hide": "Nascondi importi",
     "show": "Mostra importi"
+  },
+  "statement": {
+    "title": "Controlla estratto",
+    "intro": "Carica il PDF dell'estratto conto di un conto: Quadra controlla date e importi di ogni riga e ti dice cosa non torna. Il file resta sul tuo dispositivo.",
+    "account": "Conto da controllare",
+    "choose": "Scegli il PDF dell'estratto",
+    "formats": "Modi di lettura disponibili: modo1 e modo2.",
+    "unsupported": "Non riesco a leggere questo formato di estratto conto. Contatta l'amministratore per farlo supportare.",
+    "readError": "Non riesco ad aprire il PDF. Controlla che sia un estratto conto non protetto da password.",
+    "verdict": "Esito",
+    "allGood": "Tutto torna ✓",
+    "toCheck": "Da controllare",
+    "summary": "{{account}}, dal {{from}} al {{to}}: {{statement}} righe nell'estratto, {{quadra}} movimenti in Quadra, {{matched}} corrispondono.",
+    "wrongAccount": "Quasi nessuna riga corrisponde: sei sicuro di aver scelto il conto giusto?",
+    "readWarning": "La lettura del PDF non quadra con i saldi o i totali scritti nell'estratto: controlla anche a mano.",
+    "totals": "Somme",
+    "statementCol": "Estratto",
+    "quadraCol": "Quadra",
+    "in": "Entrate",
+    "out": "Uscite",
+    "sumsMatch": "Le somme coincidono.",
+    "sumsDiffer": "Differenza tra Quadra ed estratto: {{diff}}. Controlla le righe qui sotto.",
+    "missing": "Nell'estratto ma non in Quadra",
+    "missingHint": "Spese o entrate che la banca ha registrato e tu no: controlla se le hai dimenticate.",
+    "elsewhere": "Trovata su {{account}}: {{date}} · {{text}} (forse è sul conto sbagliato)",
+    "amountDiff": "Importo diverso",
+    "amountDiffHint": "Stessa data e segno, ma cifra diversa: forse un errore di battitura. Sotto c'è quello che hai in Quadra.",
+    "inQuadra": "In Quadra: {{amount}} · {{date}} · {{text}}",
+    "notInStatement": "In Quadra ma non nell'estratto",
+    "notInStatementHint": "Movimenti che la banca non mostra: controlla importo, data e che siano sul conto giusto.",
+    "pending": "Degli ultimi giorni: potrebbe non essere ancora addebitata.",
+    "dateDiff": "Data diversa",
+    "dateDiffHint": "Importo uguale ma la data in Quadra è lontana da quella della banca.",
+    "bankDate": "La banca la registra il {{date}} ({{days}} giorni di differenza)",
+    "ok": "Corrispondono",
+    "okHint": "Righe con stesso importo e data compatibile.",
+    "show": "Mostra l'elenco"
   }
 }

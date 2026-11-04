@@ -2,28 +2,48 @@
  * Lettura dei registri mensili fatti a mano (un foglio per mese: spesa | data | banca | motivo).
  * Condivisa da convert-ledger (CSV) e build-backup (JSON di ripristino). Nessun dato lascia il computer.
  */
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as XLSX from 'xlsx';
 
 const MONTHS = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
-export type LedgerAccount = 'modo1' | 'modo2';
+export type LedgerAccount = string;
 
 export interface Entry {
   date: string;
   cents: number;
   description: string;
   account: LedgerAccount;
+  /** Solo se imposto da private/correzioni.json. */
+  categoryId?: string;
 }
+
+/** Conti del registro, in private/conti.json: il primo è quello delle righe senza banca. */
+export interface LedgerAccountConfig {
+  id: string;
+  name: string;
+  /** Testi (senza maiuscole) che nella colonna «banca» o nel motivo indicano questo conto. */
+  match: string[];
+}
+const ACCOUNTS_FILE = join('private', 'conti.json');
+export const ledgerAccounts: LedgerAccountConfig[] = existsSync(ACCOUNTS_FILE)
+  ? (JSON.parse(readFileSync(ACCOUNTS_FILE, 'utf8')) as LedgerAccountConfig[])
+  : [];
 
 const rome = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Rome' });
 const text = (cell: unknown): string => (cell == null ? '' : String(cell).trim());
 
 function accountOf(bank: string, description: string): LedgerAccount {
+  const [main] = ledgerAccounts;
+  if (!main) throw new Error('Manca private/conti.json (elenco dei conti del registro)');
   const b = bank.toLowerCase();
-  if (b === 'modo2' || (b !== 'modo1' && /modo2/i.test(description))) return 'modo2';
-  // Righe senza banca (es. periodo all'estero): per scelta dell'utente sono tutte Modo1.
-  return 'modo1';
+  const byBank = ledgerAccounts.find((a) => a.match.includes(b));
+  if (byBank) return byBank.id;
+  // Senza banca: il conto citato nel motivo (se non è il principale), altrimenti il principale.
+  const mentioned = ledgerAccounts
+    .slice(1)
+    .find((a) => b === '' && a.match.some((m) => description.toLowerCase().includes(m)));
+  return (mentioned ?? main).id;
 }
 
 /** Porta una data fuori dal mese del foglio dentro di esso, tenendo lo stesso giorno. */
@@ -56,7 +76,10 @@ function readSheet(
     // Se "motivo" è vuoto ma "banca" contiene testo (es. luglio 2026), il testo è la descrizione.
     const bankCell = text(row[2]);
     const motive = text(row[3]);
-    const shifted = motive === '' && bankCell !== '' && !/^(modo1|modo2)$/i.test(bankCell);
+    const shifted =
+      motive === '' &&
+      bankCell !== '' &&
+      !ledgerAccounts.some((a) => a.match.includes(bankCell.toLowerCase()));
     const description = shifted ? bankCell : motive;
     entries.push({
       date: currentDate,

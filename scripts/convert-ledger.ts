@@ -5,7 +5,7 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ledgerFiles, readLedgers } from './ledger';
+import { ledgerAccounts, ledgerFiles, readLedgers } from './ledger';
 
 const fmt = (cents: number): string => {
   const abs = Math.abs(cents);
@@ -16,7 +16,7 @@ const csvCell = (s: string): string => (/[;"\n]/.test(s) ? `"${s.replace(/"/g, '
 const { entries: all, log } = readLedgers(ledgerFiles(process.argv.slice(2)));
 
 mkdirSync('private', { recursive: true });
-for (const account of ['modo1', 'modo2'] as const) {
+for (const { id: account } of ledgerAccounts) {
   const rows = all
     .filter((e) => e.account === account)
     .sort((a, b) => a.date.localeCompare(b.date));
