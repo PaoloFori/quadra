@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
 import { MetricCard, SectionTitle } from '@/components/ui';
 import { WealthChart } from '@/components/WealthChart';
+import { MonthlyBars } from './charts';
 import { savingsGoal } from '@/domain/reports/projections';
 import { todayIso } from '@/lib/dates';
 import { parseUserAmount } from '@/lib/money';
@@ -142,6 +143,10 @@ export function WealthView({ accountId }: { accountId: string }) {
   if (view === null) return <p className="card text-muted">{t('wealth.noAccounts')}</p>;
 
   const { projection, flows } = view;
+  // con più di un anno di storico il mese da solo è ambiguo: si aggiunge l'anno (2 cifre)
+  const longHistory = view.history.length > 12;
+  const label = (m: string): string =>
+    longHistory ? `${f.monthShort(m)} ${m.slice(2, 4)}` : f.monthShort(m);
   const up = projection.delta.cents >= 0;
 
   return (
@@ -169,11 +174,25 @@ export function WealthView({ accountId }: { accountId: string }) {
         />
         <WealthChart
           values={projection.values}
-          labels={projection.months.map((m) => f.monthShort(m))}
+          labels={projection.months.map((m) => label(m))}
           projectedFrom={projection.projectedFrom}
           label={t('wealth.title')}
         />
         <p className="text-[12px] text-faint">{t('wealth.dashedHint')}</p>
+      </section>
+
+      <section className="card space-y-3">
+        <SectionTitle
+          title={t('wealth.savedByMonth')}
+          subtitle={t('wealth.sinceStart', {
+            month: f.month(view.history[0]!.month),
+            total: f.currency(view.history.reduce((s, m) => s + m.net, 0)),
+          })}
+        />
+        <MonthlyBars
+          data={view.history.map((m) => ({ name: label(m.month), value: m.net }))}
+          label={t('wealth.savedByMonth')}
+        />
       </section>
 
       {view.accounts.length > 1 && (

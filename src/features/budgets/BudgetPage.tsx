@@ -7,12 +7,16 @@ import { Screen } from '@/components/Screen';
 import { Sheet } from '@/components/Sheet';
 import { useCategoryLookup } from '@/db/hooks';
 import { budgetsRepo, newId, transactionsRepo } from '@/db/repositories';
+import { getSettings, setSetting } from '@/db/settings';
 import {
   budgetStatuses,
   levelOf,
+  savingsProgress,
   totalRemaining,
   type BudgetStatus,
+  type SavingsProgress,
 } from '@/domain/reports/budget';
+import { totalsOf } from '@/domain/reports/totals';
 import type { Budget } from '@/domain/types';
 import { monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
@@ -104,6 +108,114 @@ function BudgetSheet({
   );
 }
 
+function SavingsSheet({
+  monthlyCents,
+  yearlyCents,
+  onClose,
+}: {
+  monthlyCents?: number;
+  yearlyCents?: number;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const plain = (c?: number): string => (c === undefined ? '' : centsToPlain(c).replace('.', ','));
+  const [monthly, setMonthly] = useState(plain(monthlyCents));
+  const [yearly, setYearly] = useState(plain(yearlyCents));
+  const [error, setError] = useState(false);
+
+  async function save(): Promise<void> {
+    const m = monthly.trim() === '' ? null : parseUserAmount(monthly);
+    const y = yearly.trim() === '' ? null : parseUserAmount(yearly);
+    if ((monthly.trim() !== '' && m === null) || (yearly.trim() !== '' && y === null))
+      return setError(true);
+    await setSetting('savingsMonthlyCents', m === null || m === 0 ? undefined : m);
+    await setSetting('savingsYearlyCents', y === null || y === 0 ? undefined : y);
+    onClose();
+  }
+
+  return (
+    <Sheet title={t('budget.savingsTitle')} onClose={onClose}>
+      <p className="text-[13px] text-muted">{t('budget.savingsHint')}</p>
+      <div>
+        <label className="label" htmlFor="sv-month">
+          {t('budget.savingsMonthly')}
+        </label>
+        <input
+          id="sv-month"
+          className="input tabular"
+          inputMode="decimal"
+          autoFocus
+          value={monthly}
+          onChange={(e) => {
+            setMonthly(e.target.value);
+            setError(false);
+          }}
+        />
+      </div>
+      <div>
+        <label className="label" htmlFor="sv-year">
+          {t('budget.savingsYearly')}
+        </label>
+        <input
+          id="sv-year"
+          className="input tabular"
+          inputMode="decimal"
+          value={yearly}
+          onChange={(e) => {
+            setYearly(e.target.value);
+            setError(false);
+          }}
+        />
+        {error && (
+          <p role="alert" className="mt-1 text-[13px] text-expense">
+            {t('errors.invalidAmount')}
+          </p>
+        )}
+      </div>
+      <button className="btn-primary w-full" onClick={() => void save()}>
+        {t('common.save')}
+      </button>
+    </Sheet>
+  );
+}
+
+/** Una riga dell'obiettivo di risparmio: quanto è entrato, quanto è uscito, quanto hai messo da parte. */
+function SavingsBlock({ title, progress }: { title: string; progress: SavingsProgress }) {
+  const { t } = useTranslation();
+  const f = useFormat();
+  const p = progress;
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-semibold capitalize">{title}</p>
+        <p className="tabular whitespace-nowrap text-[14px]">
+          <Amount cents={p.savedCents} /> / {f.currency(p.targetCents)}
+        </p>
+      </div>
+      <ProgressBar ratio={p.ratio} level="ok" label={title} />
+      <p className="text-[13px] text-muted">
+        {t('budget.savingsFlow', {
+          income: f.currency(p.incomeCents),
+          expenses: f.currency(p.expensesCents),
+        })}
+      </p>
+      <p
+        className={`text-[13px] font-semibold ${p.reached ? 'text-income' : p.canStillSpendCents < 0 ? 'text-expense' : 'text-muted'}`}
+      >
+        {p.reached
+          ? `✓ ${t('budget.savingsReached', { amount: f.currency(p.savedCents - p.targetCents) })}`
+          : t('budget.savingsMissing', { amount: f.currency(p.missingCents) })}
+        {!p.reached &&
+          ` · ${
+            p.canStillSpendCents >= 0
+              ? t('budget.savingsCanSpend', { amount: f.currency(p.canStillSpendCents) })
+              : t('budget.savingsNoRoom')
+          }`}
+      </p>
+    </div>
+  );
+}
+
 export default function BudgetPage() {
   const { t } = useTranslation();
   const f = useFormat();
@@ -116,6 +228,24 @@ export default function BudgetPage() {
     [],
   );
   const [editing, setEditing] = useState<Budget | 'new' | null>(null);
+  const settings = useLiveQuery(getSettings, [], undefined);
+  const [editingSavings, setEditingSavings] = useState(false);
+  const year = month.slice(0, 4);
+  const yearTxs = useLiveQuery(
+    () => transactionsRepo.inRange(`${year}-01-01`, `${year}-12-31`),
+    [year],
+    [],
+  );
+  const monthlyGoal = settings?.savingsMonthlyCents;
+  const yearlyGoal = settings?.savingsYearlyCents;
+  const savingsMonth = useMemo(
+    () => (monthlyGoal ? savingsProgress(totalsOf(txs), monthlyGoal) : null),
+    [txs, monthlyGoal],
+  );
+  const savingsYear = useMemo(
+    () => (yearlyGoal ? savingsProgress(totalsOf(yearTxs), yearlyGoal) : null),
+    [yearTxs, yearlyGoal],
+  );
 
   const statuses = useMemo(
     () =>
@@ -174,6 +304,25 @@ export default function BudgetPage() {
         {statuses.length === 0 && <p className="text-[14px] text-muted">{t('budget.howTo')}</p>}
       </section>
 
+      <section className="card space-y-3" aria-label={t('budget.savingsTitle')}>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-[17px] font-semibold tracking-[-0.01em]">
+            {t('budget.savingsTitle')}
+          </h2>
+          <button
+            className="btn-secondary !min-h-[40px] !px-3 !text-[14px]"
+            onClick={() => setEditingSavings(true)}
+          >
+            {savingsMonth || savingsYear ? t('common.edit') : t('budget.savingsSet')}
+          </button>
+        </div>
+        {!savingsMonth && !savingsYear && (
+          <p className="text-[14px] text-muted">{t('budget.savingsIntro')}</p>
+        )}
+        {savingsMonth && <SavingsBlock title={f.month(month)} progress={savingsMonth} />}
+        {savingsYear && <SavingsBlock title={year} progress={savingsYear} />}
+      </section>
+
       {statuses.length > 0 && (
         <section className="card" aria-label={t('budget.totalTitle')}>
           <p className="text-[13px] text-muted">{t('budget.totalTitle')}</p>
@@ -230,6 +379,13 @@ export default function BudgetPage() {
           );
         })}
       </ul>
+      {editingSavings && (
+        <SavingsSheet
+          monthlyCents={monthlyGoal}
+          yearlyCents={yearlyGoal}
+          onClose={() => setEditingSavings(false)}
+        />
+      )}
       {editing && (
         <BudgetSheet
           budget={editing === 'new' ? undefined : editing}

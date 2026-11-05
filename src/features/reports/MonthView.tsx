@@ -3,7 +3,6 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
 import { SectionTitle } from '@/components/ui';
-import { Delta } from '@/components/Delta';
 import { useAccounts } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
 import { ALL_ACCOUNTS, filterByAccount, totalsByAccount } from '@/domain/reports/accounts';
@@ -14,6 +13,10 @@ import { daysInMonth, monthOf, monthRange, shiftMonth, todayIso } from '@/lib/da
 import { useFormat } from '@/i18n/useFormat';
 import { DailyChart } from './charts';
 import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
+import { totalsOf } from '@/domain/reports/totals';
+import { monthlyTrend } from '@/domain/reports/projections';
+import { ComparisonCard } from './Compare';
+import { YearBars } from './charts';
 import { AccountsCompare, CategoryBreakdown, MetricsGrid } from './shared';
 
 interface Props {
@@ -37,6 +40,27 @@ export function MonthView({ month, accountId, onReport }: Props) {
     [month],
   );
 
+  // Stesso mese dell'anno scorso e ultimi mesi: una sola query indicizzata su 13 mesi
+  const rawCompare = useLiveQuery(
+    () => transactionsRepo.inRange(monthRange(shiftMonth(month, -12)).from, monthRange(month).to),
+    [month],
+  );
+  const compareTxs = useMemo(
+    () => rawCompare && filterByAccount(rawCompare, accountId),
+    [rawCompare, accountId],
+  );
+  const comparison = useMemo(() => {
+    if (!compareTxs) return undefined;
+    const of = (m: MonthKey) => totalsOf(compareTxs.filter((x) => monthOf(x.date) === m));
+    return {
+      rows: [
+        { label: f.month(month), totals: of(month) },
+        { label: f.month(shiftMonth(month, -1)), totals: of(shiftMonth(month, -1)) },
+        { label: f.month(shiftMonth(month, -12)), totals: of(shiftMonth(month, -12)) },
+      ],
+      trend: monthlyTrend(compareTxs, month, 6),
+    };
+  }, [compareTxs, month, f]);
   const txs = useMemo(() => rawTxs && filterByAccount(rawTxs, accountId), [rawTxs, accountId]);
   const history = useMemo(
     () => rawHistory && filterByAccount(rawHistory, accountId),
@@ -86,17 +110,14 @@ export function MonthView({ month, accountId, onReport }: Props) {
         }}
       />
 
-      <section className="card space-y-1">
-        <SectionTitle title={t('reports.vsPrevious')} />
-        <p className="flex justify-between pt-2">
-          <span className="text-muted">{t('common.expenses')}</span>
-          <Delta {...report.expensesChange} />
-        </p>
-        <p className="flex justify-between">
-          <span className="text-muted">{t('common.income')}</span>
-          <Delta {...report.incomeChange} higherIsBad={false} />
-        </p>
-      </section>
+      {comparison && <ComparisonCard title={t('reports.compareTitle')} rows={comparison.rows} />}
+
+      {comparison && (
+        <section className="card space-y-3">
+          <SectionTitle title={t('reports.lastMonths')} />
+          <YearBars months={comparison.trend} label={t('reports.lastMonths')} />
+        </section>
+      )}
 
       {accountId === ALL_ACCOUNTS && accounts.length > 1 && (
         <section className="card space-y-4">
@@ -107,7 +128,11 @@ export function MonthView({ month, accountId, onReport }: Props) {
 
       <section className="card space-y-3">
         <SectionTitle title={t('reports.byCategory')} />
-        <CategoryBreakdown byCategory={report.byCategory} collapsible linkFor={categoryLink} />
+        <CategoryBreakdown
+          byCategory={report.byCategory}
+          collapsible
+          linkFor={(id) => categoryLink(id, { month, accountId: scope })}
+        />
       </section>
 
       <section className="card space-y-3">

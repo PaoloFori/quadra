@@ -28,5 +28,14 @@ export function filterFromParams(p: URLSearchParams): TransactionFilter {
 }
 
 /** Pagina di analisi di una categoria (`null` = senza categoria). */
-export const categoryLink = (categoryId: string | null): string =>
-  `/category/${categoryId ?? NO_CATEGORY}`;
+export const categoryLink = (
+  categoryId: string | null,
+  scope: { month?: string; year?: string; accountId?: string } = {},
+): string => {
+  const p = new URLSearchParams();
+  if (scope.month) p.set('month', scope.month);
+  else if (scope.year) p.set('year', scope.year);
+  if (scope.accountId) p.set('account', scope.accountId);
+  const query = p.toString();
+  return `/category/${categoryId ?? NO_CATEGORY}${query ? `?${query}` : ''}`;
+};

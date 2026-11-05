@@ -39,7 +39,7 @@ export function expensesByCategory(txs: readonly Transaction[]): CategoryTotal[]
     .sort((a, b) => b.cents - a.cents);
 }
 
-/** Variazione rispetto al periodo precedente; `pct` è null se il precedente è zero. */
+/** Variazione rispetto al periodo precedente; `pct` è null se il precedente è zero o negativo (la percentuale non avrebbe senso). */
 export function compare(current: number, previous: number): { diff: number; pct: number | null } {
-  return { diff: current - previous, pct: previous === 0 ? null : (current - previous) / previous };
+  return { diff: current - previous, pct: previous <= 0 ? null : (current - previous) / previous };
 }

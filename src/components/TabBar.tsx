@@ -65,17 +65,20 @@ export function TabBar({ onAdd }: { onAdd: () => void }) {
   return (
     <nav
       aria-label="Principale"
-      className="shrink-0 bg-bg px-4 pt-2 lg:hidden"
-      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 12px)' }}
+      className="relative z-10 shrink-0 bg-bg px-4 pt-3 lg:hidden"
+      // Su iPhone l'area sicura in basso è ~34px: la barra se ne prende solo una parte, così non resta
+      // sollevata (l'indicatore di casa sta sotto, senza toccarla).
+      style={{ paddingBottom: 'max(calc(env(safe-area-inset-bottom) - 18px), 10px)' }}
     >
       <ul className="mx-auto flex max-w-xl items-center rounded-[26px] border-[1.5px] border-line bg-raised p-1.5">
         <Tab tab={NAV_ITEMS[0]} />
         <Tab tab={NAV_ITEMS[1]} />
-        <li className="flex w-[72px] justify-center">
+        <li className="flex w-[80px] justify-center">
+          {/* Il «+» è più grande della barra e sporge in alto: un cerchio con anello del colore dello sfondo */}
           <button
             aria-label={t('tx.add')}
             onClick={onAdd}
-            className="btn-primary !min-h-[52px] !w-[52px] !rounded-full !px-0 text-[28px] leading-none"
+            className="btn-primary -mt-5 !min-h-[64px] !w-[64px] !rounded-full !border-[4px] !border-bg !bg-accent !px-0 text-[34px] font-light leading-none ring-[1.5px] ring-line transition active:scale-95"
           >
             +
           </button>

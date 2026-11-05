@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Delta } from '@/components/Delta';
 import { useAccounts } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
 import { ALL_ACCOUNTS, filterByAccount, totalsByAccount } from '@/domain/reports/accounts';
@@ -12,6 +11,7 @@ import { useFormat } from '@/i18n/useFormat';
 import { YearBars } from './charts';
 import { WealthChart } from '@/components/WealthChart';
 import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
+import { ComparisonCard, YearVsPrevious } from './Compare';
 import { AccountsCompare, CategoryBreakdown, MetricsGrid } from './shared';
 import { SectionTitle } from '@/components/ui';
 
@@ -41,6 +41,10 @@ export function YearView({ year, accountId, onReport }: Props) {
           )
         : [],
     [rawTxs, accounts, year],
+  );
+  const previousMonths = useMemo(
+    () => (txs ? buildYearReport(txs, String(Number(year) - 1)).months : []),
+    [txs, year],
   );
   const cumulative = useMemo(() => {
     const months = report?.months ?? [];
@@ -78,33 +82,36 @@ export function YearView({ year, accountId, onReport }: Props) {
         average={{ label: t('reports.avgMonth'), cents: report.averageMonthlyExpenses }}
       />
 
-      <section className="card space-y-1">
-        <SectionTitle title={t('reports.vsPreviousYear')} />
-        <p className="flex justify-between pt-2">
-          <span className="text-muted">{t('common.expenses')}</span>
-          <Delta {...report.expensesChange} />
-        </p>
-        <p className="flex justify-between">
-          <span className="text-muted">{t('common.income')}</span>
-          <Delta {...report.incomeChange} higherIsBad={false} />
-        </p>
-        {report.mostExpensive && (
-          <p className="flex justify-between gap-3 pt-2">
-            <span className="text-muted">{t('reports.mostExpensive')}</span>
-            <span className="tabular text-right font-medium">
-              {f.month(report.mostExpensive.month)} · {f.currency(report.mostExpensive.expenses)}
-            </span>
-          </p>
-        )}
-        {report.lightest && (
-          <p className="flex justify-between gap-3">
-            <span className="text-muted">{t('reports.lightest')}</span>
-            <span className="tabular text-right font-medium">
-              {f.month(report.lightest.month)} · {f.currency(report.lightest.expenses)}
-            </span>
-          </p>
-        )}
-      </section>
+      <ComparisonCard
+        title={t('reports.compareTitle')}
+        rows={[
+          { label: year, totals: report.totals },
+          { label: String(Number(year) - 1), totals: report.previousTotals },
+        ]}
+      />
+
+      <YearVsPrevious year={year} months={report.months} previousMonths={previousMonths} />
+
+      {(report.mostExpensive || report.lightest) && (
+        <section className="card space-y-1">
+          {report.mostExpensive && (
+            <p className="flex justify-between gap-3">
+              <span className="text-muted">{t('reports.mostExpensive')}</span>
+              <span className="tabular text-right font-medium">
+                {f.month(report.mostExpensive.month)} · {f.currency(report.mostExpensive.expenses)}
+              </span>
+            </p>
+          )}
+          {report.lightest && (
+            <p className="flex justify-between gap-3">
+              <span className="text-muted">{t('reports.lightest')}</span>
+              <span className="tabular text-right font-medium">
+                {f.month(report.lightest.month)} · {f.currency(report.lightest.expenses)}
+              </span>
+            </p>
+          )}
+        </section>
+      )}
 
       <section className="card space-y-3">
         <SectionTitle title={t('reports.byMonth')} />
@@ -162,7 +169,11 @@ export function YearView({ year, accountId, onReport }: Props) {
 
       <section className="card space-y-3">
         <SectionTitle title={t('reports.byCategory')} />
-        <CategoryBreakdown byCategory={report.byCategory} collapsible linkFor={categoryLink} />
+        <CategoryBreakdown
+          byCategory={report.byCategory}
+          collapsible
+          linkFor={(id) => categoryLink(id, { year, accountId: scope })}
+        />
       </section>
     </div>
   );

@@ -3,23 +3,43 @@ import type { Category, Rule } from './types';
 type CategorySeed = Pick<Category, 'id' | 'kind' | 'color' | 'icon'>;
 
 const SEEDS: CategorySeed[] = [
-  { id: 'groceries', kind: 'expense', color: '#34c759', icon: '🛒' },
-  { id: 'restaurants', kind: 'expense', color: '#ff9500', icon: '🍽️' },
-  { id: 'transport', kind: 'expense', color: '#5ac8fa', icon: '🚆' },
-  { id: 'fuel', kind: 'expense', color: '#8e8e93', icon: '⛽' },
-  { id: 'rent', kind: 'expense', color: '#af52de', icon: '🏠' },
-  { id: 'utilities', kind: 'expense', color: '#ffcc00', icon: '💡' },
-  { id: 'subscriptions', kind: 'expense', color: '#ff2d55', icon: '🔁' },
-  { id: 'health', kind: 'expense', color: '#ff6b6b', icon: '💊' },
-  { id: 'shopping', kind: 'expense', color: '#0a84ff', icon: '🛍️' },
-  { id: 'leisure', kind: 'expense', color: '#bf5af2', icon: '🎬' },
-  { id: 'travel', kind: 'expense', color: '#64d2ff', icon: '✈️' },
-  { id: 'cash', kind: 'expense', color: '#a2845e', icon: '💶' },
-  { id: 'fees', kind: 'expense', color: '#636366', icon: '🏦' },
-  { id: 'other', kind: 'both', color: '#98989d', icon: '📦' },
-  { id: 'salary', kind: 'income', color: '#30d158', icon: '💼' },
-  { id: 'otherIncome', kind: 'income', color: '#66d4cf', icon: '➕' },
+  { id: 'groceries', kind: 'expense', color: '#22c55e', icon: '🛒' },
+  { id: 'restaurants', kind: 'expense', color: '#f97316', icon: '🍽️' },
+  { id: 'transport', kind: 'expense', color: '#0ea5e9', icon: '🚆' },
+  { id: 'fuel', kind: 'expense', color: '#94a3b8', icon: '⛽' },
+  { id: 'rent', kind: 'expense', color: '#8b5cf6', icon: '🏠' },
+  { id: 'utilities', kind: 'expense', color: '#f59e0b', icon: '💡' },
+  { id: 'subscriptions', kind: 'expense', color: '#ec4899', icon: '🔁' },
+  { id: 'health', kind: 'expense', color: '#ef4444', icon: '💊' },
+  { id: 'shopping', kind: 'expense', color: '#3b82f6', icon: '🛍️' },
+  { id: 'leisure', kind: 'expense', color: '#a855f7', icon: '🎬' },
+  { id: 'travel', kind: 'expense', color: '#14b8a6', icon: '✈️' },
+  { id: 'cash', kind: 'expense', color: '#a16207', icon: '💶' },
+  { id: 'fees', kind: 'expense', color: '#78716c', icon: '🏦' },
+  { id: 'other', kind: 'both', color: '#64748b', icon: '📦' },
+  { id: 'salary', kind: 'income', color: '#84cc16', icon: '💼' },
+  { id: 'otherIncome', kind: 'income', color: '#06b6d4', icon: '➕' },
 ];
+
+/** Colori delle categorie predefinite fino alla versione 3 del database: servono solo a rinnovare quelle mai cambiate. */
+export const LEGACY_CATEGORY_COLORS: Record<string, string> = {
+  groceries: '#34c759',
+  restaurants: '#ff9500',
+  transport: '#5ac8fa',
+  fuel: '#8e8e93',
+  rent: '#af52de',
+  utilities: '#ffcc00',
+  subscriptions: '#ff2d55',
+  health: '#ff6b6b',
+  shopping: '#0a84ff',
+  leisure: '#bf5af2',
+  travel: '#64d2ff',
+  cash: '#a2845e',
+  fees: '#636366',
+  other: '#98989d',
+  salary: '#30d158',
+  otherIncome: '#66d4cf',
+};
 
 export const DEFAULT_CATEGORIES: Category[] = SEEDS.map((s) => ({ ...s, builtin: true }));
 

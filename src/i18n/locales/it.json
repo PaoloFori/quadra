@@ -101,7 +101,8 @@
     "kind": "Tipo",
     "both": "Entrambe",
     "color": "Colore",
-    "confirmDelete": "Eliminare la categoria? I movimenti collegati resteranno senza categoria."
+    "confirmDelete": "Eliminare la categoria? I movimenti collegati resteranno senza categoria.",
+    "customColor": "Colore personalizzato"
   },
   "import": {
     "title": "Importa movimenti",
@@ -223,7 +224,14 @@
     "month": "Mese",
     "chartType": "Tipo di grafico",
     "chart_donut": "Ciambella",
-    "chart_pie": "Torta"
+    "chart_pie": "Torta",
+    "vsLabel": "Rispetto a {{period}}",
+    "yearVsPrevious": "{{year}} contro {{previous}}",
+    "metric": "Voce",
+    "compareTitle": "Confronto",
+    "thisMonthLabel": "Questo mese",
+    "lastMonths": "Ultimi 6 mesi",
+    "sameMonthLastYear": "Stesso mese, anno scorso"
   },
   "budget": {
     "add": "Nuovo budget",
@@ -241,7 +249,18 @@
     "spentOf": "Spesi {{spent}} su {{limit}}",
     "percentUsed": "{{pct}}% usato",
     "exceeded_one": "{{count}} budget superato",
-    "exceeded_other": "{{count}} budget superati"
+    "exceeded_other": "{{count}} budget superati",
+    "savingsTitle": "Risparmio",
+    "savingsSet": "Imposta",
+    "savingsIntro": "Quanto vuoi mettere da parte? Imposta un obiettivo al mese e/o all'anno: Quadra prende le entrate, toglie le uscite e ti dice a che punto sei.",
+    "savingsHint": "Lascia vuoto ciò che non ti serve. Il risparmio è «entrate meno uscite» del periodo; i giroconti non contano.",
+    "savingsMonthly": "Obiettivo al mese",
+    "savingsYearly": "Obiettivo all'anno",
+    "savingsFlow": "Entrate {{income}} · Uscite {{expenses}}",
+    "savingsReached": "Obiettivo raggiunto, {{amount}} in più",
+    "savingsMissing": "Mancano {{amount}}",
+    "savingsCanSpend": "puoi ancora spendere {{amount}}",
+    "savingsNoRoom": "con le entrate di ora non c'è più margine"
   },
   "backup": {
     "title": "Backup e ripristino",
@@ -340,7 +359,7 @@
     "tab": "Patrimonio",
     "title": "Patrimonio",
     "vsLastMonth": "Rispetto a fine mese scorso",
-    "history": "Ultimi 12 mesi",
+    "history": "Dal primo mese di cui ho traccia",
     "pace": "A questo ritmo",
     "avgSaving": "Risparmio medio al mese",
     "avgIncome": "Entrate medie",
@@ -362,7 +381,9 @@
     "goalMonths_one": "{{count}} mese",
     "goalMonths_other": "{{count}} mesi",
     "noAccounts": "Aggiungi un conto per vedere il patrimonio.",
-    "dashedHint": "Tratteggio: stima dei prossimi mesi al ritmo attuale."
+    "dashedHint": "Tratteggio: stima dei prossimi mesi al ritmo attuale.",
+    "savedByMonth": "Risparmio mese per mese",
+    "sinceStart": "Dal {{month}}: {{total}} messi da parte"
   },
   "themes": {
     "blu": "Blu notte",
@@ -398,7 +419,13 @@
     "times_other": "{{count}} volte",
     "since": "dal {{date}}",
     "movements_one": "{{count}} movimento",
-    "movements_other": "{{count}} movimenti"
+    "movements_other": "{{count}} movimenti",
+    "allTime": "Tutto lo storico",
+    "emptyPeriod": "Nessun movimento in questa categoria in {{period}}.",
+    "byDay": "Giorno per giorno",
+    "byMonth": "Mese per mese",
+    "inPeriod": "Movimenti di {{period}}",
+    "seeAllPeriod": "Vedi tutti i movimenti del periodo"
   },
   "recurrence": {
     "title": "Ricorrenze",

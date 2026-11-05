@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
@@ -17,11 +17,29 @@ import { DOT } from '@/features/reports/shared';
 import { movementsLink } from '@/features/transactions/movementsLink';
 import { useFormat } from '@/i18n/useFormat';
 import { monthOf, todayIso } from '@/lib/dates';
+import { ALL_ACCOUNTS } from '@/domain/reports/accounts';
+import { CategoryPeriodView, scopeParamsOf } from './CategoryPeriodView';
 
 /** Analisi di una singola categoria: totali, andamento, dove si spende e movimenti più alti. */
 export default function CategoryPage() {
   const { id = 'none' } = useParams();
+  const [params] = useSearchParams();
   const categoryId = id === 'none' ? null : id;
+  const scope = scopeParamsOf(params.get('month'), params.get('year'));
+  if (scope) {
+    return (
+      <CategoryPeriodView
+        categoryId={categoryId}
+        scope={scope}
+        accountId={params.get('account') ?? ALL_ACCOUNTS}
+      />
+    );
+  }
+  return <CategoryAllTime categoryId={categoryId} />;
+}
+
+/** Analisi di tutto lo storico di una categoria. */
+function CategoryAllTime({ categoryId }: { categoryId: string | null }) {
   const { t } = useTranslation();
   const f = useFormat();
   const lookup = useCategoryLookup();

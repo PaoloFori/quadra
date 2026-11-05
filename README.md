@@ -70,6 +70,13 @@ riporta le date corrette. Poi importa ogni CSV scegliendo il conto corrispondent
 Per fare tutto in un colpo: `npm run build-backup` crea `private/quadra-backup-spese.json` (conti, movimenti, categorie e giroconti già pronti).
 In Quadra: _Impostazioni → Backup → Ripristina da file → Sostituisci tutto_.
 
+## Analisi
+
+- **Categoria dentro un mese o un anno:** dal grafico a ciambella di Home, Resoconti mensili e annuali, toccando una categoria si vede l'analisi di quel solo periodo (e del conto scelto); «Tutto lo storico» riporta all'analisi completa.
+- **Confronto:** il mese si confronta con il precedente e con lo stesso mese dell'anno scorso; l'anno con quello prima, mese per mese.
+- **Patrimonio:** parte dal primo mese di cui c'è traccia.
+- **Risparmio (Budget):** obiettivo mensile e/o annuale; Quadra prende entrate meno uscite del periodo e mostra quanto manca e quanto si può ancora spendere.
+
 ## Controllo dell'estratto conto
 
 _Impostazioni → Controlla estratto_: scegli il conto e carica il PDF dell'estratto. Quadra confronta riga per riga

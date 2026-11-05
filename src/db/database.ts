@@ -8,7 +8,7 @@ import type {
   Rule,
   Transaction,
 } from '@/domain/types';
-import { DEFAULT_CATEGORIES, DEFAULT_RULES } from '@/domain/defaults';
+import { DEFAULT_CATEGORIES, DEFAULT_RULES, LEGACY_CATEGORY_COLORS } from '@/domain/defaults';
 
 export interface SettingRow {
   key: string;
@@ -47,6 +47,18 @@ export class QuadraDb extends Dexie {
         'id, accountId, date, [accountId+date], categoryId, hash, transferGroupId, recurrenceId',
       recurrences: 'id, nextDue',
     });
+
+    // v4: colori più distinti per le categorie predefinite (solo quelle che hanno ancora il colore di una volta).
+    this.version(4)
+      .stores({})
+      .upgrade(async (tx) => {
+        for (const c of DEFAULT_CATEGORIES) {
+          const stored = await tx.table('categories').get(c.id);
+          if (stored && stored.color === LEGACY_CATEGORY_COLORS[c.id]) {
+            await tx.table('categories').update(c.id, { color: c.color });
+          }
+        }
+      });
 
     this.on('populate', (tx) => {
       void tx.table('categories').bulkAdd(DEFAULT_CATEGORIES);

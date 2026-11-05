@@ -6,7 +6,10 @@ import type { AccountBalance } from '@/domain/balances';
 import { ALL_ACCOUNTS, filterByAccount } from '@/domain/reports/accounts';
 import {
   lastFullMonths,
+  monthlyHistory,
+  monthsSinceFirst,
   projectWealth,
+  type MonthlyFlow,
   trend,
   wealthSeries,
   type Trend,
@@ -19,6 +22,8 @@ export interface Wealth {
   currentCents: number;
   flows: Trend;
   projection: WealthProjection;
+  /** Entrate e uscite di ogni mese dal primo movimento. */
+  history: MonthlyFlow[];
 }
 
 /** Patrimonio attuale, storico degli ultimi mesi e proiezione, per tutti i conti o uno solo. */
@@ -37,7 +42,11 @@ export function useWealth(accountId: string = ALL_ACCOUNTS): Wealth | null | und
       accounts: mine,
       currentCents,
       flows,
-      projection: projectWealth(wealthSeries(currentCents, txs, today), flows.avgSavingCents),
+      projection: projectWealth(
+        wealthSeries(currentCents, txs, today, monthsSinceFirst(txs, today)),
+        flows.avgSavingCents,
+      ),
+      history: monthlyHistory(txs, today),
     };
   }, [balances, all, accountId]);
 }

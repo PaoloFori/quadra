@@ -71,7 +71,13 @@ export function DailyChart({ data }: { data: DailyPoint[] }) {
   );
 }
 
-export function YearBars({ months }: { months: MonthTotals[] }) {
+export function YearBars({
+  months,
+  label,
+}: {
+  months: Array<Pick<MonthTotals, 'month' | 'income' | 'expenses'>>;
+  label?: string;
+}) {
   const { t } = useTranslation();
   const f = useFormat();
   const data = months.map((m) => ({
@@ -80,7 +86,7 @@ export function YearBars({ months }: { months: MonthTotals[] }) {
     expenses: m.expenses,
   }));
   return (
-    <div className="h-56" role="img" aria-label={t('reports.byMonth')}>
+    <div className="h-56" role="img" aria-label={label ?? t('reports.byMonth')}>
       <ResponsiveContainer>
         <BarChart data={data} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
           <XAxis
@@ -135,7 +141,8 @@ export function MonthlyBars({
             tickLine={false}
             axisLine={false}
             fontSize={10}
-            interval={0}
+            interval={data.length > 12 ? 'preserveStartEnd' : 0}
+            minTickGap={8}
           />
           <YAxis hide />
           <Tooltip

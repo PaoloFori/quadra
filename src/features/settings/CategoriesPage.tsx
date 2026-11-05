@@ -7,17 +7,32 @@ import { useCategoryLookup } from '@/db/hooks';
 import { categoriesRepo, newId } from '@/db/repositories';
 import type { Category, CategoryKind } from '@/domain/types';
 
-const COLORS = [
-  '#34c759',
-  '#ff9500',
-  '#5ac8fa',
-  '#af52de',
-  '#ffcc00',
-  '#ff2d55',
-  '#0a84ff',
-  '#a2845e',
-  '#636366',
-  '#30d158',
+/** Palette per le categorie: tinte ben distinte tra loro, leggibili su sfondo scuro e chiaro. */
+export const CATEGORY_COLORS = [
+  '#ef4444',
+  '#f97316',
+  '#f59e0b',
+  '#eab308',
+  '#84cc16',
+  '#22c55e',
+  '#10b981',
+  '#14b8a6',
+  '#06b6d4',
+  '#0ea5e9',
+  '#3b82f6',
+  '#6366f1',
+  '#8b5cf6',
+  '#a855f7',
+  '#d946ef',
+  '#ec4899',
+  '#f43f5e',
+  '#fb7185',
+  '#a16207',
+  '#78716c',
+  '#94a3b8',
+  '#64748b',
+  '#0f766e',
+  '#7c2d12',
 ];
 
 function CategorySheet({ category, onClose }: { category?: Category; onClose: () => void }) {
@@ -25,7 +40,7 @@ function CategorySheet({ category, onClose }: { category?: Category; onClose: ()
   const lookup = useCategoryLookup();
   const [name, setName] = useState(category ? lookup.label(category.id) : '');
   const [icon, setIcon] = useState(category?.icon ?? '🏷️');
-  const [color, setColor] = useState(category?.color ?? COLORS[0]!);
+  const [color, setColor] = useState(category?.color ?? CATEGORY_COLORS[0]!);
   const [kind, setKind] = useState<CategoryKind>(category?.kind ?? 'expense');
 
   async function save(): Promise<void> {
@@ -95,7 +110,7 @@ function CategorySheet({ category, onClose }: { category?: Category; onClose: ()
         </div>
       </div>
       <div role="radiogroup" aria-label={t('categories.color')} className="flex flex-wrap gap-2">
-        {COLORS.map((c) => (
+        {CATEGORY_COLORS.map((c) => (
           <button
             key={c}
             role="radio"
@@ -106,6 +121,20 @@ function CategorySheet({ category, onClose }: { category?: Category; onClose: ()
             style={{ backgroundColor: c }}
           />
         ))}
+        <label
+          className={`relative flex h-11 w-11 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 text-[18px] ${CATEGORY_COLORS.includes(color) ? 'border-line-strong' : 'border-ink'}`}
+          style={{ backgroundColor: CATEGORY_COLORS.includes(color) ? undefined : color }}
+          title={t('categories.customColor')}
+        >
+          <span aria-hidden="true">🎨</span>
+          <input
+            type="color"
+            aria-label={t('categories.customColor')}
+            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+          />
+        </label>
       </div>
       <div className="flex gap-2">
         {category && !category.builtin && (

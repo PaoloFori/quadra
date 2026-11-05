@@ -17,7 +17,9 @@ export async function setSetting<K extends keyof Settings>(
   key: K,
   value: Settings[K],
 ): Promise<void> {
-  await db.settings.put({ key, value });
+  // un valore vuoto toglie l'impostazione invece di salvarla come «undefined»
+  if (value === undefined) await db.settings.delete(key);
+  else await db.settings.put({ key, value });
 }
 
 /** Valori privati del dispositivo (PIN, credenziali): mai inclusi nei backup. */

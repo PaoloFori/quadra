@@ -32,6 +32,15 @@ export function wealthSeries(
   return points;
 }
 
+/** Quanti mesi (il corrente incluso) sono passati dal primo movimento: almeno 2, per poter disegnare una linea. */
+export function monthsSinceFirst(txs: readonly Transaction[], today: IsoDate): number {
+  if (txs.length === 0) return 2;
+  const first = txs.reduce((min, t) => (t.date < min ? t.date : min), txs[0]!.date);
+  const [fy, fm] = [Number(first.slice(0, 4)), Number(first.slice(5, 7))];
+  const [ty, tm] = [Number(today.slice(0, 4)), Number(today.slice(5, 7))];
+  return Math.max((ty - fy) * 12 + (tm - fm) + 1, 2);
+}
+
 export interface MonthlyFlow extends Totals {
   month: MonthKey;
 }
@@ -163,4 +172,30 @@ export function projectWealth(
     projectedFrom: series.length,
     delta: { cents: last && base ? last.cents - base.cents : 0, months: Math.max(span, 0) },
   };
+}
+
+/** Entrate e uscite di ogni mese dal primo movimento fino al mese in corso (incluso). */
+export function monthlyHistory(txs: readonly Transaction[], today: IsoDate): MonthlyFlow[] {
+  const count = monthsSinceFirst(txs, today);
+  const current = monthOf(today);
+  const byMonth = new Map<MonthKey, Transaction[]>();
+  for (const t of txs) {
+    const m = monthOf(t.date);
+    byMonth.set(m, [...(byMonth.get(m) ?? []), t]);
+  }
+  return Array.from({ length: count }, (_, i) => shiftMonth(current, -(count - 1 - i))).map(
+    (month) => ({ month, ...totalsOf(byMonth.get(month) ?? []) }),
+  );
+}
+
+/** Entrate e uscite degli ultimi `count` mesi fino a `month` incluso (anche il mese scelto, completo o no). */
+export function monthlyTrend(
+  txs: readonly Transaction[],
+  month: MonthKey,
+  count = 6,
+): MonthlyFlow[] {
+  return Array.from({ length: count }, (_, i) => shiftMonth(month, -(count - 1 - i))).map((m) => ({
+    month: m,
+    ...totalsOf(txs.filter((t) => monthOf(t.date) === m)),
+  }));
 }

@@ -101,7 +101,8 @@
     "kind": "Type",
     "both": "Both",
     "color": "Color",
-    "confirmDelete": "Delete this category? Linked transactions will become uncategorized."
+    "confirmDelete": "Delete this category? Linked transactions will become uncategorized.",
+    "customColor": "Custom colour"
   },
   "import": {
     "title": "Import transactions",
@@ -223,7 +224,14 @@
     "month": "Month",
     "chartType": "Chart type",
     "chart_donut": "Donut",
-    "chart_pie": "Pie"
+    "chart_pie": "Pie",
+    "vsLabel": "Compared with {{period}}",
+    "yearVsPrevious": "{{year}} vs {{previous}}",
+    "metric": "Measure",
+    "compareTitle": "Comparison",
+    "thisMonthLabel": "This month",
+    "lastMonths": "Last 6 months",
+    "sameMonthLastYear": "Same month last year"
   },
   "budget": {
     "add": "New budget",
@@ -241,7 +249,18 @@
     "spentOf": "Spent {{spent}} of {{limit}}",
     "percentUsed": "{{pct}}% used",
     "exceeded_one": "{{count}} budget exceeded",
-    "exceeded_other": "{{count}} budgets exceeded"
+    "exceeded_other": "{{count}} budgets exceeded",
+    "savingsTitle": "Savings",
+    "savingsSet": "Set",
+    "savingsIntro": "How much do you want to put aside? Set a monthly and/or yearly goal: Quadra takes your income, subtracts spending and tells you where you are.",
+    "savingsHint": "Leave blank what you don't need. Savings are «income minus spending» for the period; transfers don't count.",
+    "savingsMonthly": "Monthly goal",
+    "savingsYearly": "Yearly goal",
+    "savingsFlow": "Income {{income}} · Spending {{expenses}}",
+    "savingsReached": "Goal reached, {{amount}} more",
+    "savingsMissing": "{{amount}} to go",
+    "savingsCanSpend": "you can still spend {{amount}}",
+    "savingsNoRoom": "with current income there is no room left"
   },
   "backup": {
     "title": "Backup & restore",
@@ -340,7 +359,7 @@
     "tab": "Net worth",
     "title": "Net worth",
     "vsLastMonth": "Versus end of last month",
-    "history": "Last 12 months",
+    "history": "Since the first month on record",
     "pace": "At this pace",
     "avgSaving": "Average monthly saving",
     "avgIncome": "Average income",
@@ -362,7 +381,9 @@
     "goalMonths_one": "{{count}} month",
     "goalMonths_other": "{{count}} months",
     "noAccounts": "Add an account to see your net worth.",
-    "dashedHint": "Dashed: estimate for the coming months at the current pace."
+    "dashedHint": "Dashed: estimate for the coming months at the current pace.",
+    "savedByMonth": "Saved month by month",
+    "sinceStart": "Since {{month}}: {{total}} set aside"
   },
   "themes": {
     "blu": "Night blue",
@@ -398,7 +419,13 @@
     "times_other": "{{count}} times",
     "since": "since {{date}}",
     "movements_one": "{{count}} transaction",
-    "movements_other": "{{count}} transactions"
+    "movements_other": "{{count}} transactions",
+    "allTime": "All history",
+    "emptyPeriod": "No transactions in this category in {{period}}.",
+    "byDay": "Day by day",
+    "byMonth": "Month by month",
+    "inPeriod": "Transactions in {{period}}",
+    "seeAllPeriod": "See all transactions in this period"
   },
   "recurrence": {
     "title": "Recurring",

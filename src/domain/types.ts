@@ -96,6 +96,9 @@ export interface Settings {
   theme?: string;
   lastBackupAt?: string;
   lastYearEndReminder?: number;
+  /** Obiettivo di risparmio (centesimi): quanto mettere da parte ogni mese / ogni anno. */
+  savingsMonthlyCents?: number;
+  savingsYearlyCents?: number;
 }
 
 export type Frequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';

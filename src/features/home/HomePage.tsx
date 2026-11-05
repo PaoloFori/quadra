@@ -109,7 +109,11 @@ export default function HomePage() {
                   <span className="text-[13px] capitalize text-muted">{f.month(month)}</span>
                 }
               />
-              <CategoryBreakdown byCategory={byCategory} collapsible linkFor={categoryLink} />
+              <CategoryBreakdown
+                byCategory={byCategory}
+                collapsible
+                linkFor={(id) => categoryLink(id, { month })}
+              />
             </section>
           )}
 
