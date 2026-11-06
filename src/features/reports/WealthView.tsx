@@ -10,6 +10,7 @@ import { parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
 import { DOT } from './shared';
 import { useWealth } from './useWealth';
+import { AmountInput } from '@/components/AmountInput';
 
 const GOAL_KEY = 'quadra:goal';
 
@@ -74,10 +75,9 @@ function GoalCard({
           <label className="label" htmlFor="goal-amount">
             {t('wealth.goalAmount')}
           </label>
-          <input
+          <AmountInput
             id="goal-amount"
             className="input tabular"
-            inputMode="decimal"
             value={goal.amount}
             onChange={(e) => update({ ...goal, amount: e.target.value })}
           />

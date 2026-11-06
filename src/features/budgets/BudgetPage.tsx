@@ -21,6 +21,7 @@ import type { Budget } from '@/domain/types';
 import { monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
+import { AmountInput } from '@/components/AmountInput';
 
 function BudgetSheet({
   budget,
@@ -74,10 +75,9 @@ function BudgetSheet({
         <label className="label" htmlFor="b-amount">
           {t('budget.monthlyLimit')}
         </label>
-        <input
+        <AmountInput
           id="b-amount"
           className="input tabular"
-          inputMode="decimal"
           autoFocus
           value={amount}
           onChange={(e) => {
@@ -140,10 +140,9 @@ function SavingsSheet({
         <label className="label" htmlFor="sv-month">
           {t('budget.savingsMonthly')}
         </label>
-        <input
+        <AmountInput
           id="sv-month"
           className="input tabular"
-          inputMode="decimal"
           autoFocus
           value={monthly}
           onChange={(e) => {
@@ -156,10 +155,9 @@ function SavingsSheet({
         <label className="label" htmlFor="sv-year">
           {t('budget.savingsYearly')}
         </label>
-        <input
+        <AmountInput
           id="sv-year"
           className="input tabular"
-          inputMode="decimal"
           value={yearly}
           onChange={(e) => {
             setYearly(e.target.value);

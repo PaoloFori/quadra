@@ -102,7 +102,12 @@
     "both": "Both",
     "color": "Color",
     "confirmDelete": "Delete this category? Linked transactions will become uncategorized.",
-    "customColor": "Custom colour"
+    "customColor": "Custom colour",
+    "newShort": "New",
+    "newName": "New category name",
+    "addShort": "Add",
+    "alreadyExists": "“{{name}}” already exists: I selected it.",
+    "created": "Category “{{name}}” created and selected."
   },
   "import": {
     "title": "Import transactions",

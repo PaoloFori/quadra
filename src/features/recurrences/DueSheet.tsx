@@ -6,6 +6,7 @@ import type { IsoDate, Recurrence } from '@/domain/types';
 import { useFormat } from '@/i18n/useFormat';
 import { todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
+import { AmountInput } from '@/components/AmountInput';
 
 /** Conferma una scadenza: importo e data si possono cambiare, ma solo per questa volta. */
 export function DueSheet({
@@ -51,10 +52,9 @@ export function DueSheet({
         <label className="label" htmlFor="due-amount">
           {t('common.amount')}
         </label>
-        <input
+        <AmountInput
           id="due-amount"
           className="input tabular"
-          inputMode="decimal"
           autoFocus
           value={amount}
           onChange={(e) => {

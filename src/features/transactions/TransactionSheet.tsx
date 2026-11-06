@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { CategoryPicker } from '@/components/CategoryPicker';
 import { Sheet } from '@/components/Sheet';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
-import { recurrencesRepo, rulesRepo } from '@/db/repositories';
+import { categoriesRepo, newId, recurrencesRepo, rulesRepo } from '@/db/repositories';
 import { autoRegisterDue, makeRecurring } from '@/db/recurrenceService';
 import {
   addManualTransaction,
@@ -18,13 +18,21 @@ import { similarTransactions } from '@/domain/history';
 import { Amount } from '@/components/Amount';
 import { transactionsRepo } from '@/db/repositories';
 import { matchCategory } from '@/domain/rules';
+import { findCategoryByName, nextCategoryColor } from '@/domain/categoryMatch';
+import { CATEGORY_COLORS } from '@/domain/defaults';
 import { FREQUENCIES } from '@/domain/recurrence';
 import type { Frequency, Transaction } from '@/domain/types';
 import { todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
+import { AmountInput } from '@/components/AmountInput';
 
 const LAST_ACCOUNT_KEY = 'quadra.lastAccount';
+
+/** Telefono o tablet (schermo toccato con il dito): lì si chiude la tastiera da sola. */
+function isTouchDevice(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches;
+}
 
 function rememberedAccount(): string | undefined {
   try {
@@ -67,6 +75,9 @@ export function TransactionSheet({ tx, onClose }: Props) {
   ).find((r) => r.id === tx?.recurrenceId);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [categoryNotice, setCategoryNotice] = useState<string | null>(null);
 
   const all = useLiveQuery(() => (tx ? transactionsRepo.all() : Promise.resolve([])), [tx?.id], []);
   const similar = useMemo(() => (tx ? similarTransactions(all, tx) : []), [all, tx]);
@@ -76,6 +87,36 @@ export function TransactionSheet({ tx, onClose }: Props) {
   const suggested = useMemo(() => (note ? matchCategory(note, rules) : null), [note, rules]);
   const shownCategory = categoryTouched || categoryId ? categoryId : suggested;
   const categoryChanged = !!tx && shownCategory !== tx.categoryId && shownCategory !== null;
+
+  /** Nuova categoria dal nome scritto: se esiste già (stesso nome) si usa quella, altrimenti si crea. */
+  async function createCategory(): Promise<void> {
+    const name = newName.trim();
+    if (!name) return;
+    const existing = findCategoryByName(lookup.all, lookup.label, name);
+    let id: string;
+    if (existing) {
+      id = existing.id;
+      setCategoryNotice(t('categories.alreadyExists', { name: lookup.label(existing.id) }));
+    } else {
+      id = newId();
+      await categoriesRepo.put({
+        id,
+        builtin: false,
+        icon: '🏷️',
+        color: nextCategoryColor(
+          lookup.all.map((c) => c.color),
+          CATEGORY_COLORS,
+        ),
+        kind: income ? 'income' : 'expense',
+        name,
+      });
+      setCategoryNotice(t('categories.created', { name }));
+    }
+    setCategoryId(id);
+    setCategoryTouched(true);
+    setNewName('');
+    setCreating(false);
+  }
 
   async function save(): Promise<void> {
     const cents = parseUserAmount(amount);
@@ -162,19 +203,39 @@ export function TransactionSheet({ tx, onClose }: Props) {
       </div>
 
       <div>
+        <label className="label" htmlFor="tx-account">
+          {t('common.account')}
+        </label>
+        <select
+          id="tx-account"
+          className="input"
+          value={effectiveAccount}
+          onChange={(e) => setAccountId(e.target.value)}
+        >
+          {accounts.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
         <label className="label" htmlFor="tx-amount">
           {t('common.amount')}
         </label>
-        <input
+        <AmountInput
           id="tx-amount"
           className="input tabular !text-2xl font-bold"
-          inputMode="decimal"
           autoFocus={!tx}
           placeholder="0,00"
           value={amount}
           onChange={(e) => {
-            setAmount(e.target.value);
+            const value = e.target.value;
+            setAmount(value);
             setError(null);
+            // su telefono, scritti i due decimali la tastiera si chiude: il tasto Salva resta raggiungibile
+            if (isTouchDevice() && /^\d+[.,]\d{2}$/.test(value.trim())) e.target.blur();
           }}
         />
         {error && (
@@ -183,40 +244,6 @@ export function TransactionSheet({ tx, onClose }: Props) {
           </p>
         )}
       </div>
-
-      <div>
-        <label className="label" htmlFor="tx-note">
-          {t('common.note')}
-        </label>
-        <input
-          id="tx-note"
-          className="input"
-          placeholder={t('tx.notePlaceholder')}
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-      </div>
-
-      <CategoryPicker
-        lookup={lookup}
-        kind={income ? 'income' : 'expense'}
-        value={shownCategory}
-        onChange={(id) => {
-          setCategoryId(id);
-          setCategoryTouched(true);
-        }}
-      />
-      {categoryChanged && (
-        <label className="flex min-h-[44px] items-center gap-3 text-[14px]">
-          <input
-            type="checkbox"
-            className="h-5 w-5"
-            checked={applySimilar}
-            onChange={(e) => setApplySimilar(e.target.checked)}
-          />
-          {t('tx.applySimilar')}
-        </label>
-      )}
 
       {tx?.source === 'import' && (
         <div>
@@ -232,82 +259,127 @@ export function TransactionSheet({ tx, onClose }: Props) {
         </div>
       )}
 
+      <div>
+        <label className="label" htmlFor="tx-note">
+          {t('common.note')}
+        </label>
+        <input
+          id="tx-note"
+          className="input"
+          placeholder={t('tx.notePlaceholder')}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-2">
-        <div>
+        <div className="min-w-0">
           <label className="label" htmlFor="tx-date">
             {t('common.date')}
           </label>
           <input
             id="tx-date"
             type="date"
-            className="input"
+            className="input block w-full min-w-0 max-w-full"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
-        <div>
-          <label className="label" htmlFor="tx-account">
-            {t('common.account')}
-          </label>
-          <select
-            id="tx-account"
-            className="input"
-            value={effectiveAccount}
-            onChange={(e) => setAccountId(e.target.value)}
-          >
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {!tx?.isTransfer && !tx?.recurrenceId && (
+          <div className="min-w-0">
+            <label className="label" htmlFor="tx-repeat">
+              {t('recurrence.repeat')}
+            </label>
+            <select
+              id="tx-repeat"
+              className="input block w-full min-w-0 max-w-full"
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value as Frequency | '')}
+            >
+              <option value="">{t('recurrence.never')}</option>
+              {FREQUENCIES.map((fr) => (
+                <option key={fr} value={fr}>
+                  {t(`recurrence.freq.${fr}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      {tx?.recurrenceId ? (
+      {tx?.recurrenceId && (
         <p className="rounded-xl bg-tile p-3 text-[13px] text-muted">
           🔁 {t('recurrence.partOf', { title: recurrence?.title ?? '…' })}{' '}
           <Link to="/settings/recurrences" className="text-accent" onClick={onClose}>
             {t('recurrence.manage')}
           </Link>
         </p>
-      ) : (
-        !tx?.isTransfer && (
-          <div className="space-y-2">
-            <div>
-              <label className="label" htmlFor="tx-repeat">
-                {t('recurrence.repeat')}
-              </label>
-              <select
-                id="tx-repeat"
-                className="input"
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value as Frequency | '')}
-              >
-                <option value="">{t('recurrence.never')}</option>
-                {FREQUENCIES.map((fr) => (
-                  <option key={fr} value={fr}>
-                    {t(`recurrence.freq.${fr}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {frequency && (
-              <label className="flex min-h-[44px] items-start gap-3">
-                <input
-                  type="checkbox"
-                  className="mt-0.5 h-5 w-5 accent-[rgb(var(--accent))]"
-                  checked={remind}
-                  onChange={(e) => setRemind(e.target.checked)}
-                />
-                <span>
-                  <span className="block">{t('recurrence.remind')}</span>
-                  <span className="block text-[12px] text-muted">{t('recurrence.remindHint')}</span>
-                </span>
-              </label>
-            )}
+      )}
+      {frequency && !tx?.recurrenceId && !tx?.isTransfer && (
+        <label className="flex min-h-[44px] items-start gap-3">
+          <input
+            type="checkbox"
+            className="mt-0.5 h-5 w-5 accent-[rgb(var(--accent))]"
+            checked={remind}
+            onChange={(e) => setRemind(e.target.checked)}
+          />
+          <span>
+            <span className="block">{t('recurrence.remind')}</span>
+            <span className="block text-[12px] text-muted">{t('recurrence.remindHint')}</span>
+          </span>
+        </label>
+      )}
+
+      <div className="space-y-2">
+        <CategoryPicker
+          lookup={lookup}
+          kind={income ? 'income' : 'expense'}
+          value={shownCategory}
+          onChange={(id) => {
+            setCategoryId(id);
+            setCategoryTouched(true);
+            setCategoryNotice(null);
+          }}
+          onAdd={() => setCreating(true)}
+        />
+        {creating && (
+          <div className="flex gap-2">
+            <input
+              className="input min-w-0 flex-1"
+              aria-label={t('categories.newName')}
+              placeholder={t('categories.newName')}
+              autoFocus
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  void createCategory();
+                }
+              }}
+            />
+            <button
+              type="button"
+              className="btn-secondary"
+              disabled={newName.trim() === ''}
+              onClick={() => void createCategory()}
+            >
+              {t('categories.addShort')}
+            </button>
           </div>
-        )
+        )}
+        {categoryNotice && <p className="text-[13px] text-muted">{categoryNotice}</p>}
+      </div>
+      {categoryChanged && (
+        <label className="flex min-h-[44px] items-center gap-3 text-[14px]">
+          <input
+            type="checkbox"
+            className="h-5 w-5"
+            checked={applySimilar}
+            onChange={(e) => setApplySimilar(e.target.checked)}
+          />
+          {t('tx.applySimilar')}
+        </label>
       )}
 
       {tx && (

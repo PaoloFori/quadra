@@ -9,6 +9,7 @@ import { getAccountBalances, setAccountBalance } from '@/db/accountService';
 import type { AccountBalance } from '@/domain/balances';
 import { centsToPlain, parseSignedAmount } from '@/lib/money';
 import { AccountSheet } from './AccountSheet';
+import { AmountInput } from '@/components/AmountInput';
 
 function BalancesSheet({ balances, onClose }: { balances: AccountBalance[]; onClose: () => void }) {
   const { t } = useTranslation();
@@ -37,10 +38,10 @@ function BalancesSheet({ balances, onClose }: { balances: AccountBalance[]; onCl
           <label className="label" htmlFor={`bal-${account.id}`}>
             {account.name}
           </label>
-          <input
+          <AmountInput
+            signed
             id={`bal-${account.id}`}
             className="input tabular"
-            inputMode="decimal"
             value={values[account.id] ?? ''}
             onChange={(e) => {
               setValues({ ...values, [account.id]: e.target.value });

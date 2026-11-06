@@ -4,6 +4,7 @@ import { Sheet } from '@/components/Sheet';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { EMPTY_FILTER, type TransactionFilter } from '@/domain/filters';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
+import { AmountInput } from '@/components/AmountInput';
 
 interface Props {
   value: TransactionFilter;
@@ -109,10 +110,9 @@ export function FilterSheet({ value, onApply, onClose }: Props) {
           <label className="label" htmlFor="f-min">
             {t('tx.minAmount')}
           </label>
-          <input
+          <AmountInput
             id="f-min"
             className="input"
-            inputMode="decimal"
             value={min}
             onChange={(e) => setMin(e.target.value)}
           />
@@ -121,10 +121,9 @@ export function FilterSheet({ value, onApply, onClose }: Props) {
           <label className="label" htmlFor="f-max">
             {t('tx.maxAmount')}
           </label>
-          <input
+          <AmountInput
             id="f-max"
             className="input"
-            inputMode="decimal"
             value={max}
             onChange={(e) => setMax(e.target.value)}
           />

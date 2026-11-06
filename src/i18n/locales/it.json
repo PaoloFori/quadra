@@ -102,7 +102,12 @@
     "both": "Entrambe",
     "color": "Colore",
     "confirmDelete": "Eliminare la categoria? I movimenti collegati resteranno senza categoria.",
-    "customColor": "Colore personalizzato"
+    "customColor": "Colore personalizzato",
+    "newShort": "Nuova",
+    "newName": "Nome della nuova categoria",
+    "addShort": "Aggiungi",
+    "alreadyExists": "«{{name}}» esiste già: l'ho selezionata.",
+    "created": "Categoria «{{name}}» creata e selezionata."
   },
   "import": {
     "title": "Importa movimenti",

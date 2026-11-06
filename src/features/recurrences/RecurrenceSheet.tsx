@@ -9,6 +9,7 @@ import { FREQUENCIES } from '@/domain/recurrence';
 import type { Frequency, Recurrence } from '@/domain/types';
 import { todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
+import { AmountInput } from '@/components/AmountInput';
 
 /** Crea o modifica una ricorrenza (le sue regole, non i movimenti già registrati). */
 export function RecurrenceSheet({
@@ -108,10 +109,9 @@ export function RecurrenceSheet({
         <label className="label" htmlFor="r-amount">
           {t('common.amount')}
         </label>
-        <input
+        <AmountInput
           id="r-amount"
           className="input tabular"
-          inputMode="decimal"
           value={amount}
           onChange={(e) => {
             setAmount(e.target.value);
