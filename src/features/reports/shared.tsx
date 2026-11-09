@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
 import { DonutChart, type DonutSlice } from '@/components/DonutChart';
-import { IconTile, MetricCard } from '@/components/ui';
+import { IconTile, MetricCard, SectionTitle } from '@/components/ui';
 import { useCategoryLookup } from '@/db/hooks';
 import { savingsRate, type AccountTotals } from '@/domain/reports/accounts';
 import type { CategoryTotal, Totals } from '@/domain/reports/totals';
-import type { Account } from '@/domain/types';
+import type { Account, Transaction } from '@/domain/types';
 import { useFormat } from '@/i18n/useFormat';
 
 const UNCATEGORIZED_COLOR = '#6e766f';
@@ -197,12 +197,12 @@ export function MetricsGrid({
   const rate = savingsRate(totals);
   return (
     <section className="grid grid-cols-2 gap-3" aria-label={t('reports.summary')}>
-      <RowLink to={links?.income} className="block">
+      <RowLink to={links?.income} className="block transition active:scale-[0.98]">
         <MetricCard label={t('common.income')} dot={DOT.income}>
           <span className="text-income">{f.currency(totals.income)}</span>
         </MetricCard>
       </RowLink>
-      <RowLink to={links?.expenses} className="block">
+      <RowLink to={links?.expenses} className="block transition active:scale-[0.98]">
         <MetricCard label={t('common.expenses')} dot={DOT.expenses}>
           {f.currency(totals.expenses)}
         </MetricCard>
@@ -218,6 +218,75 @@ export function MetricsGrid({
         <MetricCard label={average.label} dot={DOT.other}>
           {f.currency(average.cents)}
         </MetricCard>
+      )}
+    </section>
+  );
+}
+
+/** Gruppo di chip a scelta singola (arco di tempo, cosa confrontare…). */
+export function ChipGroup<T extends string | number>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: Array<{ value: T; text: string }>;
+  value: T;
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div role="group" aria-label={label} className="flex flex-wrap gap-2" data-no-swipe>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          aria-pressed={value === o.value}
+          className={value === o.value ? 'chip chip-on' : 'chip'}
+          onClick={() => onChange(o.value)}
+        >
+          {o.text}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Le spese singole più alte del periodo, con categoria e data: 5 in vista, le altre con un tocco. */
+export function TopExpenses({ txs }: { txs: Transaction[] }) {
+  const { t } = useTranslation();
+  const f = useFormat();
+  const lookup = useCategoryLookup();
+  const [all, setAll] = useState(false);
+  const shown = all ? txs : txs.slice(0, 5);
+  if (txs.length === 0) return null;
+  return (
+    <section className="card">
+      <SectionTitle title={t('reports.topExpenses')} />
+      <ol className="mt-1">
+        {shown.map((tx) => (
+          <li
+            key={tx.id}
+            className="flex min-h-[52px] items-center justify-between gap-3 border-t border-line first:border-0"
+          >
+            <span className="min-w-0">
+              <span className="line-clamp-1 font-medium">{tx.note || tx.description}</span>
+              <span className="line-clamp-1 text-[13px] text-muted">
+                {(tx.categoryId && lookup.byId.get(tx.categoryId)?.icon) || '•'}{' '}
+                {lookup.label(tx.categoryId)} · {f.date(tx.date)}
+              </span>
+            </span>
+            <Amount cents={tx.amountCents} className="text-[16px]" />
+          </li>
+        ))}
+      </ol>
+      {txs.length > 5 && (
+        <button
+          className="btn-secondary mt-2 w-full"
+          aria-expanded={all}
+          onClick={() => setAll(!all)}
+        >
+          {all ? t('reports.showLess') : t('reports.showMore', { count: txs.length - 5 })}
+        </button>
       )}
     </section>
   );

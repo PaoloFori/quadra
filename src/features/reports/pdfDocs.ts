@@ -47,7 +47,7 @@ export function monthPdfDoc(r: MonthReport, ctx: Ctx): PdfDoc {
       { heading: t('reports.byCategory'), rows: categoryRows(r.byCategory, ctx) },
       {
         heading: t('reports.top5'),
-        rows: r.top5.map((tx) => ({
+        rows: r.topExpenses.slice(0, 5).map((tx) => ({
           label: `${f.date(tx.date)} · ${tx.note || tx.description}`,
           value: f.currency(-tx.amountCents),
         })),

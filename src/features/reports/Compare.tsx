@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Delta } from '@/components/Delta';
@@ -28,7 +28,15 @@ const METRICS: Metric[] = ['expenses', 'income', 'net'];
  * Confronto tra il periodo scelto (prima riga) e uno o due periodi passati: barre di entrate, uscite e
  * risparmio affiancate, la tabella dei valori e le variazioni rispetto a ciascun periodo di confronto.
  */
-export function ComparisonCard({ title, rows }: { title: string; rows: PeriodRow[] }) {
+export function ComparisonCard({
+  title,
+  rows,
+  controls,
+}: {
+  title: string;
+  rows: PeriodRow[];
+  controls?: ReactNode;
+}) {
   const { t } = useTranslation();
   const f = useFormat();
   const metricName = (m: Metric): string =>
@@ -46,6 +54,7 @@ export function ComparisonCard({ title, rows }: { title: string; rows: PeriodRow
   return (
     <section className="card space-y-3">
       <SectionTitle title={title} />
+      {controls}
       <div className="h-56" role="img" aria-label={title}>
         <ResponsiveContainer>
           <BarChart data={data} margin={{ left: 0, right: 0, top: 8, bottom: 0 }} barGap={3}>

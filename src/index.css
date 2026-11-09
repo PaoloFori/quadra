@@ -244,6 +244,18 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Tocchi subito affidabili sul telefono: niente attesa del doppio tocco (zoom), che a volte fa perdere il primo tap. */
+a,
+button,
+[role='button'],
+summary,
+label,
+select,
+input,
+textarea {
+  touch-action: manipulation;
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }

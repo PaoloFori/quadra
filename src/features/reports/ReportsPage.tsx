@@ -1,8 +1,10 @@
 import { useCallback, useRef, useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Screen } from '@/components/Screen';
 import { useAccounts, useCategoryLookup } from '@/db/hooks';
+import { transactionsRepo } from '@/db/repositories';
 import { ALL_ACCOUNTS } from '@/domain/reports/accounts';
 import { renderPdf } from '@/domain/export/pdf';
 import type { MonthReport } from '@/domain/reports/month';
@@ -16,6 +18,7 @@ import { MonthView } from './MonthView';
 import { monthPdfDoc, yearPdfDoc } from './pdfDocs';
 import { WealthView } from './WealthView';
 import { YearView } from './YearView';
+import { PeriodPicker } from './PeriodPicker';
 import { AccountChips } from './shared';
 
 export type ReportsMode = 'month' | 'year' | 'wealth' | 'movements';
@@ -46,6 +49,8 @@ export default function ReportsPage({ initialMode = 'month' }: { initialMode?: R
   const monthReport = useRef<MonthReport | undefined>(undefined);
   const yearReport = useRef<YearReport | undefined>(undefined);
   const [exporting, setExporting] = useState(false);
+  const [picking, setPicking] = useState(false);
+  const firstDate = useLiveQuery(transactionsRepo.firstDate, []);
 
   const step = (delta: number): void => {
     if (mode === 'month') setMonth((m) => shiftMonth(m, delta));
@@ -128,9 +133,17 @@ export default function ReportsPage({ initialMode = 'month' }: { initialMode?: R
           >
             ‹
           </button>
-          <h2 className="font-display text-[20px] font-medium capitalize tracking-[-0.02em]">
+          <button
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3 font-display text-[20px] font-medium capitalize tracking-[-0.02em]"
+            aria-haspopup="dialog"
+            aria-label={t(mode === 'month' ? 'reports.pickMonth' : 'reports.pickYear')}
+            onClick={() => setPicking(true)}
+          >
             {title}
-          </h2>
+            <span aria-hidden="true" className="text-[13px] text-muted">
+              ▾
+            </span>
+          </button>
           <button
             className="btn-secondary !min-w-[44px] !px-3"
             aria-label={t('reports.next')}
@@ -139,6 +152,20 @@ export default function ReportsPage({ initialMode = 'month' }: { initialMode?: R
             ›
           </button>
         </div>
+      )}
+
+      {picking && (mode === 'month' || mode === 'year') && (
+        <PeriodPicker
+          mode={mode}
+          value={mode === 'month' ? month : year}
+          firstYear={firstDate ? Number(firstDate.slice(0, 4)) : undefined}
+          onPick={(v) => {
+            if (mode === 'month') setMonth(v);
+            else setYear(v);
+            setPicking(false);
+          }}
+          onClose={() => setPicking(false)}
+        />
       )}
 
       <div className="min-h-[50vh]">

@@ -18,6 +18,9 @@ export const transactionsRepo = {
   latest: (n: number): Promise<Transaction[]> =>
     db.transactions.orderBy('date').reverse().limit(n).toArray(),
   get: (id: string): Promise<Transaction | undefined> => db.transactions.get(id),
+  /** Data del movimento più vecchio (per sapere da che anno partire nelle griglie). */
+  firstDate: async (): Promise<string | undefined> =>
+    (await db.transactions.orderBy('date').first())?.date,
   put: (tx: Transaction): Promise<string> => db.transactions.put(tx),
   update: (id: string, changes: Partial<Transaction>): Promise<number> =>
     db.transactions.update(id, { ...changes, updatedAt: Date.now() }),

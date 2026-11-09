@@ -236,7 +236,21 @@
     "compareTitle": "Comparison",
     "thisMonthLabel": "This month",
     "lastMonths": "Last 6 months",
-    "sameMonthLastYear": "Same month last year"
+    "sameMonthLastYear": "Same month last year",
+    "topExpenses": "Biggest expenses",
+    "showMore": "Show {{count}} more",
+    "showLess": "Show less",
+    "compareWith": "What to compare",
+    "compareBoth": "Previous month & last year",
+    "comparePrevious": "Previous month",
+    "compareLastYear": "Last year",
+    "incomeExpensesTrend": "Income and spending over time",
+    "span": "Time span",
+    "months_one": "{{count}} month",
+    "months_other": "{{count}} months",
+    "spanAll": "All",
+    "pickMonth": "Pick a month",
+    "pickYear": "Pick a year"
   },
   "budget": {
     "add": "New budget",

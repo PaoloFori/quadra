@@ -4,6 +4,7 @@ import {
   compare,
   countable,
   expensesByCategory,
+  topExpensesOf,
   totalsOf,
   type CategoryTotal,
   type Totals,
@@ -23,7 +24,8 @@ export interface MonthReport {
   incomeChange: { diff: number; pct: number | null };
   byCategory: CategoryTotal[];
   daily: DailyPoint[];
-  top5: Transaction[];
+  /** Le spese singole più alte del mese (fino a TOP_EXPENSES), dalla più alta. */
+  topExpenses: Transaction[];
   hasData: boolean;
 }
 
@@ -61,10 +63,7 @@ export function buildMonthReport(
     previousCumulative: prev[Math.min(i, prev.length - 1)] ?? 0,
   }));
 
-  const top5 = countable(current)
-    .filter((t) => t.amountCents < 0)
-    .sort((a, b) => a.amountCents - b.amountCents)
-    .slice(0, 5);
+  const topExpenses = topExpensesOf(current);
 
   return {
     month,
@@ -74,7 +73,7 @@ export function buildMonthReport(
     incomeChange: compare(totals.income, previousTotals.income),
     byCategory: expensesByCategory(current),
     daily,
-    top5,
+    topExpenses,
     hasData: current.length > 0,
   };
 }

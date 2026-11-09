@@ -12,7 +12,7 @@ import { YearBars } from './charts';
 import { WealthChart } from '@/components/WealthChart';
 import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
 import { ComparisonCard, YearVsPrevious } from './Compare';
-import { AccountsCompare, CategoryBreakdown, MetricsGrid } from './shared';
+import { AccountsCompare, CategoryBreakdown, MetricsGrid, TopExpenses } from './shared';
 import { SectionTitle } from '@/components/ui';
 
 interface Props {
@@ -175,6 +175,8 @@ export function YearView({ year, accountId, onReport }: Props) {
           linkFor={(id) => categoryLink(id, { year, accountId: scope })}
         />
       </section>
+
+      <TopExpenses txs={report.topExpenses} />
     </div>
   );
 }

@@ -43,3 +43,14 @@ export function expensesByCategory(txs: readonly Transaction[]): CategoryTotal[]
 export function compare(current: number, previous: number): { diff: number; pct: number | null } {
   return { diff: current - previous, pct: previous <= 0 ? null : (current - previous) / previous };
 }
+
+/** Quante spese singole tenere nell'elenco «spese più alte»: la scheda ne mostra 5 e poi tutte. */
+export const TOP_EXPENSES = 20;
+
+/** Le spese singole più alte (i giroconti non contano), dalla più alta. */
+export function topExpensesOf(txs: readonly Transaction[], limit = TOP_EXPENSES): Transaction[] {
+  return countable(txs)
+    .filter((t) => t.amountCents < 0)
+    .sort((a, b) => a.amountCents - b.amountCents)
+    .slice(0, limit);
+}

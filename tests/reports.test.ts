@@ -71,7 +71,7 @@ describe('resoconto mensile', () => {
     expect(report.daily[4]?.previousCumulative).toBe(2000);
   });
   it('top 5 ordinato per importo', () => {
-    expect(report.top5.map((t) => t.amountCents)).toEqual([-4000, -1000, -500]);
+    expect(report.topExpenses.map((t) => t.amountCents)).toEqual([-4000, -1000, -500]);
   });
   it('limita la serie al giorno indicato', () => {
     expect(buildMonthReport(data, '2026-03', 10).daily).toHaveLength(10);

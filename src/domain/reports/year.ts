@@ -1,6 +1,13 @@
 import { yearOf } from '@/lib/dates';
 import type { MonthKey, Transaction } from '../types';
-import { compare, expensesByCategory, totalsOf, type CategoryTotal, type Totals } from './totals';
+import {
+  compare,
+  expensesByCategory,
+  topExpensesOf,
+  totalsOf,
+  type CategoryTotal,
+  type Totals,
+} from './totals';
 
 export interface MonthTotals extends Totals {
   month: MonthKey;
@@ -13,6 +20,8 @@ export interface YearReport {
   previousTotals: Totals;
   months: MonthTotals[];
   byCategory: CategoryTotal[];
+  /** Le spese singole più alte dell'anno (fino a TOP_EXPENSES). */
+  topExpenses: Transaction[];
   /** Spesa media sui mesi che hanno almeno un movimento. */
   averageMonthlyExpenses: number;
   mostExpensive: MonthTotals | null;
@@ -43,6 +52,7 @@ export function buildYearReport(all: readonly Transaction[], year: string): Year
     previousTotals,
     months,
     byCategory: expensesByCategory(current),
+    topExpenses: topExpensesOf(current),
     averageMonthlyExpenses:
       withData.length === 0 ? 0 : Math.round(totals.expenses / withData.length),
     mostExpensive: byExpenses[0] ?? null,

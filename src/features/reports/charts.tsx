@@ -80,8 +80,10 @@ export function YearBars({
 }) {
   const { t } = useTranslation();
   const f = useFormat();
+  // oltre un anno il solo mese è ambiguo: si aggiunge l'anno e si diradano le etichette
+  const long = months.length > 12;
   const data = months.map((m) => ({
-    name: f.monthShort(m.month),
+    name: long ? `${f.monthShort(m.month)} ${m.month.slice(2, 4)}` : f.monthShort(m.month),
     income: m.income,
     expenses: m.expenses,
   }));
@@ -95,7 +97,8 @@ export function YearBars({
             tickLine={false}
             axisLine={false}
             fontSize={10}
-            interval={0}
+            interval={long ? 'preserveStartEnd' : 0}
+            minTickGap={8}
           />
           <YAxis hide />
           <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => f.currency(Number(v))} />
