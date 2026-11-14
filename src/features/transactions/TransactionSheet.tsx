@@ -187,7 +187,11 @@ export function TransactionSheet({ tx, onClose }: Props) {
   }
 
   return (
-    <Sheet title={tx ? t('tx.edit') : t('tx.add')} onClose={onClose}>
+    <Sheet
+      title={tx ? t('tx.edit') : t('tx.add')}
+      onClose={onClose}
+      headerAction={{ label: t('common.save'), onClick: () => void save(), disabled: saving }}
+    >
       <div role="group" aria-label={t('tx.type')} className="grid grid-cols-2 gap-2">
         {([false, true] as const).map((isIncome) => (
           <button
