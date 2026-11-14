@@ -22,6 +22,7 @@ import type { Budget } from '@/domain/types';
 import { monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
+import { usePersistentState } from '@/lib/persistentState';
 import { AmountInput } from '@/components/AmountInput';
 
 function BudgetSheet({ budget, onClose }: { budget?: Budget; onClose: () => void }) {
@@ -270,6 +271,10 @@ export default function BudgetPage() {
     [],
   );
   const [editing, setEditing] = useState<Budget | 'new' | null>(null);
+  // la spiegazione si può chiudere; si ricorda la scelta (chiusa di base)
+  const [helpOpen, setHelpOpen] = usePersistentState<boolean>('budget.help', false, (raw) =>
+    typeof raw === 'boolean' ? raw : undefined,
+  );
   const settings = useLiveQuery(getSettings, [], undefined);
   const [editingSavings, setEditingSavings] = useState(false);
   const year = month.slice(0, 4);
@@ -341,10 +346,24 @@ export default function BudgetPage() {
       </div>
 
       <section className="card space-y-1.5">
-        <h2 className="font-semibold">{t('budget.what')}</h2>
-        <p className="text-[14px] text-muted">{t('budget.intro')}</p>
-        <p className="text-[14px] text-muted">{t('budget.canExceed')}</p>
-        {statuses.length === 0 && <p className="text-[14px] text-muted">{t('budget.howTo')}</p>}
+        <button
+          className="flex min-h-[44px] w-full items-center justify-between gap-3 text-left"
+          aria-expanded={helpOpen}
+          aria-controls="budget-help"
+          onClick={() => setHelpOpen(!helpOpen)}
+        >
+          <span className="font-semibold">{t('budget.what')}</span>
+          <span aria-hidden="true" className="text-[13px] text-muted">
+            {helpOpen ? '▴' : '▾'}
+          </span>
+        </button>
+        {helpOpen && (
+          <div id="budget-help" className="space-y-1.5">
+            <p className="text-[14px] text-muted">{t('budget.intro')}</p>
+            <p className="text-[14px] text-muted">{t('budget.canExceed')}</p>
+            {statuses.length === 0 && <p className="text-[14px] text-muted">{t('budget.howTo')}</p>}
+          </div>
+        )}
       </section>
 
       <section className="card space-y-3" aria-label={t('budget.savingsTitle')}>

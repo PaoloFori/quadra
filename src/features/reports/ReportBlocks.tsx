@@ -16,6 +16,8 @@ export interface Block {
   /** Nome mostrato nella schermata «Personalizza». */
   title: string;
   node: ReactNode;
+  /** Nascosto finché l'utente non lo sceglie da «Personalizza». */
+  hiddenByDefault?: boolean;
 }
 
 /** Salva (o, con `undefined`, azzera) l'ordine dei blocchi di una vista nelle impostazioni, quindi anche nei backup. */
@@ -50,6 +52,7 @@ export function ReportBlocks({
   const ordered = orderBlocks(
     available.map((b) => b.id),
     layouts[view],
+    available.filter((b) => b.hiddenByDefault).map((b) => b.id),
   );
 
   const update = (order: string[], hidden: string[]): void =>

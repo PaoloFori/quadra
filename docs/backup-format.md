@@ -34,7 +34,7 @@
 
 ## Impostazioni dei Resoconti
 
-`data.settings.reportLayouts` (facoltativo) salva, per ciascuna scheda (`month`, `year`, `wealth`), l'ordine dei blocchi e quelli nascosti:
+`data.settings.reportLayouts` (facoltativo) salva, per ciascuna schermata (`month`, `year`, `wealth` dei Resoconti e `home`), l'ordine dei blocchi e quelli nascosti:
 `{ "month": { "order": ["summary", "balance"], "hidden": ["daily"] } }`. Gli id sconosciuti vengono ignorati; i blocchi nuovi si aggiungono in fondo.
 Essendo un campo facoltativo non serve cambiare `schemaVersion`.
 

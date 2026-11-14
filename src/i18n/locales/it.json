@@ -62,7 +62,21 @@
     "liquidity": "Liquidità attuale",
     "newTx": "Nuova",
     "wealthTrend": "Andamento patrimonio",
-    "topCategories": "Spese per categoria"
+    "topCategories": "Spese per categoria",
+    "yearChart": "Entrate e uscite dell'anno",
+    "blocks": {
+      "liquidity": "Liquidità e conti",
+      "due": "Scadenze",
+      "monthSummary": "Riepilogo del mese",
+      "monthChart": "Andamento giornaliero del mese",
+      "yearChart": "Entrate e uscite dell'anno",
+      "categories": "Spese per categoria",
+      "wealthTrend": "Andamento patrimonio",
+      "budget": "Budget residuo",
+      "latest": "Ultimi movimenti",
+      "monthMovements": "Movimenti del mese",
+      "allMovements": "Tutti i movimenti"
+    }
   },
   "settings": {
     "title": "Impostazioni",
@@ -214,7 +228,7 @@
     "savings": "Risparmio",
     "savedOfIncome": "{{pct}} delle entrate",
     "spentTotal": "Spese",
-    "cumulative": "Saldo cumulato",
+    "cumulative": "Andamento annuale",
     "accountFilter": "Conto",
     "movements_one": "{{count}} movimento",
     "movements_other": "{{count}} movimenti",
@@ -274,7 +288,6 @@
     "resetLayout": "Ripristina ordine",
     "blocks": {
       "summary": "Riepilogo",
-      "yearVsPrevious": "Anno su anno",
       "extremes": "Mese più e meno caro",
       "averages": "Medie mensili"
     },
@@ -326,7 +339,9 @@
     "name": "Nome del budget",
     "namePlaceholder": "es. Casa, Tutto, Svago",
     "nameRequired": "Dai un nome al budget.",
-    "oneLimitHint": "Un solo limite per tutte le categorie scelte. I budget possono sovrapporsi (es. «Tutto» e «Casa»)."
+    "oneLimitHint": "Un solo limite per tutte le categorie scelte. I budget possono sovrapporsi (es. «Tutto» e «Casa»).",
+    "helpShow": "Come funziona il budget",
+    "helpHide": "Nascondi la spiegazione"
   },
   "backup": {
     "title": "Backup e ripristino",

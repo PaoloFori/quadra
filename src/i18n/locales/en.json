@@ -62,7 +62,21 @@
     "liquidity": "Current cash",
     "newTx": "New",
     "wealthTrend": "Net worth trend",
-    "topCategories": "Spending by category"
+    "topCategories": "Spending by category",
+    "yearChart": "Income and expenses of the year",
+    "blocks": {
+      "liquidity": "Liquidity and accounts",
+      "due": "Due payments",
+      "monthSummary": "Month summary",
+      "monthChart": "Daily trend of the month",
+      "yearChart": "Income and expenses of the year",
+      "categories": "Spending by category",
+      "wealthTrend": "Net worth trend",
+      "budget": "Budget left",
+      "latest": "Latest transactions",
+      "monthMovements": "Transactions of the month",
+      "allMovements": "All transactions"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -214,7 +228,7 @@
     "savings": "Savings",
     "savedOfIncome": "{{pct}} of income",
     "spentTotal": "Spent",
-    "cumulative": "Cumulative balance",
+    "cumulative": "Annual trend",
     "accountFilter": "Account",
     "movements_one": "{{count}} transaction",
     "movements_other": "{{count}} transactions",
@@ -274,7 +288,6 @@
     "resetLayout": "Reset order",
     "blocks": {
       "summary": "Summary",
-      "yearVsPrevious": "Year over year",
       "extremes": "Most and least expensive month",
       "averages": "Monthly averages"
     },
@@ -326,7 +339,9 @@
     "name": "Budget name",
     "namePlaceholder": "e.g. Home, Everything, Fun",
     "nameRequired": "Give the budget a name.",
-    "oneLimitHint": "One limit for all the chosen categories. Budgets can overlap (e.g. “Everything” and “Home”)."
+    "oneLimitHint": "One limit for all the chosen categories. Budgets can overlap (e.g. “Everything” and “Home”).",
+    "helpShow": "How budgets work",
+    "helpHide": "Hide the explanation"
   },
   "backup": {
     "title": "Backup & restore",

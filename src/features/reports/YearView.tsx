@@ -124,7 +124,18 @@ export function YearView({ year, accountId, onReport }: Props) {
             title={t('reports.balanceTitleYear')}
             startLabel={t('reports.balanceStartYear')}
             endLabel={t('reports.balanceEndYear')}
-            balances={balances}
+            startCents={balances[0]!.startCents}
+            endCents={balances[balances.length - 1]!.endCents}
+            chart={
+              <div className="space-y-1.5">
+                <p className="label-caps">{t('reports.cumulative')}</p>
+                <WealthChart
+                  values={cumulative.map((c) => c.value)}
+                  labels={cumulative.map((c) => c.name)}
+                  label={t('reports.cumulative')}
+                />
+              </div>
+            }
             partialNote={
               year === todayIso().slice(0, 4)
                 ? t('reports.balancePartialYear', { date: f.date(todayIso()) })
@@ -143,13 +154,16 @@ export function YearView({ year, accountId, onReport }: Props) {
             { label: year, totals: report.totals },
             { label: String(Number(year) - 1), totals: report.previousTotals },
           ]}
+          extra={
+            <YearVsPrevious
+              bare
+              year={year}
+              months={report.months}
+              previousMonths={previousMonths}
+            />
+          }
         />
       ),
-    },
-    {
-      id: 'yearVsPrevious',
-      title: t('reports.blocks.yearVsPrevious'),
-      node: <YearVsPrevious year={year} months={report.months} previousMonths={previousMonths} />,
     },
     !!(report.mostExpensive || report.lightest) && {
       id: 'extremes',
@@ -221,20 +235,6 @@ export function YearView({ year, accountId, onReport }: Props) {
               ))}
             </tbody>
           </table>
-        </section>
-      ),
-    },
-    {
-      id: 'cumulative',
-      title: t('reports.cumulative'),
-      node: (
-        <section className="card space-y-3">
-          <SectionTitle title={t('reports.cumulative')} />
-          <WealthChart
-            values={cumulative.map((c) => c.value)}
-            labels={cumulative.map((c) => c.name)}
-            label={t('reports.cumulative')}
-          />
         </section>
       ),
     },

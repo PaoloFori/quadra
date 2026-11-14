@@ -111,9 +111,8 @@ export function MonthView({ month, accountId, onReport }: Props) {
     );
   }, [txs, month]);
   const recurring = useMemo(() => detectRecurring(history ?? []), [history]);
-  // saldo a fine mese: un punto per ogni mese dell'arco scelto, l'ultimo è il mese mostrato
-  const balances = useMonthBalances(accountId, month, span);
-  const thisMonth = balances?.[balances.length - 1];
+  // saldo all'inizio e alla fine del mese mostrato (per il mese in corso: fino a oggi)
+  const thisMonth = useMonthBalances(accountId, month, 1)?.[0];
 
   useEffect(
     () =>
@@ -152,7 +151,7 @@ export function MonthView({ month, accountId, onReport }: Props) {
         />
       ),
     },
-    balances && {
+    thisMonth && {
       id: 'balance',
       title: t('reports.balanceTitle'),
       node: (
@@ -160,13 +159,18 @@ export function MonthView({ month, accountId, onReport }: Props) {
           title={t('reports.balanceTitle')}
           startLabel={t('reports.balanceStartMonth')}
           endLabel={t('reports.balanceEndMonth')}
-          balances={balances}
-          startCents={thisMonth?.startCents}
-          endCents={thisMonth?.endCents}
+          startCents={thisMonth.startCents}
+          endCents={thisMonth.endCents}
           partialNote={
             monthOf(today) === month
               ? t('reports.balancePartialMonth', { date: f.date(today) })
               : undefined
+          }
+          chart={
+            <div className="space-y-1.5">
+              <p className="label-caps">{t('reports.dailyTrend')}</p>
+              <DailyChart data={report.daily} />
+            </div>
           }
         />
       ),
@@ -236,16 +240,6 @@ export function MonthView({ month, accountId, onReport }: Props) {
             collapsible
             linkFor={(id) => categoryLink(id, { month, accountId: scope })}
           />
-        </section>
-      ),
-    },
-    {
-      id: 'daily',
-      title: t('reports.dailyTrend'),
-      node: (
-        <section className="card space-y-3">
-          <SectionTitle title={t('reports.dailyTrend')} />
-          <DailyChart data={report.daily} />
         </section>
       ),
     },

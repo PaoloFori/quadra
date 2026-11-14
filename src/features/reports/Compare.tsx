@@ -32,10 +32,13 @@ export function ComparisonCard({
   title,
   rows,
   controls,
+  extra,
 }: {
   title: string;
   rows: PeriodRow[];
   controls?: ReactNode;
+  /** Altro contenuto nella stessa scheda (es. il confronto mese per mese dell'anno). */
+  extra?: ReactNode;
 }) {
   const { t } = useTranslation();
   const f = useFormat();
@@ -138,6 +141,7 @@ export function ComparisonCard({
             </p>
           </div>
         ))}
+      {extra}
     </section>
   );
 }
@@ -147,10 +151,13 @@ export function YearVsPrevious({
   year,
   months,
   previousMonths,
+  bare = false,
 }: {
   year: string;
   months: MonthTotals[];
   previousMonths: MonthTotals[];
+  /** Senza scheda e titolo propri: per metterlo dentro un'altra scheda. */
+  bare?: boolean;
 }) {
   const { t } = useTranslation();
   const f = useFormat();
@@ -168,9 +175,16 @@ export function YearVsPrevious({
     before: previousMonths[i]?.[metric] ?? 0,
   }));
 
+  const Wrapper = bare ? 'div' : 'section';
   return (
-    <section className="card space-y-3">
-      <SectionTitle title={t('reports.yearVsPrevious', { year, previous: previousYear })} />
+    <Wrapper className={bare ? 'space-y-3 border-t border-line pt-3' : 'card space-y-3'}>
+      {bare ? (
+        <p className="label-caps">
+          {t('reports.yearVsPrevious', { year, previous: previousYear })}
+        </p>
+      ) : (
+        <SectionTitle title={t('reports.yearVsPrevious', { year, previous: previousYear })} />
+      )}
       <div
         className="flex flex-wrap gap-2"
         role="group"
@@ -220,6 +234,6 @@ export function YearVsPrevious({
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </section>
+    </Wrapper>
   );
 }

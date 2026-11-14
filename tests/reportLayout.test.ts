@@ -22,6 +22,12 @@ describe('layout dei blocchi', () => {
     expect(r.map((o) => o.id)).toEqual(['c', 'a', 'b', 'd']);
     expect(r.find((o) => o.id === 'a')?.hidden).toBe(true);
   });
+  it('blocchi nascosti di default: nascosti finché l’utente non li sceglie, anche se nuovi', () => {
+    const hiddenOf = (r: { id: string; hidden: boolean }[]) => r.filter((o) => o.hidden).map((o) => o.id);
+    expect(hiddenOf(orderBlocks(['a', 'b'], undefined, ['b']))).toEqual(['b']);
+    // l'utente ha mostrato b (è nell'ordine salvato e non nei nascosti): resta visibile
+    expect(hiddenOf(orderBlocks(['a', 'b', 'c'], { order: ['a', 'b'], hidden: [] }, ['b', 'c']))).toEqual(['c']);
+  });
   it('sposta su e giù senza uscire dai bordi', () => {
     expect(moveBlock(['a', 'b', 'c'], 'b', -1)).toEqual(['b', 'a', 'c']);
     expect(moveBlock(['a', 'b', 'c'], 'a', -1)).toEqual(['a', 'b', 'c']);
@@ -32,6 +38,7 @@ describe('layout dei blocchi', () => {
     expect(sanitizeLayouts({ month: { order: ['a', 3], hidden: 'no' }, year: 5 })).toEqual({
       month: { order: ['a'], hidden: [] },
     });
+    expect(sanitizeLayouts({ home: { order: ['x'], hidden: [] } }).home?.order).toEqual(['x']);
   });
 });
 
