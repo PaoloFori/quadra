@@ -37,40 +37,84 @@ function BudgetSheet({
   const options = lookup.all.filter(
     (c) => c.kind !== 'income' && (c.id === budget?.categoryId || !taken.has(c.id)),
   );
-  const [categoryId, setCategoryId] = useState(budget?.categoryId ?? '');
+  // nuovo budget: si possono scegliere più categorie, con lo stesso limite; modifica: una sola, quella del budget
+  const [selected, setSelected] = useState<string[]>([]);
   const [amount, setAmount] = useState(
     budget ? centsToPlain(budget.monthlyCents).replace('.', ',') : '',
   );
   const [error, setError] = useState(false);
-  const chosen = categoryId || options[0]?.id || '';
+  const [pickError, setPickError] = useState(false);
+
+  const toggle = (id: string): void => {
+    setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
+    setPickError(false);
+  };
+  const allSelected = options.length > 0 && selected.length === options.length;
 
   async function save(): Promise<void> {
     const cents = parseUserAmount(amount);
-    if (cents === null || !chosen) return setError(true);
-    await budgetsRepo.put({ id: budget?.id ?? newId(), categoryId: chosen, monthlyCents: cents });
+    if (cents === null) return setError(true);
+    if (budget) {
+      await budgetsRepo.put({ id: budget.id, categoryId: budget.categoryId, monthlyCents: cents });
+      return onClose();
+    }
+    if (selected.length === 0) return setPickError(true);
+    await Promise.all(
+      selected.map((categoryId) =>
+        budgetsRepo.put({ id: newId(), categoryId, monthlyCents: cents }),
+      ),
+    );
     onClose();
   }
 
   return (
     <Sheet title={budget ? t('budget.edit') : t('budget.add')} onClose={onClose}>
-      <div>
-        <label className="label" htmlFor="b-cat">
-          {t('common.category')}
-        </label>
-        <select
-          id="b-cat"
-          className="input"
-          value={chosen}
-          disabled={!!budget}
-          onChange={(e) => setCategoryId(e.target.value)}
-        >
-          {options.map((c) => (
-            <option key={c.id} value={c.id}>
-              {lookup.label(c.id)}
-            </option>
-          ))}
-        </select>
-      </div>
+      {budget ? (
+        <div>
+          <label className="label" htmlFor="b-cat">
+            {t('common.category')}
+          </label>
+          <select id="b-cat" className="input" value={budget.categoryId} disabled>
+            {options.map((c) => (
+              <option key={c.id} value={c.id}>
+                {lookup.label(c.id)}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <div>
+          <div className="mb-1.5 flex items-center justify-between gap-3">
+            <span className="label !mb-0" id="b-cats">
+              {t('budget.pickCategories')}
+            </span>
+            <button
+              className="text-[14px] font-medium text-accent"
+              onClick={() => setSelected(allSelected ? [] : options.map((c) => c.id))}
+            >
+              {allSelected ? t('budget.selectNone') : t('budget.selectAll')}
+            </button>
+          </div>
+          <div role="group" aria-labelledby="b-cats" className="flex flex-wrap gap-2">
+            {options.map((c) => (
+              <button
+                key={c.id}
+                aria-pressed={selected.includes(c.id)}
+                onClick={() => toggle(c.id)}
+                className={`chip ${selected.includes(c.id) ? 'chip-on' : ''}`}
+              >
+                <span aria-hidden="true">{c.icon}</span> {lookup.label(c.id)}
+              </button>
+            ))}
+          </div>
+          {options.length === 0 && <p className="text-[14px] text-muted">{t('budget.allTaken')}</p>}
+          {pickError && (
+            <p role="alert" className="mt-1 text-[13px] text-expense">
+              {t('budget.pickAtLeastOne')}
+            </p>
+          )}
+        </div>
+      )}
       <div>
         <label className="label" htmlFor="b-amount">
           {t('budget.monthlyLimit')}
@@ -78,13 +122,18 @@ function BudgetSheet({
         <AmountInput
           id="b-amount"
           className="input tabular"
-          autoFocus
+          autoFocus={!!budget}
           value={amount}
           onChange={(e) => {
             setAmount(e.target.value);
             setError(false);
           }}
         />
+        {selected.length > 1 && (
+          <p className="mt-1 text-[13px] text-muted">
+            {t('budget.sameLimit', { count: selected.length })}
+          </p>
+        )}
         {error && (
           <p role="alert" className="mt-1 text-[13px] text-expense">
             {t('errors.invalidAmount')}

@@ -250,7 +250,18 @@
     "months_other": "{{count}} mesi",
     "spanAll": "Tutto",
     "pickMonth": "Scegli il mese",
-    "pickYear": "Scegli l'anno"
+    "pickYear": "Scegli l'anno",
+    "balanceTitle": "Saldo a fine mese",
+    "balanceTitleYear": "Saldo nell'anno",
+    "balanceStartMonth": "A inizio mese",
+    "balanceEndMonth": "A fine mese",
+    "balanceStartYear": "A inizio anno",
+    "balanceEndYear": "A fine anno",
+    "balanceChange": "Variazione",
+    "balanceColumn": "Saldo",
+    "balancePartialMonth": "Mese in corso: il saldo finale è quello di oggi.",
+    "balancePartialYear": "Anno in corso: il saldo finale è quello di oggi.",
+    "balanceHint": "Include tutti i movimenti, anche i giroconti. Per far coincidere il saldo con quello reale imposta il saldo di partenza dei conti."
   },
   "budget": {
     "add": "Nuovo budget",
@@ -279,7 +290,13 @@
     "savingsReached": "Obiettivo raggiunto, {{amount}} in più",
     "savingsMissing": "Mancano {{amount}}",
     "savingsCanSpend": "puoi ancora spendere {{amount}}",
-    "savingsNoRoom": "con le entrate di ora non c'è più margine"
+    "savingsNoRoom": "con le entrate di ora non c'è più margine",
+    "pickCategories": "Categorie (puoi sceglierne più di una)",
+    "selectAll": "Seleziona tutte",
+    "selectNone": "Deseleziona",
+    "allTaken": "Tutte le categorie hanno già un budget.",
+    "pickAtLeastOne": "Scegli almeno una categoria.",
+    "sameLimit": "Lo stesso limite verrà applicato alle {{count}} categorie scelte."
   },
   "backup": {
     "title": "Backup e ripristino",
@@ -415,7 +432,8 @@
     "mono": "Grafite e bianco",
     "light-blue": "Blu e bianco",
     "light-pink": "Rosa e bianco",
-    "light-green": "Verde e bianco"
+    "light-green": "Verde e bianco",
+    "light-lilac": "Lilla e bianco"
   },
   "category": {
     "back": "Resoconti",

@@ -26,6 +26,8 @@ export interface MonthReport {
   daily: DailyPoint[];
   /** Le spese singole più alte del mese (fino a TOP_EXPENSES), dalla più alta. */
   topExpenses: Transaction[];
+  /** Saldo a inizio e fine mese: lo aggiunge la schermata, che conosce i saldi dei conti. */
+  balance?: { startCents: number; endCents: number };
   hasData: boolean;
 }
 

@@ -26,6 +26,8 @@ export interface YearReport {
   averageMonthlyExpenses: number;
   mostExpensive: MonthTotals | null;
   lightest: MonthTotals | null;
+  /** Saldo a inizio e fine anno: lo aggiunge la schermata, che conosce i saldi dei conti. */
+  balance?: { startCents: number; endCents: number };
   expensesChange: { diff: number; pct: number | null };
   incomeChange: { diff: number; pct: number | null };
   hasData: boolean;

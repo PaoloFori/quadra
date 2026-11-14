@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/Amount';
@@ -10,12 +10,15 @@ import { detectRecurring } from '@/domain/reports/recurring';
 import { buildMonthReport, type MonthReport } from '@/domain/reports/month';
 import type { MonthKey } from '@/domain/types';
 import { daysInMonth, monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
+import { oneOf, usePersistentState } from '@/lib/persistentState';
 import { useFormat } from '@/i18n/useFormat';
 import { DailyChart } from './charts';
 import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
 import { totalsOf } from '@/domain/reports/totals';
 import { monthlyTrend, monthsSinceFirst } from '@/domain/reports/projections';
+import { BalanceCard } from './BalanceCard';
 import { ComparisonCard } from './Compare';
+import { useMonthBalances } from './useBalances';
 import { YearBars } from './charts';
 import { AccountsCompare, CategoryBreakdown, ChipGroup, MetricsGrid, TopExpenses } from './shared';
 
@@ -41,8 +44,16 @@ export function MonthView({ month, accountId, onReport }: Props) {
   );
 
   // Arco del grafico (6, 12, 24 mesi o tutto) e cosa confrontare; si parte da 13 mesi per avere sempre l'anno scorso
-  const [span, setSpan] = useState<6 | 12 | 24 | 0>(6);
-  const [compareWith, setCompareWith] = useState<'both' | 'previous' | 'lastYear'>('both');
+  const [span, setSpan] = usePersistentState<6 | 12 | 24 | 0>(
+    'month.span',
+    6,
+    oneOf([6, 12, 24, 0]),
+  );
+  const [compareWith, setCompareWith] = usePersistentState<'both' | 'previous' | 'lastYear'>(
+    'month.compareWith',
+    'both',
+    oneOf(['both', 'previous', 'lastYear']),
+  );
   const rawCompare = useLiveQuery(
     () =>
       transactionsRepo.inRange(
@@ -98,8 +109,22 @@ export function MonthView({ month, accountId, onReport }: Props) {
     );
   }, [txs, month]);
   const recurring = useMemo(() => detectRecurring(history ?? []), [history]);
+  // saldo a fine mese: un punto per ogni mese dell'arco scelto, l'ultimo è il mese mostrato
+  const balances = useMonthBalances(accountId, month, span);
+  const thisMonth = balances?.[balances.length - 1];
 
-  useEffect(() => onReport(report), [report, onReport]);
+  useEffect(
+    () =>
+      onReport(
+        report && thisMonth
+          ? {
+              ...report,
+              balance: { startCents: thisMonth.startCents, endCents: thisMonth.endCents },
+            }
+          : report,
+      ),
+    [report, thisMonth, onReport],
+  );
 
   if (!report) return <p className="p-6 text-center text-muted">{t('common.loading')}</p>;
   if (!report.hasData) return <p className="card text-muted">{t('reports.noData')}</p>;
@@ -120,6 +145,16 @@ export function MonthView({ month, accountId, onReport }: Props) {
           cents: Math.round(report.totals.expenses / elapsedDays),
         }}
       />
+
+      {balances && (
+        <BalanceCard
+          title={t('reports.balanceTitle')}
+          startLabel={t('reports.balanceStartMonth')}
+          endLabel={t('reports.balanceEndMonth')}
+          balances={balances}
+          partialNote={monthOf(today) === month ? t('reports.balancePartialMonth') : undefined}
+        />
+      )}
 
       {comparison && (
         <ComparisonCard

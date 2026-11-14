@@ -22,6 +22,7 @@ import type { RestorePreview } from '@/domain/backup/merge';
 import { transactionsToCsv } from '@/domain/export/csv';
 import { monthOf, todayIso } from '@/lib/dates';
 import { saveFile } from '@/lib/files';
+import { applyTheme } from '@/lib/themes';
 import { getStorageStatus, requestPersistence, type StorageStatus } from '@/lib/storage';
 import { useFormat } from '@/i18n/useFormat';
 
@@ -198,6 +199,7 @@ function RestoreCard({ onDone }: { onDone: (msg: string) => void }) {
     setBusy(true);
     try {
       await restoreBackup(file, mode);
+      applyTheme((await getSettings()).theme); // il file può portare un tema diverso
       setFile(null);
       setPreview(null);
       onDone(t('backup.restore.done'));

@@ -250,7 +250,18 @@
     "months_other": "{{count}} months",
     "spanAll": "All",
     "pickMonth": "Pick a month",
-    "pickYear": "Pick a year"
+    "pickYear": "Pick a year",
+    "balanceTitle": "Balance at month end",
+    "balanceTitleYear": "Balance through the year",
+    "balanceStartMonth": "At start of month",
+    "balanceEndMonth": "At end of month",
+    "balanceStartYear": "At start of year",
+    "balanceEndYear": "At end of year",
+    "balanceChange": "Change",
+    "balanceColumn": "Balance",
+    "balancePartialMonth": "Current month: the closing balance is as of today.",
+    "balancePartialYear": "Current year: the closing balance is as of today.",
+    "balanceHint": "Includes every movement, transfers too. To make the balance match the real one, set the accounts' starting balance."
   },
   "budget": {
     "add": "New budget",
@@ -279,7 +290,13 @@
     "savingsReached": "Goal reached, {{amount}} more",
     "savingsMissing": "{{amount}} to go",
     "savingsCanSpend": "you can still spend {{amount}}",
-    "savingsNoRoom": "with current income there is no room left"
+    "savingsNoRoom": "with current income there is no room left",
+    "pickCategories": "Categories (you can pick more than one)",
+    "selectAll": "Select all",
+    "selectNone": "Clear",
+    "allTaken": "Every category already has a budget.",
+    "pickAtLeastOne": "Pick at least one category.",
+    "sameLimit": "The same limit will be applied to the {{count}} chosen categories."
   },
   "backup": {
     "title": "Backup & restore",
@@ -415,7 +432,8 @@
     "mono": "Graphite and white",
     "light-blue": "Blue and white",
     "light-pink": "Pink and white",
-    "light-green": "Green and white"
+    "light-green": "Green and white",
+    "light-lilac": "Lilac and white"
   },
   "category": {
     "back": "Reports",

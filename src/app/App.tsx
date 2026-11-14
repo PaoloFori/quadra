@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { ErrorBoundary } from './ErrorBoundary';
 import { AppShell } from './AppShell';
+import { LastScreen } from './LastScreen';
 import { LockProvider } from '@/features/security/LockProvider';
 
 const HomePage = lazy(() => import('@/features/home/HomePage'));
@@ -23,11 +24,15 @@ export function App() {
     <ErrorBoundary>
       <LockProvider>
         <HashRouter>
+          <LastScreen />
           <AppShell>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/transactions" element={<ReportsPage initialMode="movements" />} />
-              <Route path="/reports" element={<ReportsPage />} />
+              <Route
+                path="/transactions"
+                element={<ReportsPage key="transactions" initialMode="movements" />}
+              />
+              <Route path="/reports" element={<ReportsPage key="reports" />} />
               <Route path="/category/:id" element={<CategoryPage />} />
               <Route path="/budget" element={<BudgetPage />} />
               <Route path="/settings/categories" element={<CategoriesPage />} />

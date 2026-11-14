@@ -1,4 +1,4 @@
-import { useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -9,6 +9,7 @@ import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
 import { filterTransactions, isFilterActive, type TransactionFilter } from '@/domain/filters';
 import type { IsoDate, Transaction } from '@/domain/types';
+import { oneOf, readStored, writeStored } from '@/lib/persistentState';
 import { useFormat } from '@/i18n/useFormat';
 import { HistoryView } from './HistoryView';
 import { FilterSheet } from './FilterSheet';
@@ -42,6 +43,23 @@ function withDayHeaders(rows: readonly Transaction[]): Item[] {
 
 const TYPES = [undefined, 'income', 'expense'] as const;
 
+/** Come hai usato i movimenti l'ultima volta: tutti/entrate/uscite, conto e lista o storico. Il testo cercato no. */
+interface MovementsPrefs {
+  type?: 'income' | 'expense';
+  accountId?: string;
+  view: 'list' | 'history';
+}
+const PREFS_KEY = 'movements';
+const parsePrefs = (raw: unknown): MovementsPrefs | undefined => {
+  if (typeof raw !== 'object' || raw === null) return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    type: oneOf(['income', 'expense'] as const)(r.type),
+    accountId: typeof r.accountId === 'string' ? r.accountId : undefined,
+    view: r.view === 'history' ? 'history' : 'list',
+  };
+};
+
 /** Elenco dei movimenti con ricerca, filtri e storico per categoria (una scheda dei Resoconti). */
 export function MovementsPanel({ initial }: { initial: TransactionFilter }) {
   const { t } = useTranslation();
@@ -51,9 +69,17 @@ export function MovementsPanel({ initial }: { initial: TransactionFilter }) {
   const categories = useCategoryLookup();
   const accountById = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
 
-  const [filter, setFilter] = useState<TransactionFilter>(initial);
+  // arrivando da un link (grafico, scheda) valgono i suoi filtri; aprendo i movimenti a mano, quelli dell'ultima volta
+  const [saved] = useState(() => readStored(PREFS_KEY, parsePrefs));
+  const fromLink = isFilterActive(initial);
+  const [filter, setFilter] = useState<TransactionFilter>(() =>
+    fromLink || !saved ? initial : { ...initial, type: saved.type, accountId: saved.accountId },
+  );
   const deferredFilter = useDeferredValue(filter);
-  const [view, setView] = useState<'list' | 'history'>('list');
+  const [view, setView] = useState<'list' | 'history'>(saved?.view ?? 'list');
+  useEffect(() => {
+    writeStored(PREFS_KEY, { type: filter.type, accountId: filter.accountId, view });
+  }, [filter.type, filter.accountId, view]);
   const [editing, setEditing] = useState<Transaction | 'new' | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 

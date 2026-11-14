@@ -70,9 +70,10 @@ export async function restoreBackup(file: BackupFile, mode: RestoreMode): Promis
   ];
   await db.transaction('rw', tables, async () => {
     if (mode === 'replace') {
-      // I segreti del dispositivo (PIN, Face ID) e lastBackupAt restano: non fanno parte dei dati.
+      // I segreti del dispositivo (PIN, Face ID), lastBackupAt e il tema scelto restano: un backup
+      // senza tema (o fatto altrove) non deve cambiare l'aspetto dell'app. Se il file ha un tema, vince quello.
       const keep = (await db.settings.toArray()).filter(
-        (s) => s.key.startsWith('device:') || s.key === 'lastBackupAt',
+        (s) => s.key.startsWith('device:') || s.key === 'lastBackupAt' || s.key === 'theme',
       );
       await Promise.all(tables.map((t) => t.clear()));
       await db.settings.bulkPut(keep);

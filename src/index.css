@@ -4,7 +4,27 @@
 
 /* Temi: ogni tema ridefinisce gli stessi colori. Si applica con data-theme sull'elemento <html>
    (e, per le anteprime in Impostazioni, su un qualunque elemento). Elenco in src/lib/themes.ts. */
-:root,
+:root:not([data-theme]),
+[data-theme='light-lilac'] {
+  --bg: 250 247 255;
+  --card: 255 255 255;
+  --raised: 255 255 255;
+  --tile: 241 235 253;
+  --ink: 38 24 66;
+  --muted: 99 84 130;
+  --faint: 143 129 172;
+  --line: 233 225 247;
+  --line-strong: 213 201 237;
+  --accent: 124 77 219;
+  --accent-subtle: 238 230 254;
+  --on-accent: 255 255 255;
+  --income: 22 130 80;
+  --expense: 214 52 52;
+  --negative-subtle: 254 226 226;
+  --warn: 170 100 0;
+  color-scheme: light;
+}
+
 [data-theme='blu'] {
   --bg: 10 12 11;
   --card: 17 20 18;

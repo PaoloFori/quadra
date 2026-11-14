@@ -38,6 +38,12 @@ export function monthPdfDoc(r: MonthReport, ctx: Ctx): PdfDoc {
           { label: t('common.income'), value: f.currency(r.totals.income) },
           { label: t('common.expenses'), value: f.currency(r.totals.expenses) },
           { label: t('common.balance'), value: signed(f, r.totals.net) },
+          ...(r.balance
+            ? [
+                { label: t('reports.balanceStartMonth'), value: f.currency(r.balance.startCents) },
+                { label: t('reports.balanceEndMonth'), value: f.currency(r.balance.endCents) },
+              ]
+            : []),
           {
             label: t('reports.vsPrevious'),
             value: changeText(f, r.expensesChange.diff, r.expensesChange.pct),
@@ -68,6 +74,12 @@ export function yearPdfDoc(r: YearReport, ctx: Ctx): PdfDoc {
           { label: t('common.income'), value: f.currency(r.totals.income) },
           { label: t('common.expenses'), value: f.currency(r.totals.expenses) },
           { label: t('common.balance'), value: signed(f, r.totals.net) },
+          ...(r.balance
+            ? [
+                { label: t('reports.balanceStartYear'), value: f.currency(r.balance.startCents) },
+                { label: t('reports.balanceEndYear'), value: f.currency(r.balance.endCents) },
+              ]
+            : []),
           { label: t('reports.avgMonthly'), value: f.currency(r.averageMonthlyExpenses) },
           ...(r.mostExpensive
             ? [

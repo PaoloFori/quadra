@@ -5,13 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { useAccounts } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
 import { ALL_ACCOUNTS, filterByAccount, totalsByAccount } from '@/domain/reports/accounts';
-import { monthRange, yearOf } from '@/lib/dates';
+import { monthRange, todayIso, yearOf } from '@/lib/dates';
 import { buildYearReport, type YearReport } from '@/domain/reports/year';
 import { useFormat } from '@/i18n/useFormat';
 import { YearBars } from './charts';
 import { WealthChart } from '@/components/WealthChart';
 import { categoryLink, movementsLink } from '@/features/transactions/movementsLink';
+import { BalanceCard } from './BalanceCard';
 import { ComparisonCard, YearVsPrevious } from './Compare';
+import { useMonthBalances } from './useBalances';
 import { AccountsCompare, CategoryBreakdown, MetricsGrid, TopExpenses } from './shared';
 import { SectionTitle } from '@/components/ui';
 
@@ -54,7 +56,32 @@ export function YearView({ year, accountId, onReport }: Props) {
     }));
   }, [report, f]);
 
-  useEffect(() => onReport(report), [report, onReport]);
+  // saldo a fine di ogni mese dell'anno, fino all'ultimo mese con movimenti (poi sarebbe una linea piatta)
+  const yearBalances = useMonthBalances(accountId, `${year}-12`, 12);
+  const balances = useMemo(() => {
+    const lastMonth = report?.months.filter((m) => m.hasData).at(-1)?.month;
+    return lastMonth ? yearBalances?.filter((b) => b.month <= lastMonth) : undefined;
+  }, [yearBalances, report]);
+  const endByMonth = useMemo(
+    () => new Map((balances ?? []).map((b) => [b.month, b.endCents])),
+    [balances],
+  );
+
+  useEffect(
+    () =>
+      onReport(
+        report && balances?.length
+          ? {
+              ...report,
+              balance: {
+                startCents: balances[0]!.startCents,
+                endCents: balances[balances.length - 1]!.endCents,
+              },
+            }
+          : report,
+      ),
+    [report, balances, onReport],
+  );
 
   if (!report) return <p className="p-6 text-center text-muted">{t('common.loading')}</p>;
   if (!report.hasData) return <p className="card text-muted">{t('reports.noData')}</p>;
@@ -81,6 +108,18 @@ export function YearView({ year, accountId, onReport }: Props) {
         }}
         average={{ label: t('reports.avgMonth'), cents: report.averageMonthlyExpenses }}
       />
+
+      {balances && balances.length > 0 && (
+        <BalanceCard
+          title={t('reports.balanceTitleYear')}
+          startLabel={t('reports.balanceStartYear')}
+          endLabel={t('reports.balanceEndYear')}
+          balances={balances}
+          partialNote={
+            year === todayIso().slice(0, 4) ? t('reports.balancePartialYear') : undefined
+          }
+        />
+      )}
 
       <ComparisonCard
         title={t('reports.compareTitle')}
@@ -122,6 +161,7 @@ export function YearView({ year, accountId, onReport }: Props) {
               <th className="py-2 text-left font-medium">{t('reports.month')}</th>
               <th className="py-2 text-right font-medium">{t('common.income')}</th>
               <th className="py-2 text-right font-medium">{t('common.expenses')}</th>
+              <th className="py-2 text-right font-medium">{t('reports.balanceColumn')}</th>
             </tr>
           </thead>
           <tbody>
@@ -144,6 +184,11 @@ export function YearView({ year, accountId, onReport }: Props) {
                 </td>
                 <td className="tabular py-2.5 text-right">
                   {f.number(Math.round(m.expenses / 100))}
+                </td>
+                <td className="tabular py-2.5 text-right text-muted">
+                  {endByMonth.has(m.month)
+                    ? f.number(Math.round(endByMonth.get(m.month)! / 100))
+                    : '–'}
                 </td>
               </tr>
             ))}

@@ -8,13 +8,14 @@ export const THEMES = [
   { id: 'amber', dark: true },
   { id: 'violet', dark: true },
   { id: 'mono', dark: true },
+  { id: 'light-lilac', dark: false },
   { id: 'light-blue', dark: false },
   { id: 'light-pink', dark: false },
   { id: 'light-green', dark: false },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]['id'];
-export const DEFAULT_THEME: ThemeId = 'blu';
+export const DEFAULT_THEME: ThemeId = 'light-lilac';
 export const THEME_STORAGE_KEY = 'quadra:theme';
 
 export function isThemeId(value: unknown): value is ThemeId {
@@ -29,7 +30,7 @@ export function applyTheme(id: string | undefined): ThemeId {
   const [r, g, b] = getComputedStyle(root).getPropertyValue('--bg').trim().split(/\s+/);
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', r && g && b ? `rgb(${r}, ${g}, ${b})` : '#0a0c0b');
+    ?.setAttribute('content', r && g && b ? `rgb(${r}, ${g}, ${b})` : '#faf7ff');
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {

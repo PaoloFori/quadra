@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '@/db/database';
 import { exportBackup, previewRestore, readAllData, restoreBackup } from '@/db/backupService';
 import { commitImport, previewImport } from '@/db/importService';
-import { setDeviceSecret, setSetting, getDeviceSecret } from '@/db/settings';
+import { getSettings, setDeviceSecret, setSetting, getDeviceSecret } from '@/db/settings';
 import { addManualTransaction } from '@/db/transactionService';
 import { analyzeTable } from '@/domain/importing/analyze';
 import { parseRows } from '@/domain/importing/parse';
@@ -112,6 +112,20 @@ describe('backup: esporta → cancella tutto → reimporta → dati identici', (
     expect(JSON.stringify(backup)).not.toContain('lastBackupAt');
     await restoreBackup(backup, 'replace');
     expect(await getDeviceSecret('pin')).toEqual({ hash: 'abc' });
+  });
+
+  it('"sostituisci" tiene il tema scelto se il backup non ne ha uno; se lo ha, vince il suo', async () => {
+    await seed();
+    const senzaTema = await exportBackup({ kind: 'all' });
+    await setSetting('theme', 'light-lilac');
+    await restoreBackup(senzaTema, 'replace');
+    expect((await getSettings()).theme).toBe('light-lilac');
+
+    await setSetting('theme', 'navy');
+    const conTema = await exportBackup({ kind: 'all' });
+    await setSetting('theme', 'light-lilac');
+    await restoreBackup(conTema, 'replace');
+    expect((await getSettings()).theme).toBe('navy');
   });
 
   it('il JSON di un anno si reimporta da solo in un database vuoto', async () => {

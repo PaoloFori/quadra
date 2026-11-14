@@ -11,6 +11,7 @@ import type { MonthReport } from '@/domain/reports/month';
 import type { YearReport } from '@/domain/reports/year';
 import { monthOf, shiftMonth, todayIso } from '@/lib/dates';
 import { saveFile } from '@/lib/files';
+import { oneOf, usePersistentState } from '@/lib/persistentState';
 import { useFormat } from '@/i18n/useFormat';
 import { filterFromParams } from '@/features/transactions/movementsLink';
 import { MovementsPanel } from '@/features/transactions/MovementsPanel';
@@ -30,18 +31,34 @@ const MODE_LABEL: Record<ReportsMode, string> = {
   movements: 'nav.transactions',
 };
 
-export default function ReportsPage({ initialMode = 'month' }: { initialMode?: ReportsMode }) {
+export default function ReportsPage({ initialMode }: { initialMode?: ReportsMode }) {
   const { t } = useTranslation();
   const f = useFormat();
   const lookup = useCategoryLookup();
   const accounts = useAccounts();
-  const [accountId, setAccountId] = useState(ALL_ACCOUNTS);
+  // conto e scheda scelti l'ultima volta restano memorizzati sul dispositivo
+  const [accountId, setAccountId] = usePersistentState<string>(
+    'reports.account',
+    ALL_ACCOUNTS,
+    (raw) => (typeof raw === 'string' ? raw : undefined),
+  );
   // se il conto scelto viene eliminato si torna a «tutti»
   const scope =
     accountId === ALL_ACCOUNTS || accounts.some((a) => a.id === accountId)
       ? accountId
       : ALL_ACCOUNTS;
-  const [mode, setMode] = useState<ReportsMode>(initialMode);
+  const [storedMode, setMode] = usePersistentState<ReportsMode>(
+    'reports.mode',
+    'month',
+    oneOf(MODES),
+  );
+  // aprendo /transactions si va ai movimenti; altrimenti si riparte dall'ultima scheda usata
+  const [forced, setForced] = useState(initialMode);
+  const mode = forced ?? storedMode;
+  const chooseMode = (m: ReportsMode): void => {
+    setForced(undefined);
+    setMode(m);
+  };
   // i filtri dei movimenti arrivano dall'indirizzo (link da grafici e schede); si riparte quando cambiano
   const [params] = useSearchParams();
   const [month, setMonth] = useState(monthOf(todayIso()));
@@ -112,7 +129,7 @@ export default function ReportsPage({ initialMode = 'month' }: { initialMode?: R
           <button
             key={m}
             aria-pressed={mode === m}
-            onClick={() => setMode(m)}
+            onClick={() => chooseMode(m)}
             className={`chip justify-center !px-1 !text-[13px] ${mode === m ? 'chip-on' : ''}`}
           >
             {t(MODE_LABEL[m])}
