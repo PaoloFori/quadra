@@ -1,5 +1,7 @@
 /** Tipi di dominio condivisi. Importi in centesimi interi (negativo = uscita), date ISO `YYYY-MM-DD`. */
 
+import type { ReportLayouts } from './reports/layout';
+
 export type IsoDate = string;
 export type MonthKey = string; // YYYY-MM
 
@@ -102,6 +104,8 @@ export interface Settings {
   /** Obiettivo di risparmio (centesimi): quanto mettere da parte ogni mese / ogni anno. */
   savingsMonthlyCents?: number;
   savingsYearlyCents?: number;
+  /** Ordine e blocchi nascosti dei Resoconti, per scheda (inclusi nei backup). */
+  reportLayouts?: ReportLayouts;
 }
 
 export type Frequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';

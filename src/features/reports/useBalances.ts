@@ -4,7 +4,7 @@ import { useAccounts } from '@/db/hooks';
 import { transactionsRepo } from '@/db/repositories';
 import { monthEndBalances, type MonthBalance } from '@/domain/reports/balance';
 import { ALL_ACCOUNTS, filterByAccount } from '@/domain/reports/accounts';
-import { monthRange } from '@/lib/dates';
+import { monthRange, todayIso } from '@/lib/dates';
 import { monthsSinceFirst } from '@/domain/reports/projections';
 import type { MonthKey } from '@/domain/types';
 
@@ -18,7 +18,10 @@ export function useMonthBalances(
   count: number,
 ): MonthBalance[] | undefined {
   const accounts = useAccounts();
-  const { to } = monthRange(lastMonth);
+  // il saldo arriva al massimo a oggi: i movimenti con data futura non fanno ancora parte del saldo
+  const monthEnd = monthRange(lastMonth).to;
+  const today = todayIso();
+  const to = monthEnd < today ? monthEnd : today;
   const raw = useLiveQuery(() => transactionsRepo.inRange('0000-01-01', to), [to]);
   return useMemo(() => {
     if (!raw) return undefined;

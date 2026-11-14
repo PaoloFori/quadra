@@ -259,9 +259,37 @@
     "balanceEndYear": "At end of year",
     "balanceChange": "Change",
     "balanceColumn": "Balance",
-    "balancePartialMonth": "Current month: the closing balance is as of today.",
-    "balancePartialYear": "Current year: the closing balance is as of today.",
-    "balanceHint": "Includes every movement, transfers too. To make the balance match the real one, set the accounts' starting balance."
+    "balancePartialMonth": "Current month: the final balance is as of today ({{date}}).",
+    "balancePartialYear": "Current year: the final balance is as of today ({{date}}).",
+    "balanceHint": "Includes every movement, transfers too. To make the balance match the real one, set the accounts' starting balance.",
+    "customize": "Customize",
+    "customizeTitle": "Customize blocks",
+    "customizeHint": "Choose what to show and in which order. It applies to this tab and is also saved in backups.",
+    "show": "Show",
+    "hide": "Hide",
+    "visible": "Visible",
+    "hidden": "Hidden",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "resetLayout": "Reset order",
+    "blocks": {
+      "summary": "Summary",
+      "yearVsPrevious": "Year over year",
+      "extremes": "Most and least expensive month",
+      "averages": "Monthly averages"
+    },
+    "movements": {
+      "title": "Transactions",
+      "count_one": "{{count}} transaction",
+      "count_other": "{{count}} transactions",
+      "sortBy": "Sort by",
+      "sort": {
+        "day": "Days",
+        "category": "Categories",
+        "amount": "Amount"
+      },
+      "filter": "Filter and search"
+    }
   },
   "budget": {
     "add": "New budget",

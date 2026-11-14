@@ -9,6 +9,9 @@ import { todayIso } from '@/lib/dates';
 import { parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
 import { DOT } from './shared';
+import { PeriodMovements } from './PeriodMovements';
+import { ReportBlocks, type Block } from './ReportBlocks';
+import { ALL_ACCOUNTS } from '@/domain/reports/accounts';
 import { useWealth } from './useWealth';
 import { AmountInput } from '@/components/AmountInput';
 
@@ -149,53 +152,70 @@ export function WealthView({ accountId }: { accountId: string }) {
     longHistory ? `${f.monthShort(m)} ${m.slice(2, 4)}` : f.monthShort(m);
   const up = projection.delta.cents >= 0;
 
-  return (
-    <div className="masonry">
-      <section className="hero space-y-1" aria-label={t('wealth.title')}>
-        <p className="label-caps !text-on-accent">{t('wealth.title')}</p>
-        <p className="tabular font-display text-[40px] font-medium leading-[44px] tracking-[-0.04em]">
-          {f.currency(view.currentCents)}
-        </p>
-        <p className="mt-2 inline-flex rounded-full bg-bg px-2.5 py-1 text-[13px] text-ink">
-          {flows.sufficientHistory
-            ? `${t('wealth.in6')}: ${f.currency(flows.in6Months)}`
-            : t('wealth.shortHistory').split(' (')[0]}
-        </p>
-      </section>
-
-      <section className="card space-y-3">
-        <SectionTitle
-          title={t('wealth.history')}
-          subtitle={
-            projection.delta.months > 0
-              ? `${up ? '↑' : '↓'} ${f.currency(Math.abs(projection.delta.cents))} · ${t('wealth.goalMonths', { count: projection.delta.months })}`
-              : undefined
-          }
-        />
-        <WealthChart
-          values={projection.values}
-          labels={projection.months.map((m) => label(m))}
-          projectedFrom={projection.projectedFrom}
-          label={t('wealth.title')}
-        />
-        <p className="text-[12px] text-faint">{t('wealth.dashedHint')}</p>
-      </section>
-
-      <section className="card space-y-3">
-        <SectionTitle
-          title={t('wealth.savedByMonth')}
-          subtitle={t('wealth.sinceStart', {
-            month: f.month(view.history[0]!.month),
-            total: f.currency(view.history.reduce((s, m) => s + m.net, 0)),
-          })}
-        />
-        <MonthlyBars
-          data={view.history.map((m) => ({ name: label(m.month), value: m.net }))}
-          label={t('wealth.savedByMonth')}
-        />
-      </section>
-
-      {view.accounts.length > 1 && (
+  const blocks: (Block | false | undefined)[] = [
+    {
+      id: 'hero',
+      title: t('wealth.title'),
+      node: (
+        <section className="hero space-y-1" aria-label={t('wealth.title')}>
+          <p className="label-caps !text-on-accent">{t('wealth.title')}</p>
+          <p className="tabular font-display text-[40px] font-medium leading-[44px] tracking-[-0.04em]">
+            {f.currency(view.currentCents)}
+          </p>
+          <p className="mt-2 inline-flex rounded-full bg-bg px-2.5 py-1 text-[13px] text-ink">
+            {flows.sufficientHistory
+              ? `${t('wealth.in6')}: ${f.currency(flows.in6Months)}`
+              : t('wealth.shortHistory').split(' (')[0]}
+          </p>
+        </section>
+      ),
+    },
+    {
+      id: 'history',
+      title: t('wealth.history'),
+      node: (
+        <section className="card space-y-3">
+          <SectionTitle
+            title={t('wealth.history')}
+            subtitle={
+              projection.delta.months > 0
+                ? `${up ? '↑' : '↓'} ${f.currency(Math.abs(projection.delta.cents))} · ${t('wealth.goalMonths', { count: projection.delta.months })}`
+                : undefined
+            }
+          />
+          <WealthChart
+            values={projection.values}
+            labels={projection.months.map((m) => label(m))}
+            projectedFrom={projection.projectedFrom}
+            label={t('wealth.title')}
+          />
+          <p className="text-[12px] text-faint">{t('wealth.dashedHint')}</p>
+        </section>
+      ),
+    },
+    {
+      id: 'savedByMonth',
+      title: t('wealth.savedByMonth'),
+      node: (
+        <section className="card space-y-3">
+          <SectionTitle
+            title={t('wealth.savedByMonth')}
+            subtitle={t('wealth.sinceStart', {
+              month: f.month(view.history[0]!.month),
+              total: f.currency(view.history.reduce((s, m) => s + m.net, 0)),
+            })}
+          />
+          <MonthlyBars
+            data={view.history.map((m) => ({ name: label(m.month), value: m.net }))}
+            label={t('wealth.savedByMonth')}
+          />
+        </section>
+      ),
+    },
+    view.accounts.length > 1 && {
+      id: 'accounts',
+      title: t('reports.byAccount'),
+      node: (
         <section className="card">
           <SectionTitle title={t('reports.byAccount')} />
           <ul className="mt-1">
@@ -210,32 +230,58 @@ export function WealthView({ accountId }: { accountId: string }) {
             ))}
           </ul>
         </section>
-      )}
-
-      <div className="grid grid-cols-2 gap-3">
-        <MetricCard label={t('wealth.avgIncome')} dot={DOT.income}>
-          <span className="text-income">{f.currency(flows.avgIncomeCents)}</span>
-        </MetricCard>
-        <MetricCard label={t('wealth.avgExpenses')} dot={DOT.expenses}>
-          {f.currency(flows.avgExpensesCents)}
-        </MetricCard>
-      </div>
-
-      <section className="card space-y-0.5">
-        <SectionTitle title={t('wealth.pace')} />
-        <div className="pt-2">
-          <Row label={t('wealth.avgSaving')}>
-            <Amount cents={flows.avgSavingCents} />
-          </Row>
-          <Row label={t('wealth.in6')}>{f.currency(flows.in6Months)}</Row>
-          <Row label={t('wealth.in12')}>{f.currency(flows.in12Months)}</Row>
+      ),
+    },
+    {
+      id: 'averages',
+      title: t('reports.blocks.averages'),
+      node: (
+        <div className="grid grid-cols-2 gap-3">
+          <MetricCard label={t('wealth.avgIncome')} dot={DOT.income}>
+            <span className="text-income">{f.currency(flows.avgIncomeCents)}</span>
+          </MetricCard>
+          <MetricCard label={t('wealth.avgExpenses')} dot={DOT.expenses}>
+            {f.currency(flows.avgExpensesCents)}
+          </MetricCard>
         </div>
-        <p className="pt-1 text-[12px] text-muted">
-          {flows.sufficientHistory ? t('wealth.paceHint') : `⚠️ ${t('wealth.shortHistory')}`}
-        </p>
-      </section>
+      ),
+    },
+    {
+      id: 'pace',
+      title: t('wealth.pace'),
+      node: (
+        <section className="card space-y-0.5">
+          <SectionTitle title={t('wealth.pace')} />
+          <div className="pt-2">
+            <Row label={t('wealth.avgSaving')}>
+              <Amount cents={flows.avgSavingCents} />
+            </Row>
+            <Row label={t('wealth.in6')}>{f.currency(flows.in6Months)}</Row>
+            <Row label={t('wealth.in12')}>{f.currency(flows.in12Months)}</Row>
+          </div>
+          <p className="pt-1 text-[12px] text-muted">
+            {flows.sufficientHistory ? t('wealth.paceHint') : `⚠️ ${t('wealth.shortHistory')}`}
+          </p>
+        </section>
+      ),
+    },
+    {
+      id: 'goal',
+      title: t('wealth.goalTitle'),
+      node: <GoalCard currentCents={view.currentCents} avgIncomeCents={flows.avgIncomeCents} />,
+    },
+    {
+      id: 'movements',
+      title: t('reports.movements.title'),
+      node: (
+        <PeriodMovements
+          to={todayIso()}
+          accountId={accountId}
+          scopeAccountId={accountId === ALL_ACCOUNTS ? undefined : accountId}
+        />
+      ),
+    },
+  ];
 
-      <GoalCard currentCents={view.currentCents} avgIncomeCents={flows.avgIncomeCents} />
-    </div>
-  );
+  return <ReportBlocks view="wealth" blocks={blocks} />;
 }

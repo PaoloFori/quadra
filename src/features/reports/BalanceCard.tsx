@@ -15,6 +15,9 @@ interface Props {
   partialNote?: string;
   /** Mesi con almeno 2 punti disegnano la linea; con meno non si mostra il grafico. */
   showChart?: boolean;
+  /** Saldo di inizio/fine del periodo mostrato, se diverso da quello del primo/ultimo mese del grafico. */
+  startCents?: number;
+  endCents?: number;
 }
 
 /** Saldo del conto all'inizio e alla fine del periodo, la variazione e come è cambiato mese dopo mese. */
@@ -25,13 +28,17 @@ export function BalanceCard({
   balances,
   partialNote,
   showChart = true,
+  startCents,
+  endCents,
 }: Props) {
   const { t } = useTranslation();
   const f = useFormat();
   const first = balances[0];
   const last = balances[balances.length - 1];
   if (!first || !last) return null;
-  const change = last.endCents - first.startCents;
+  const start = startCents ?? first.startCents;
+  const end = endCents ?? last.endCents;
+  const change = end - start;
 
   return (
     <section className="card space-y-3" aria-label={title}>
@@ -39,11 +46,11 @@ export function BalanceCard({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <p className="label-caps">{startLabel}</p>
-          <Amount cents={first.startCents} neutral signed={false} className="text-[20px]" />
+          <Amount cents={start} neutral signed={false} className="text-[20px]" />
         </div>
         <div>
           <p className="label-caps">{endLabel}</p>
-          <Amount cents={last.endCents} neutral signed={false} className="text-[20px]" />
+          <Amount cents={end} neutral signed={false} className="text-[20px]" />
         </div>
       </div>
       <p className="flex items-baseline justify-between gap-3 text-[14px]">

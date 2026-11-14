@@ -23,7 +23,8 @@ import { PeriodPicker } from './PeriodPicker';
 import { AccountChips } from './shared';
 
 export type ReportsMode = 'month' | 'year' | 'wealth' | 'movements';
-const MODES: ReportsMode[] = ['month', 'year', 'wealth', 'movements'];
+/** Schede visibili; i movimenti filtrati si aprono dai grafici e dai blocchi (route /transactions), non hanno più una scheda. */
+const MODES: ReportsMode[] = ['month', 'year', 'wealth'];
 const MODE_LABEL: Record<ReportsMode, string> = {
   month: 'reports.monthly',
   year: 'reports.yearly',
@@ -123,7 +124,7 @@ export default function ReportsPage({ initialMode }: { initialMode?: ReportsMode
       <div
         role="group"
         aria-label={t('nav.reports')}
-        className="grid grid-cols-4 gap-1.5 md:max-w-lg"
+        className="grid grid-cols-3 gap-1.5 md:max-w-lg"
       >
         {MODES.map((m) => (
           <button
@@ -137,7 +138,14 @@ export default function ReportsPage({ initialMode }: { initialMode?: ReportsMode
         ))}
       </div>
 
-      {mode !== 'movements' && (
+      {mode === 'movements' ? (
+        <button
+          className="inline-flex min-h-[44px] items-center text-accent"
+          onClick={() => chooseMode(storedMode)}
+        >
+          ‹ {t('nav.reports')}
+        </button>
+      ) : (
         <AccountChips accounts={accounts} value={scope} onChange={setAccountId} />
       )}
 

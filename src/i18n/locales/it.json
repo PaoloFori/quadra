@@ -259,9 +259,37 @@
     "balanceEndYear": "A fine anno",
     "balanceChange": "Variazione",
     "balanceColumn": "Saldo",
-    "balancePartialMonth": "Mese in corso: il saldo finale è quello di oggi.",
-    "balancePartialYear": "Anno in corso: il saldo finale è quello di oggi.",
-    "balanceHint": "Include tutti i movimenti, anche i giroconti. Per far coincidere il saldo con quello reale imposta il saldo di partenza dei conti."
+    "balancePartialMonth": "Mese in corso: il saldo finale è quello di oggi ({{date}}).",
+    "balancePartialYear": "Anno in corso: il saldo finale è quello di oggi ({{date}}).",
+    "balanceHint": "Include tutti i movimenti, anche i giroconti. Per far coincidere il saldo con quello reale imposta il saldo di partenza dei conti.",
+    "customize": "Personalizza",
+    "customizeTitle": "Personalizza i blocchi",
+    "customizeHint": "Scegli cosa mostrare e in che ordine. Vale per questa scheda e viene salvato anche nei backup.",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "visible": "Visibile",
+    "hidden": "Nascosto",
+    "moveUp": "Sposta su",
+    "moveDown": "Sposta giù",
+    "resetLayout": "Ripristina ordine",
+    "blocks": {
+      "summary": "Riepilogo",
+      "yearVsPrevious": "Anno su anno",
+      "extremes": "Mese più e meno caro",
+      "averages": "Medie mensili"
+    },
+    "movements": {
+      "title": "Movimenti",
+      "count_one": "{{count}} movimento",
+      "count_other": "{{count}} movimenti",
+      "sortBy": "Ordina per",
+      "sort": {
+        "day": "Giorni",
+        "category": "Categorie",
+        "amount": "Importo"
+      },
+      "filter": "Filtra e cerca"
+    }
   },
   "budget": {
     "add": "Nuovo budget",

@@ -19,8 +19,10 @@ import { monthlyTrend, monthsSinceFirst } from '@/domain/reports/projections';
 import { BalanceCard } from './BalanceCard';
 import { ComparisonCard } from './Compare';
 import { useMonthBalances } from './useBalances';
+import { PeriodMovements } from './PeriodMovements';
+import { ReportBlocks, type Block } from './ReportBlocks';
 import { YearBars } from './charts';
-import { AccountsCompare, CategoryBreakdown, ChipGroup, MetricsGrid, TopExpenses } from './shared';
+import { AccountsCompare, CategoryBreakdown, ChipGroup, MetricsGrid } from './shared';
 
 interface Props {
   month: MonthKey;
@@ -132,31 +134,47 @@ export function MonthView({ month, accountId, onReport }: Props) {
   const today = todayIso();
   const elapsedDays = monthOf(today) === month ? Number(today.slice(8, 10)) : daysInMonth(month);
 
-  return (
-    <div className="masonry">
-      <MetricsGrid
-        totals={report.totals}
-        links={{
-          income: movementsLink({ type: 'income', accountId: scope, ...monthRange(month) }),
-          expenses: movementsLink({ type: 'expense', accountId: scope, ...monthRange(month) }),
-        }}
-        average={{
-          label: t('reports.avgDay'),
-          cents: Math.round(report.totals.expenses / elapsedDays),
-        }}
-      />
-
-      {balances && (
+  const blocks: (Block | false | undefined)[] = [
+    {
+      id: 'summary',
+      title: t('reports.blocks.summary'),
+      node: (
+        <MetricsGrid
+          totals={report.totals}
+          links={{
+            income: movementsLink({ type: 'income', accountId: scope, ...monthRange(month) }),
+            expenses: movementsLink({ type: 'expense', accountId: scope, ...monthRange(month) }),
+          }}
+          average={{
+            label: t('reports.avgDay'),
+            cents: Math.round(report.totals.expenses / elapsedDays),
+          }}
+        />
+      ),
+    },
+    balances && {
+      id: 'balance',
+      title: t('reports.balanceTitle'),
+      node: (
         <BalanceCard
           title={t('reports.balanceTitle')}
           startLabel={t('reports.balanceStartMonth')}
           endLabel={t('reports.balanceEndMonth')}
           balances={balances}
-          partialNote={monthOf(today) === month ? t('reports.balancePartialMonth') : undefined}
+          startCents={thisMonth?.startCents}
+          endCents={thisMonth?.endCents}
+          partialNote={
+            monthOf(today) === month
+              ? t('reports.balancePartialMonth', { date: f.date(today) })
+              : undefined
+          }
         />
-      )}
-
-      {comparison && (
+      ),
+    },
+    comparison && {
+      id: 'compare',
+      title: t('reports.compareTitle'),
+      node: (
         <ComparisonCard
           title={t('reports.compareTitle')}
           rows={comparison.rows}
@@ -173,9 +191,12 @@ export function MonthView({ month, accountId, onReport }: Props) {
             />
           }
         />
-      )}
-
-      {comparison && (
+      ),
+    },
+    comparison && {
+      id: 'trend',
+      title: t('reports.incomeExpensesTrend'),
+      node: (
         <section className="card space-y-3">
           <SectionTitle title={t('reports.incomeExpensesTrend')} />
           <ChipGroup
@@ -191,32 +212,47 @@ export function MonthView({ month, accountId, onReport }: Props) {
           />
           <YearBars months={comparison.trend} label={t('reports.incomeExpensesTrend')} />
         </section>
-      )}
-
-      {accountId === ALL_ACCOUNTS && accounts.length > 1 && (
-        <section className="card space-y-4">
-          <SectionTitle title={t('reports.byAccount')} />
-          <AccountsCompare rows={perAccount} />
+      ),
+    },
+    accountId === ALL_ACCOUNTS &&
+      accounts.length > 1 && {
+        id: 'accounts',
+        title: t('reports.byAccount'),
+        node: (
+          <section className="card space-y-4">
+            <SectionTitle title={t('reports.byAccount')} />
+            <AccountsCompare rows={perAccount} />
+          </section>
+        ),
+      },
+    {
+      id: 'categories',
+      title: t('reports.byCategory'),
+      node: (
+        <section className="card space-y-3">
+          <SectionTitle title={t('reports.byCategory')} />
+          <CategoryBreakdown
+            byCategory={report.byCategory}
+            collapsible
+            linkFor={(id) => categoryLink(id, { month, accountId: scope })}
+          />
         </section>
-      )}
-
-      <section className="card space-y-3">
-        <SectionTitle title={t('reports.byCategory')} />
-        <CategoryBreakdown
-          byCategory={report.byCategory}
-          collapsible
-          linkFor={(id) => categoryLink(id, { month, accountId: scope })}
-        />
-      </section>
-
-      <section className="card space-y-3">
-        <SectionTitle title={t('reports.dailyTrend')} />
-        <DailyChart data={report.daily} />
-      </section>
-
-      <TopExpenses txs={report.topExpenses} />
-
-      {recurring.length > 0 && (
+      ),
+    },
+    {
+      id: 'daily',
+      title: t('reports.dailyTrend'),
+      node: (
+        <section className="card space-y-3">
+          <SectionTitle title={t('reports.dailyTrend')} />
+          <DailyChart data={report.daily} />
+        </section>
+      ),
+    },
+    recurring.length > 0 && {
+      id: 'recurring',
+      title: t('reports.recurring'),
+      node: (
         <section className="card">
           <SectionTitle title={t('reports.recurring')} />
           <ul className="mt-1">
@@ -236,7 +272,21 @@ export function MonthView({ month, accountId, onReport }: Props) {
             ))}
           </ul>
         </section>
-      )}
-    </div>
-  );
+      ),
+    },
+    {
+      id: 'movements',
+      title: t('reports.movements.title'),
+      node: (
+        <PeriodMovements
+          from={monthRange(month).from}
+          to={monthRange(month).to}
+          accountId={accountId}
+          scopeAccountId={scope}
+        />
+      ),
+    },
+  ];
+
+  return <ReportBlocks view="month" blocks={blocks} />;
 }
