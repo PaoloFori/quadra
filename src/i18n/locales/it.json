@@ -272,9 +272,9 @@
     "warning": "Attenzione: restano solo {{amount}}",
     "over": "Superato di {{amount}}",
     "what": "Cos'è un budget?",
-    "intro": "Un budget è la cifra massima che vuoi spendere ogni mese per una categoria, per esempio Ristoranti 150 €. Quadra ti mostra quanto hai già speso e quanto ti resta.",
+    "intro": "Un budget è un limite mensile con un nome, valido per una o più categorie: per esempio «Casa» 900 € per Bollette e Affitto, oppure «Tutto» per tutte le spese. Quadra somma le spese di quelle categorie e ti mostra quanto resta.",
     "canExceed": "Non blocca nulla: puoi spendere anche di più. Quando superi il limite la barra diventa rossa e ti dico di quanto lo hai superato.",
-    "howTo": "Tocca «Nuovo budget», scegli la categoria e il limite mensile.",
+    "howTo": "Tocca «Nuovo budget», dagli un nome, scegli le categorie e il limite mensile.",
     "totalTitle": "Budget del mese",
     "spentOf": "Spesi {{spent}} su {{limit}}",
     "percentUsed": "{{pct}}% usato",
@@ -294,9 +294,11 @@
     "pickCategories": "Categorie (puoi sceglierne più di una)",
     "selectAll": "Seleziona tutte",
     "selectNone": "Deseleziona",
-    "allTaken": "Tutte le categorie hanno già un budget.",
     "pickAtLeastOne": "Scegli almeno una categoria.",
-    "sameLimit": "Lo stesso limite verrà applicato alle {{count}} categorie scelte."
+    "name": "Nome del budget",
+    "namePlaceholder": "es. Casa, Tutto, Svago",
+    "nameRequired": "Dai un nome al budget.",
+    "oneLimitHint": "Un solo limite per tutte le categorie scelte. I budget possono sovrapporsi (es. «Tutto» e «Casa»)."
   },
   "backup": {
     "title": "Backup e ripristino",

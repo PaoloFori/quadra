@@ -10,6 +10,7 @@ import { budgetsRepo, newId, transactionsRepo } from '@/db/repositories';
 import { getSettings, setSetting } from '@/db/settings';
 import {
   budgetStatuses,
+  budgetsOverlap,
   levelOf,
   savingsProgress,
   totalRemaining,
@@ -23,98 +24,97 @@ import { centsToPlain, parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
 import { AmountInput } from '@/components/AmountInput';
 
-function BudgetSheet({
-  budget,
-  taken,
-  onClose,
-}: {
-  budget?: Budget;
-  taken: Set<string>;
-  onClose: () => void;
-}) {
+function BudgetSheet({ budget, onClose }: { budget?: Budget; onClose: () => void }) {
   const { t } = useTranslation();
   const lookup = useCategoryLookup();
-  const options = lookup.all.filter(
-    (c) => c.kind !== 'income' && (c.id === budget?.categoryId || !taken.has(c.id)),
-  );
-  // nuovo budget: si possono scegliere più categorie, con lo stesso limite; modifica: una sola, quella del budget
-  const [selected, setSelected] = useState<string[]>([]);
+  const options = lookup.all.filter((c) => c.kind !== 'income');
+  const [name, setName] = useState(budget?.name ?? '');
+  const [selected, setSelected] = useState<string[]>(budget?.categoryIds ?? []);
   const [amount, setAmount] = useState(
     budget ? centsToPlain(budget.monthlyCents).replace('.', ',') : '',
   );
-  const [error, setError] = useState(false);
-  const [pickError, setPickError] = useState(false);
+  const [errors, setErrors] = useState({ name: false, pick: false, amount: false });
 
   const toggle = (id: string): void => {
     setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
-    setPickError(false);
+    setErrors((e) => ({ ...e, pick: false }));
   };
   const allSelected = options.length > 0 && selected.length === options.length;
 
   async function save(): Promise<void> {
     const cents = parseUserAmount(amount);
-    if (cents === null) return setError(true);
-    if (budget) {
-      await budgetsRepo.put({ id: budget.id, categoryId: budget.categoryId, monthlyCents: cents });
-      return onClose();
-    }
-    if (selected.length === 0) return setPickError(true);
-    await Promise.all(
-      selected.map((categoryId) =>
-        budgetsRepo.put({ id: newId(), categoryId, monthlyCents: cents }),
-      ),
-    );
+    const next = {
+      name: name.trim() === '',
+      pick: selected.length === 0,
+      amount: cents === null,
+    };
+    setErrors(next);
+    if (next.name || next.pick || cents === null) return;
+    await budgetsRepo.put({
+      id: budget?.id ?? newId(),
+      name: name.trim(),
+      categoryIds: selected,
+      monthlyCents: cents,
+    });
     onClose();
   }
 
   return (
     <Sheet title={budget ? t('budget.edit') : t('budget.add')} onClose={onClose}>
-      {budget ? (
-        <div>
-          <label className="label" htmlFor="b-cat">
-            {t('common.category')}
-          </label>
-          <select id="b-cat" className="input" value={budget.categoryId} disabled>
-            {options.map((c) => (
-              <option key={c.id} value={c.id}>
-                {lookup.label(c.id)}
-              </option>
-            ))}
-          </select>
+      <div>
+        <label className="label" htmlFor="b-name">
+          {t('budget.name')}
+        </label>
+        <input
+          id="b-name"
+          className="input"
+          maxLength={40}
+          placeholder={t('budget.namePlaceholder')}
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            setErrors((er) => ({ ...er, name: false }));
+          }}
+        />
+        {errors.name && (
+          <p role="alert" className="mt-1 text-[13px] text-expense">
+            {t('budget.nameRequired')}
+          </p>
+        )}
+      </div>
+      <div>
+        <div className="mb-1.5 flex items-center justify-between gap-3">
+          <span className="label !mb-0" id="b-cats">
+            {t('budget.pickCategories')}
+          </span>
+          <button
+            className="text-[14px] font-medium text-accent"
+            onClick={() => {
+              setSelected(allSelected ? [] : options.map((c) => c.id));
+              setErrors((e) => ({ ...e, pick: false }));
+            }}
+          >
+            {allSelected ? t('budget.selectNone') : t('budget.selectAll')}
+          </button>
         </div>
-      ) : (
-        <div>
-          <div className="mb-1.5 flex items-center justify-between gap-3">
-            <span className="label !mb-0" id="b-cats">
-              {t('budget.pickCategories')}
-            </span>
+        <div role="group" aria-labelledby="b-cats" className="flex flex-wrap gap-2">
+          {options.map((c) => (
             <button
-              className="text-[14px] font-medium text-accent"
-              onClick={() => setSelected(allSelected ? [] : options.map((c) => c.id))}
+              key={c.id}
+              aria-pressed={selected.includes(c.id)}
+              onClick={() => toggle(c.id)}
+              className={`chip ${selected.includes(c.id) ? 'chip-on' : ''}`}
             >
-              {allSelected ? t('budget.selectNone') : t('budget.selectAll')}
+              <span aria-hidden="true">{c.icon}</span> {lookup.label(c.id)}
             </button>
-          </div>
-          <div role="group" aria-labelledby="b-cats" className="flex flex-wrap gap-2">
-            {options.map((c) => (
-              <button
-                key={c.id}
-                aria-pressed={selected.includes(c.id)}
-                onClick={() => toggle(c.id)}
-                className={`chip ${selected.includes(c.id) ? 'chip-on' : ''}`}
-              >
-                <span aria-hidden="true">{c.icon}</span> {lookup.label(c.id)}
-              </button>
-            ))}
-          </div>
-          {options.length === 0 && <p className="text-[14px] text-muted">{t('budget.allTaken')}</p>}
-          {pickError && (
-            <p role="alert" className="mt-1 text-[13px] text-expense">
-              {t('budget.pickAtLeastOne')}
-            </p>
-          )}
+          ))}
         </div>
-      )}
+        {errors.pick && (
+          <p role="alert" className="mt-1 text-[13px] text-expense">
+            {t('budget.pickAtLeastOne')}
+          </p>
+        )}
+      </div>
       <div>
         <label className="label" htmlFor="b-amount">
           {t('budget.monthlyLimit')}
@@ -122,19 +122,14 @@ function BudgetSheet({
         <AmountInput
           id="b-amount"
           className="input tabular"
-          autoFocus={!!budget}
           value={amount}
           onChange={(e) => {
             setAmount(e.target.value);
-            setError(false);
+            setErrors((er) => ({ ...er, amount: false }));
           }}
         />
-        {selected.length > 1 && (
-          <p className="mt-1 text-[13px] text-muted">
-            {t('budget.sameLimit', { count: selected.length })}
-          </p>
-        )}
-        {error && (
+        <p className="mt-1 text-[13px] text-muted">{t('budget.oneLimitHint')}</p>
+        {errors.amount && (
           <p role="alert" className="mt-1 text-[13px] text-expense">
             {t('errors.invalidAmount')}
           </p>
@@ -294,18 +289,19 @@ export default function BudgetPage() {
     [yearTxs, yearlyGoal],
   );
 
+  /** Nome mostrato: quello scelto, altrimenti (budget vecchi) le categorie elencate. */
+  const nameOf = (b: Budget): string =>
+    b.name?.trim() || b.categoryIds.map((id) => lookup.label(id)).join(', ');
   const statuses = useMemo(
     () =>
       budgetStatuses(budgets, txs).sort((a, b) =>
-        lookup
-          .label(a.budget.categoryId)
-          .localeCompare(lookup.label(b.budget.categoryId), undefined, {
-            sensitivity: 'base',
-          }),
+        nameOf(a.budget).localeCompare(nameOf(b.budget), undefined, { sensitivity: 'base' }),
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [budgets, txs, lookup],
   );
-  const taken = useMemo(() => new Set(budgets.map((b) => b.categoryId)), [budgets]);
+  // con budget sovrapposti (es. «Tutto» e «Casa») il totale conterebbe due volte le stesse spese
+  const overlap = useMemo(() => budgetsOverlap(budgets), [budgets]);
 
   const totals = useMemo(() => totalRemaining(statuses), [statuses]);
   const exceeded = statuses.filter((s) => s.level === 'over').length;
@@ -370,7 +366,7 @@ export default function BudgetPage() {
         {savingsYear && <SavingsBlock title={year} progress={savingsYear} />}
       </section>
 
-      {statuses.length > 0 && (
+      {statuses.length > 0 && !overlap && (
         <section className="card" aria-label={t('budget.totalTitle')}>
           <p className="text-[13px] text-muted">{t('budget.totalTitle')}</p>
           <p className="mb-2 text-lg font-bold">
@@ -394,27 +390,31 @@ export default function BudgetPage() {
 
       <ul className="space-y-3">
         {statuses.map((s) => {
-          const cat = lookup.byId.get(s.budget.categoryId);
+          const title = nameOf(s.budget);
+          const icons = s.budget.categoryIds.map((id) => lookup.byId.get(id)?.icon).filter(Boolean);
           return (
             <li key={s.budget.id}>
               <button className="card w-full text-left" onClick={() => setEditing(s.budget)}>
                 <span className="mb-2 flex items-center justify-between gap-3">
                   <span className="flex min-w-0 items-center gap-2">
-                    <span aria-hidden="true">{cat?.icon}</span>
-                    <span className="truncate font-semibold">
-                      {lookup.label(s.budget.categoryId)}
+                    <span aria-hidden="true">
+                      {icons.length === 1
+                        ? icons[0]
+                        : `${icons.slice(0, 3).join('')}${icons.length > 3 ? '…' : ''}`}
                     </span>
+                    <span className="truncate font-semibold">{title}</span>
                   </span>
                   <span className="tabular whitespace-nowrap text-[14px]">
                     <Amount cents={-s.spent} signed={false} neutral /> /{' '}
                     {f.currency(s.budget.monthlyCents)}
                   </span>
                 </span>
-                <ProgressBar
-                  ratio={s.ratio}
-                  level={s.level}
-                  label={lookup.label(s.budget.categoryId)}
-                />
+                <ProgressBar ratio={s.ratio} level={s.level} label={title} />
+                {s.budget.categoryIds.length > 1 && (
+                  <span className="mt-1 block truncate text-[12px] text-muted">
+                    {s.budget.categoryIds.map((id) => lookup.label(id)).join(' · ')}
+                  </span>
+                )}
                 <span
                   className={`mt-1.5 block text-[13px] ${s.level === 'over' ? 'font-semibold text-expense' : s.level === 'warning' ? 'font-semibold text-warn' : 'text-muted'}`}
                 >
@@ -436,7 +436,6 @@ export default function BudgetPage() {
       {editing && (
         <BudgetSheet
           budget={editing === 'new' ? undefined : editing}
-          taken={taken}
           onClose={() => setEditing(null)}
         />
       )}

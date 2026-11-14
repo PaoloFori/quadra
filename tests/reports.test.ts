@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { filterByAccount, savingsRate, totalsByAccount } from '@/domain/reports/accounts';
-import { budgetStatuses, levelOf } from '@/domain/reports/budget';
+import { budgetStatuses, budgetsOverlap, levelOf } from '@/domain/reports/budget';
 import { buildCategoryReport } from '@/domain/reports/category';
 import { buildMonthReport } from '@/domain/reports/month';
 import { detectRecurring } from '@/domain/reports/recurring';
@@ -135,10 +135,32 @@ describe('budget', () => {
   });
   it('calcola speso e residuo per categoria', () => {
     const [s] = budgetStatuses(
-      [{ id: 'b', categoryId: 'groceries', monthlyCents: 10000 }],
+      [{ id: 'b', categoryIds: ["groceries"], monthlyCents: 10000 }],
       [tx('2026-03-01', -8500)],
     );
     expect(s).toMatchObject({ spent: 8500, remaining: 1500, level: 'warning' });
+  });
+});
+
+describe('budget con più categorie', () => {
+  const t2 = (cat: string, cents: number): Transaction => ({ ...tx('2026-03-01', cents), categoryId: cat });
+  it('somma le spese di tutte le categorie del budget con un solo limite', () => {
+    const [s] = budgetStatuses(
+      [{ id: 'c', name: 'Casa', categoryIds: ['bills', 'rent'], monthlyCents: 100000 }],
+      [t2('bills', -20000), t2('rent', -70000), t2('groceries', -5000)],
+    );
+    expect(s).toMatchObject({ spent: 90000, remaining: 10000, level: 'warning' });
+  });
+  it('budget sovrapposti: ognuno conta le sue categorie, e l’overlap è rilevato', () => {
+    const budgets = [
+      { id: 'a', name: 'Tutto', categoryIds: ['bills', 'rent', 'groceries'], monthlyCents: 200000 },
+      { id: 'b', name: 'Casa', categoryIds: ['bills', 'rent'], monthlyCents: 100000 },
+    ];
+    const [all, home] = budgetStatuses(budgets, [t2('bills', -20000), t2('groceries', -5000)]);
+    expect(all?.spent).toBe(25000);
+    expect(home?.spent).toBe(20000);
+    expect(budgetsOverlap(budgets)).toBe(true);
+    expect(budgetsOverlap([budgets[1]!])).toBe(false);
   });
 });
 

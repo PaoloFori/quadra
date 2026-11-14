@@ -51,7 +51,7 @@ function CategoryAllTime({ categoryId }: { categoryId: string | null }) {
     () => (all ? buildCategoryReport(all, categoryId, todayIso()) : undefined),
     [all, categoryId],
   );
-  const budget = budgets.find((b) => b.categoryId === categoryId);
+  const budget = budgets.find((b) => b.categoryIds.length === 1 && b.categoryIds[0] === categoryId);
 
   const title = `${category?.icon ?? '❔'} ${lookup.label(categoryId)}`;
   const back = (

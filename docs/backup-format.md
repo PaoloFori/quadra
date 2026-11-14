@@ -3,7 +3,7 @@
 ```json
 {
   "app": "quadra",
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "createdAt": "2026-10-30T09:00:00.000Z",
   "range": { "kind": "all" },
   "checksum": "sha256:<hex>",

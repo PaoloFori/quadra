@@ -29,10 +29,21 @@ export function budgetStatuses(
       spentBy.set(t.categoryId, (spentBy.get(t.categoryId) ?? 0) - t.amountCents);
   }
   return budgets.map((budget) => {
-    const spent = spentBy.get(budget.categoryId) ?? 0;
+    const spent = budget.categoryIds.reduce((sum, id) => sum + (spentBy.get(id) ?? 0), 0);
     const ratio = budget.monthlyCents === 0 ? 0 : spent / budget.monthlyCents;
     return { budget, spent, remaining: budget.monthlyCents - spent, ratio, level: levelOf(ratio) };
   });
+}
+
+/** True se due budget condividono almeno una categoria: in quel caso sommarli conterebbe due volte le stesse spese. */
+export function budgetsOverlap(budgets: readonly Budget[]): boolean {
+  const seen = new Set<string>();
+  for (const b of budgets)
+    for (const id of new Set(b.categoryIds)) {
+      if (seen.has(id)) return true;
+      seen.add(id);
+    }
+  return false;
 }
 
 export function totalRemaining(statuses: readonly BudgetStatus[]): {

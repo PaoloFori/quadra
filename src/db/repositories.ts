@@ -53,8 +53,14 @@ export const categoriesRepo = {
         .modify((tx) => {
           tx.categoryId = tx.isTransfer ? null : tx.amountCents < 0 ? 'other' : 'otherIncome';
         });
-      await db.rules.where('categoryId').equals(id).delete();
-      await db.budgets.where('categoryId').equals(id).delete();
+      await db.rules.filter((r) => r.categoryId === id).delete();
+      // il budget perde la categoria; se resta senza categorie non ha più senso e si elimina
+      const affected = await db.budgets.where('categoryIds').equals(id).toArray();
+      for (const b of affected) {
+        const rest = b.categoryIds.filter((c) => c !== id);
+        if (rest.length === 0) await db.budgets.delete(b.id);
+        else await db.budgets.put({ ...b, categoryIds: rest });
+      }
       await db.categories.delete(id);
     });
   },

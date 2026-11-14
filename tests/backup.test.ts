@@ -5,6 +5,7 @@ import { exportBackup, previewRestore, readAllData, restoreBackup } from '@/db/b
 import { commitImport, previewImport } from '@/db/importService';
 import { getSettings, setDeviceSecret, setSetting, getDeviceSecret } from '@/db/settings';
 import { addManualTransaction } from '@/db/transactionService';
+import { categoriesRepo } from '@/db/repositories';
 import { analyzeTable } from '@/domain/importing/analyze';
 import { parseRows } from '@/domain/importing/parse';
 import { readTable } from '@/domain/importing/table';
@@ -46,7 +47,7 @@ async function seed(): Promise<void> {
     categoryId: 'leisure',
     note: 'Cinema',
   });
-  await db.budgets.put({ id: 'b1', categoryId: 'groceries', monthlyCents: 40000 });
+  await db.budgets.put({ id: 'b1', categoryIds: ["groceries"], monthlyCents: 40000 });
   await db.categories.put({
     id: 'custom1',
     kind: 'expense',
@@ -170,7 +171,7 @@ describe('backup: indipendente dalla lingua', () => {
 describe('backup: validazione', () => {
   it('rileva modifiche al contenuto (checksum)', async () => {
     const backup = await exportBackup({ kind: 'all' });
-    backup.data.budgets.push({ id: 'x', categoryId: 'groceries', monthlyCents: 1 });
+    backup.data.budgets.push({ id: 'x', categoryIds: ["groceries"], monthlyCents: 1 });
     await expect(parseBackup(JSON.stringify(backup))).rejects.toMatchObject({ code: 'checksum' });
   });
   it('rifiuta file non validi e backup da versioni più nuove', async () => {
@@ -243,5 +244,21 @@ describe('export CSV', () => {
       'date,account,amount,description,category,note,transfer',
       '2026-01-02,modo1,-12.50,,groceries,"Pane, latte",0',
     ]);
+  });
+
+  it('migra i budget vecchi (categoryId) al formato con più categorie', async () => {
+    const file = await parseBackup(
+      '{"app":"quadra","schemaVersion":2,"data":{"budgets":[{"id":"b","categoryId":"groceries","monthlyCents":5}]}}',
+    );
+    expect(file.data.budgets).toEqual([{ id: 'b', categoryIds: ['groceries'], monthlyCents: 5 }]);
+  });
+  it('eliminando una categoria il budget la perde, e sparisce se resta vuoto', async () => {
+    await db.budgets.bulkPut([
+      { id: 'multi', name: 'Casa', categoryIds: ['groceries', 'health'], monthlyCents: 1 },
+      { id: 'solo', categoryIds: ['groceries'], monthlyCents: 1 },
+    ]);
+    await categoriesRepo.remove('groceries');
+    expect((await db.budgets.get('multi'))?.categoryIds).toEqual(['health']);
+    expect(await db.budgets.get('solo')).toBeUndefined();
   });
 });

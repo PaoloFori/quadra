@@ -87,7 +87,9 @@ export function CategoryPeriodView({
   const income = report.kind === 'income';
   const change = compare(report.totalCents, report.previousCents);
   const budget =
-    scope.kind === 'month' ? budgets.find((b) => b.categoryId === categoryId) : undefined;
+    scope.kind === 'month'
+      ? budgets.find((b) => b.categoryIds.length === 1 && b.categoryIds[0] === categoryId)
+      : undefined;
   const ratio = budget && budget.monthlyCents > 0 ? report.totalCents / budget.monthlyCents : 0;
   const chart = report.series.map((p) => ({
     name: scope.kind === 'month' ? p.key : f.monthShort(p.key),

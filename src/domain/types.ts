@@ -55,9 +55,12 @@ export interface Rule {
   origin: 'user' | 'learned';
 }
 
+/** Un budget = un solo limite mensile condiviso da una o più categorie (i budget possono sovrapporsi). */
 export interface Budget {
   id: string;
-  categoryId: string;
+  /** Nome scelto dall'utente (es. «Casa»); i budget vecchi non ce l'hanno: si mostrano le categorie. */
+  name?: string;
+  categoryIds: string[];
   monthlyCents: number;
 }
 

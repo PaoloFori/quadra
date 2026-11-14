@@ -1,6 +1,6 @@
 import type { BackupData } from '../types';
 
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 
 type Raw = Record<string, unknown>;
 type Migration = (data: Raw) => Raw;
@@ -13,6 +13,15 @@ type Migration = (data: Raw) => Raw;
 export const MIGRATIONS: Record<number, Migration> = {
   // v2: aggiunte le ricorrenze
   1: (d) => ({ ...d, recurrences: d.recurrences ?? [] }),
+  // v3: il budget ha più categorie (categoryId → categoryIds) e un nome facoltativo
+  2: (d) => ({
+    ...d,
+    budgets: ((d.budgets as Raw[] | undefined) ?? []).map((b) => {
+      if (Array.isArray(b.categoryIds)) return b;
+      const { categoryId, ...rest } = b;
+      return { ...rest, categoryIds: typeof categoryId === 'string' ? [categoryId] : [] };
+    }),
+  }),
 };
 
 const EMPTY: BackupData = {

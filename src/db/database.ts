@@ -60,6 +60,21 @@ export class QuadraDb extends Dexie {
         }
       });
 
+    // v5: un budget raggruppa più categorie (categoryId → categoryIds) con un solo limite.
+    this.version(5)
+      .stores({ budgets: 'id, *categoryIds' })
+      .upgrade(async (tx) => {
+        await tx
+          .table('budgets')
+          .toCollection()
+          .modify((b: Record<string, unknown>) => {
+            if (!Array.isArray(b.categoryIds)) {
+              b.categoryIds = typeof b.categoryId === 'string' ? [b.categoryId] : [];
+            }
+            delete b.categoryId;
+          });
+      });
+
     this.on('populate', (tx) => {
       void tx.table('categories').bulkAdd(DEFAULT_CATEGORIES);
       void tx.table('rules').bulkAdd(DEFAULT_RULES);

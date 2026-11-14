@@ -272,9 +272,9 @@
     "warning": "Careful: only {{amount}} left",
     "over": "Over by {{amount}}",
     "what": "What is a budget?",
-    "intro": "A budget is the most you want to spend each month on a category, for example Restaurants €150. Quadra shows how much you've already spent and how much is left.",
+    "intro": "A budget is a named monthly limit for one or more categories: for example “Home” €900 for Bills and Rent, or “Everything” for all spending. Quadra adds up the spending in those categories and shows what is left.",
     "canExceed": "It never blocks anything: you can spend more. When you go over the limit the bar turns red and tells you by how much.",
-    "howTo": "Tap “New budget”, pick the category and the monthly limit.",
+    "howTo": "Tap “New budget”, give it a name, pick the categories and the monthly limit.",
     "totalTitle": "Month budget",
     "spentOf": "Spent {{spent}} of {{limit}}",
     "percentUsed": "{{pct}}% used",
@@ -294,9 +294,11 @@
     "pickCategories": "Categories (you can pick more than one)",
     "selectAll": "Select all",
     "selectNone": "Clear",
-    "allTaken": "Every category already has a budget.",
     "pickAtLeastOne": "Pick at least one category.",
-    "sameLimit": "The same limit will be applied to the {{count}} chosen categories."
+    "name": "Budget name",
+    "namePlaceholder": "e.g. Home, Everything, Fun",
+    "nameRequired": "Give the budget a name.",
+    "oneLimitHint": "One limit for all the chosen categories. Budgets can overlap (e.g. “Everything” and “Home”)."
   },
   "backup": {
     "title": "Backup & restore",
