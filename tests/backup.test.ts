@@ -1,7 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '@/db/database';
-import { exportBackup, previewRestore, readAllData, restoreBackup } from '@/db/backupService';
+import {
+  exportBackup,
+  previewRestore,
+  readAllData,
+  restoreBackup,
+  wipeAllData,
+} from '@/db/backupService';
 import { commitImport, previewImport } from '@/db/importService';
 import { getSettings, setDeviceSecret, setSetting, getDeviceSecret } from '@/db/settings';
 import { addManualTransaction } from '@/db/transactionService';
@@ -260,5 +266,24 @@ describe('export CSV', () => {
     await categoriesRepo.remove('groceries');
     expect((await db.budgets.get('multi'))?.categoryIds).toEqual(['health']);
     expect(await db.budgets.get('solo')).toBeUndefined();
+  });
+});
+
+describe('elimina tutti i dati', () => {
+  it('svuota i dati, ricrea categorie e regole di partenza e tiene tema e PIN del dispositivo', async () => {
+    await setSetting('theme', 'dark');
+    await setDeviceSecret('pin', 'x');
+    await setSetting('lastBackupAt', '2026-11-15T10:00:00.000Z');
+    await db.budgets.put({ id: 'b', categoryIds: ['groceries'], monthlyCents: 1 });
+    await wipeAllData();
+    expect(await db.accounts.count()).toBe(0);
+    expect(await db.transactions.count()).toBe(0);
+    expect(await db.budgets.count()).toBe(0);
+    expect(await db.categories.count()).toBeGreaterThan(0);
+    expect(await db.rules.count()).toBeGreaterThan(0);
+    const settings = await getSettings();
+    expect(settings.theme).toBe('dark');
+    expect(await getDeviceSecret('pin')).toBe('x');
+    expect(settings.lastBackupAt).toBeUndefined();
   });
 });

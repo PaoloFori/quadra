@@ -5,11 +5,12 @@ import { Amount } from '@/components/Amount';
 import { ProgressBar } from '@/components/ProgressBar';
 import { Screen } from '@/components/Screen';
 import { Sheet } from '@/components/Sheet';
-import { useCategoryLookup } from '@/db/hooks';
+import { useAccounts, useCategoryLookup } from '@/db/hooks';
 import { budgetsRepo, newId, transactionsRepo } from '@/db/repositories';
 import { getSettings, setSetting } from '@/db/settings';
 import {
   budgetStatuses,
+  budgetTransactions,
   budgetsOverlap,
   levelOf,
   savingsProgress,
@@ -18,12 +19,14 @@ import {
   type SavingsProgress,
 } from '@/domain/reports/budget';
 import { totalsOf } from '@/domain/reports/totals';
-import type { Budget } from '@/domain/types';
+import type { Budget, Transaction } from '@/domain/types';
 import { monthOf, monthRange, shiftMonth, todayIso } from '@/lib/dates';
 import { centsToPlain, parseUserAmount } from '@/lib/money';
 import { useFormat } from '@/i18n/useFormat';
 import { usePersistentState } from '@/lib/persistentState';
 import { AmountInput } from '@/components/AmountInput';
+import { TransactionRow } from '@/features/transactions/TransactionRow';
+import { TransactionSheet } from '@/features/transactions/TransactionSheet';
 
 function BudgetSheet({ budget, onClose }: { budget?: Budget; onClose: () => void }) {
   const { t } = useTranslation();
@@ -153,6 +156,74 @@ function BudgetSheet({ budget, onClose }: { budget?: Budget; onClose: () => void
   );
 }
 
+/** Dettaglio di un budget: quanto è stato usato e tutti i movimenti del mese che ci rientrano. */
+function BudgetDetail({
+  status,
+  title,
+  monthLabel,
+  monthTxs,
+  onEdit,
+  onClose,
+}: {
+  status: BudgetStatus;
+  title: string;
+  monthLabel: string;
+  monthTxs: readonly Transaction[];
+  onEdit: () => void;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const f = useFormat();
+  const lookup = useCategoryLookup();
+  const accounts = useAccounts();
+  const accountById = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
+  const rows = useMemo(() => budgetTransactions(status.budget, monthTxs), [status, monthTxs]);
+  const [open, setOpen] = useState<Transaction | null>(null);
+  const { budget } = status;
+  return (
+    <Sheet
+      title={title}
+      onClose={onClose}
+      headerAction={{ label: t('common.edit'), onClick: onEdit }}
+    >
+      <div className="space-y-1.5">
+        <p className="text-[13px] capitalize text-muted">{monthLabel}</p>
+        <p className="flex items-baseline justify-between gap-3">
+          <span className="font-display text-[24px] font-medium tracking-[-0.03em]">
+            {f.currency(status.spent)}
+          </span>
+          <span className="text-muted">
+            {t('budget.ofLimit', { limit: f.currency(budget.monthlyCents) })}
+          </span>
+        </p>
+        <ProgressBar ratio={status.ratio} level={status.level} label={title} />
+        <p className="text-[13px] text-muted">
+          {budget.categoryIds.map((id) => lookup.label(id)).join(' · ')}
+        </p>
+      </div>
+      <h3 className="font-semibold">{t('budget.movementsTitle', { count: rows.length })}</h3>
+      {rows.length === 0 ? (
+        <p className="text-[14px] text-muted">{t('budget.noMovements')}</p>
+      ) : (
+        <ul className="space-y-2">
+          {rows.map((tx) => (
+            <li key={tx.id}>
+              <TransactionRow
+                tx={tx}
+                category={tx.categoryId ? lookup.byId.get(tx.categoryId) : undefined}
+                categoryLabel={lookup.label(tx.categoryId)}
+                account={accountById.get(tx.accountId)}
+                onOpen={setOpen}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+      {open && <TransactionSheet tx={open} onClose={() => setOpen(null)} />}
+    </Sheet>
+  );
+}
+
 function SavingsSheet({
   monthlyCents,
   yearlyCents,
@@ -271,6 +342,7 @@ export default function BudgetPage() {
     [],
   );
   const [editing, setEditing] = useState<Budget | 'new' | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   // la spiegazione si può chiudere; si ricorda la scelta (chiusa di base)
   const [helpOpen, setHelpOpen] = usePersistentState<boolean>('budget.help', false, (raw) =>
     typeof raw === 'boolean' ? raw : undefined,
@@ -305,6 +377,7 @@ export default function BudgetPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [budgets, txs, lookup],
   );
+  const detailStatus = statuses.find((s) => s.budget.id === detailId);
   // con budget sovrapposti (es. «Tutto» e «Casa») il totale conterebbe due volte le stesse spese
   const overlap = useMemo(() => budgetsOverlap(budgets), [budgets]);
 
@@ -413,7 +486,7 @@ export default function BudgetPage() {
           const icons = s.budget.categoryIds.map((id) => lookup.byId.get(id)?.icon).filter(Boolean);
           return (
             <li key={s.budget.id}>
-              <button className="card w-full text-left" onClick={() => setEditing(s.budget)}>
+              <button className="card w-full text-left" onClick={() => setDetailId(s.budget.id)}>
                 <span className="mb-2 flex items-center justify-between gap-3">
                   <span className="flex min-w-0 items-center gap-2">
                     <span aria-hidden="true">
@@ -450,6 +523,19 @@ export default function BudgetPage() {
           monthlyCents={monthlyGoal}
           yearlyCents={yearlyGoal}
           onClose={() => setEditingSavings(false)}
+        />
+      )}
+      {detailStatus && (
+        <BudgetDetail
+          status={detailStatus}
+          title={nameOf(detailStatus.budget)}
+          monthLabel={f.month(month)}
+          monthTxs={txs}
+          onEdit={() => {
+            setDetailId(null);
+            setEditing(detailStatus.budget);
+          }}
+          onClose={() => setDetailId(null)}
         />
       )}
       {editing && (

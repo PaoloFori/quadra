@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { filterByAccount, savingsRate, totalsByAccount } from '@/domain/reports/accounts';
-import { budgetStatuses, budgetsOverlap, levelOf } from '@/domain/reports/budget';
+import { budgetStatuses, budgetTransactions, budgetsOverlap, levelOf } from '@/domain/reports/budget';
 import { buildCategoryReport } from '@/domain/reports/category';
 import { buildMonthReport } from '@/domain/reports/month';
 import { detectRecurring } from '@/domain/reports/recurring';
@@ -161,6 +161,28 @@ describe('budget con più categorie', () => {
     expect(home?.spent).toBe(20000);
     expect(budgetsOverlap(budgets)).toBe(true);
     expect(budgetsOverlap([budgets[1]!])).toBe(false);
+  });
+});
+
+describe('movimenti di un budget', () => {
+  it('sono le spese delle sue categorie (no entrate, no giroconti), dalla più recente', () => {
+    const mk = (id: string, date: string, cents: number, cat: string, transfer = false): Transaction => ({
+      ...tx(date, cents),
+      id,
+      categoryId: cat,
+      isTransfer: transfer,
+    });
+    const rows = budgetTransactions(
+      { id: 'c', name: 'Casa', categoryIds: ['bills', 'rent'], monthlyCents: 1 },
+      [
+        mk('a', '2026-03-01', -100, 'bills'),
+        mk('b', '2026-03-05', -200, 'rent'),
+        mk('c', '2026-03-06', 500, 'rent'),
+        mk('d', '2026-03-07', -300, 'groceries'),
+        mk('e', '2026-03-08', -400, 'bills', true),
+      ],
+    );
+    expect(rows.map((r) => r.id)).toEqual(['b', 'a']);
   });
 });
 

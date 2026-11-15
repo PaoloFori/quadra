@@ -341,7 +341,11 @@
     "nameRequired": "Dai un nome al budget.",
     "oneLimitHint": "Un solo limite per tutte le categorie scelte. I budget possono sovrapporsi (es. «Tutto» e «Casa»).",
     "helpShow": "Come funziona il budget",
-    "helpHide": "Nascondi la spiegazione"
+    "helpHide": "Nascondi la spiegazione",
+    "ofLimit": "su {{limit}}",
+    "movementsTitle_one": "{{count}} movimento nel budget",
+    "movementsTitle_other": "{{count}} movimenti nel budget",
+    "noMovements": "Nessuna spesa in questo budget nel mese."
   },
   "backup": {
     "title": "Backup e ripristino",
@@ -396,6 +400,16 @@
         "title": "Backup di fine anno",
         "body": "Salva un backup completo prima di chiudere l'anno."
       }
+    },
+    "wipe": {
+      "title": "Elimina tutti i dati",
+      "hint": "Cancella conti, movimenti, budget e impostazioni da questo dispositivo. Fai prima un backup completo se vuoi poter tornare indietro.",
+      "action": "Elimina tutti i dati…",
+      "warning": "Stai per cancellare tutti i tuoi dati da questo dispositivo: conti, movimenti, categorie personali, regole, budget e ricorrenze. Non si può annullare, a meno che tu abbia un file di backup.",
+      "word": "ELIMINA",
+      "typeToConfirm": "Per confermare scrivi {{word}}",
+      "confirm": "Elimina tutto",
+      "done": "Tutti i dati sono stati eliminati."
     }
   },
   "security": {

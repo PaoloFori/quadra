@@ -35,6 +35,17 @@ export function budgetStatuses(
   });
 }
 
+/** Le spese del mese che contano per il budget (le stesse sommate da `budgetStatuses`), dalla più recente. */
+export function budgetTransactions(
+  budget: Budget,
+  monthTxs: readonly Transaction[],
+): Transaction[] {
+  const ids = new Set(budget.categoryIds);
+  return countable(monthTxs)
+    .filter((t) => t.amountCents < 0 && t.categoryId !== null && ids.has(t.categoryId))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+}
+
 /** True se due budget condividono almeno una categoria: in quel caso sommarli conterebbe due volte le stesse spese. */
 export function budgetsOverlap(budgets: readonly Budget[]): boolean {
   const seen = new Set<string>();

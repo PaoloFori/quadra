@@ -341,7 +341,11 @@
     "nameRequired": "Give the budget a name.",
     "oneLimitHint": "One limit for all the chosen categories. Budgets can overlap (e.g. “Everything” and “Home”).",
     "helpShow": "How budgets work",
-    "helpHide": "Hide the explanation"
+    "helpHide": "Hide the explanation",
+    "ofLimit": "of {{limit}}",
+    "movementsTitle_one": "{{count}} transaction in this budget",
+    "movementsTitle_other": "{{count}} transactions in this budget",
+    "noMovements": "No spending in this budget this month."
   },
   "backup": {
     "title": "Backup & restore",
@@ -396,6 +400,16 @@
         "title": "Year-end backup",
         "body": "Save a full backup before closing the year."
       }
+    },
+    "wipe": {
+      "title": "Delete all data",
+      "hint": "Erases accounts, transactions, budgets and settings from this device. Make a full backup first if you want to be able to go back.",
+      "action": "Delete all data…",
+      "warning": "You are about to erase all your data from this device: accounts, transactions, custom categories, rules, budgets and recurring items. This cannot be undone unless you have a backup file.",
+      "word": "DELETE",
+      "typeToConfirm": "To confirm, type {{word}}",
+      "confirm": "Delete everything",
+      "done": "All data has been deleted."
     }
   },
   "security": {

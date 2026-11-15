@@ -1,6 +1,7 @@
 import { createBackup, type BackupFile, type BackupRange } from '@/domain/backup/format';
 import { missingData, previewMerge, type RestorePreview } from '@/domain/backup/merge';
 import type { BackupData } from '@/domain/types';
+import { DEFAULT_CATEGORIES, DEFAULT_RULES } from '@/domain/defaults';
 import { db } from './database';
 import { getSettings, setSetting } from './settings';
 
@@ -82,4 +83,40 @@ export async function restoreBackup(file: BackupFile, mode: RestoreMode): Promis
       await writeAll(missingData(await readAllData(), file.data));
     }
   });
+}
+
+/**
+ * Cancella tutti i dati dell'app (conti, movimenti, categorie personali, regole, budget, profili,
+ * ricorrenze, impostazioni) e ricrea le categorie e le regole di partenza, come alla prima apertura.
+ * Restano il tema scelto e i segreti del dispositivo (PIN, Face ID): non sono dati finanziari
+ * e cancellarli senza verifica darebbe un modo per aggirare il blocco.
+ */
+export async function wipeAllData(): Promise<void> {
+  const tables = [
+    db.accounts,
+    db.transactions,
+    db.categories,
+    db.rules,
+    db.budgets,
+    db.profiles,
+    db.recurrences,
+    db.settings,
+  ];
+  await db.transaction('rw', tables, async () => {
+    const keep = (await db.settings.toArray()).filter(
+      (s) => s.key.startsWith('device:') || s.key === 'theme',
+    );
+    await Promise.all(tables.map((t) => t.clear()));
+    await db.settings.bulkPut(keep);
+    await db.categories.bulkAdd(DEFAULT_CATEGORIES);
+    await db.rules.bulkAdd(DEFAULT_RULES);
+  });
+  // preferenze di visualizzazione di questo dispositivo (ultima schermata, ordinamenti, ecc.)
+  try {
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith('quadra:ui:')) localStorage.removeItem(key);
+    }
+  } catch {
+    /* storage non disponibile: nulla da pulire */
+  }
 }

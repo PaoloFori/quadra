@@ -9,8 +9,10 @@ import {
   previewRestore,
   restoreBackup,
   type RestoreMode,
+  wipeAllData,
 } from '@/db/backupService';
 import { getSettings } from '@/db/settings';
+import { Sheet } from '@/components/Sheet';
 import {
   backupFilename,
   BackupError,
@@ -263,6 +265,71 @@ function RestoreCard({ onDone }: { onDone: (msg: string) => void }) {
   );
 }
 
+/** Cancellazione di tutti i dati: richiede di scrivere la parola di conferma. */
+function WipeCard({ onDone }: { onDone: (message: string) => void }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState('');
+  const [busy, setBusy] = useState(false);
+  const word = t('backup.wipe.word');
+  const ready = typed.trim().toLowerCase() === word.toLowerCase();
+
+  async function wipe(): Promise<void> {
+    setBusy(true);
+    try {
+      await wipeAllData();
+      setOpen(false);
+      setTyped('');
+      onDone(t('backup.wipe.done'));
+    } catch (e) {
+      console.error(e);
+      onDone(t('errors.generic'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="card space-y-3">
+      <h2 className="font-semibold">{t('backup.wipe.title')}</h2>
+      <p className="text-[14px] text-muted">{t('backup.wipe.hint')}</p>
+      <button className="btn-danger w-full" onClick={() => setOpen(true)}>
+        {t('backup.wipe.action')}
+      </button>
+      {open && (
+        <Sheet title={t('backup.wipe.title')} onClose={() => setOpen(false)}>
+          <p className="text-[14px]">{t('backup.wipe.warning')}</p>
+          <div>
+            <label className="label" htmlFor="wipe-word">
+              {t('backup.wipe.typeToConfirm', { word })}
+            </label>
+            <input
+              id="wipe-word"
+              className="input"
+              autoComplete="off"
+              autoCapitalize="characters"
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2">
+            <button className="btn-secondary flex-1" onClick={() => setOpen(false)}>
+              {t('common.cancel')}
+            </button>
+            <button
+              className="btn-danger flex-1"
+              disabled={!ready || busy}
+              onClick={() => void wipe()}
+            >
+              {t('backup.wipe.confirm')}
+            </button>
+          </div>
+        </Sheet>
+      )}
+    </section>
+  );
+}
+
 export default function BackupPage() {
   const { t } = useTranslation();
   const f = useFormat();
@@ -317,6 +384,7 @@ export default function BackupPage() {
         <ExportCard onSaved={setMessage} />
         <RestoreCard onDone={setMessage} />
         <StorageCard />
+        <WipeCard onDone={setMessage} />
       </div>
     </Screen>
   );
